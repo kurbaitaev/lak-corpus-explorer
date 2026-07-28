@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lak Corpus Explorer</title>
+<meta name="description" content="Searchable, source-aware research corpus of the Lak language with translation-first Russian-to-Lak search, lexicon, and quality tracking.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link active" href="/">Search</a>
+      <a class="nav-link" href="/about.html">About & Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+    </div>
+  </div>
+</nav>
+
+<div class="search-header">
+  <div class="container">
+    <div class="search-header-inner">
+      <div class="search-title">
+        <h1>Lak Language Corpus</h1>
+        <p>Source-aware · translation-first Russian→Lak search · quality-tracked</p>
+      </div>
+      <div id="stats-row" class="stats-row"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="container">
+    <div class="controls-grid">
+      <div class="field-wrap">
+        <label for="q">Search (Russian or Lak)</label>
+        <input id="q" type="search" placeholder="e.g. луна, земля, спасибо, с днем рождения…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field-wrap">
+        <label for="kind">Record type</label>
+        <div class="select-wrap">
+          <select id="kind">
+            <option value="">Texts + lexicon</option>
+            <option value="text">Texts only</option>
+            <option value="lexicon">Lexicon only</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-wrap">
+        <label for="source">Source</label>
+        <div class="select-wrap">
+          <select id="source">
+            <option value="">All sources</option>
+            <option>PCMLBE</option>
+            <option>Lak Wikipedia</option>
+            <option>Digiev phrasebook</option>
+            <option>IDS</option>
+            <option>Uslar 1890</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-wrap">
+        <label for="variety">Variety</label>
+        <div class="select-wrap">
+          <select id="variety">
+            <option value="">All varieties</option>
+            <option value="standard">Standard</option>
+            <option value="arakul">Arakul</option>
+            <option value="balkhar">Balkhar</option>
+            <option value="shali">Shali</option>
+            <option value="historical">Historical</option>
+            <option value="unspecified">Unspecified</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-top:14px; padding-bottom:32px;">
+  <div id="concept-card" class="concept-card"></div>
+
+  <div class="status-bar">
+    <span id="count-label" style="color:var(--text2); font-size:13.5px;"></span>
+    <div class="pager">
+      <button class="btn" id="prev-btn" disabled>← Previous</button>
+      <span id="page-label" style="font-size:13.5px; color:var(--text2);"></span>
+      <button class="btn" id="next-btn" disabled>Next →</button>
+    </div>
+  </div>
+
+  <div class="table-wrap" id="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="td-type">Type / Quality</th>
+          <th class="td-lak">Lak text / form</th>
+          <th class="td-meaning">Meaning / document</th>
+          <th>Source</th>
+          <th>Variety</th>
+          <th class="td-actions">Review</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="status-bar" style="margin-top:12px;">
+    <span></span>
+    <div class="pager">
+      <button class="btn" id="prev-btn2" disabled>← Previous</button>
+      <span id="page-label2" style="font-size:13.5px; color:var(--text2);"></span>
+      <button class="btn" id="next-btn2" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="/js/search.js?v=3"></script>
+</body>
+</html>

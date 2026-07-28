@@ -1,0 +1,19 @@
+{
+  "name": "lak-corpus-explorer",
+  "version": "1.0.0",
+  "description": "Searchable, source-aware Lak research corpus with review system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "compression": "^1.7.5",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.3"
+  }
+}
