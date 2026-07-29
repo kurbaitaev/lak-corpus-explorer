@@ -50,11 +50,51 @@ function tokenHas(value, form) {
   return text.includes(' ' + form + ' ');
 }
 
+// ── Build stamp (changes every restart → busts all asset caches) ─
+const BUILD = Date.now();
+const PUBLIC = path.join(__dirname, 'public');
+
+// Pre-load and stamp HTML files at startup
+function stampHtml(file) {
+  let html = fs.readFileSync(path.join(PUBLIC, file), 'utf-8');
+  // Inject ?v=<stamp> into every CSS/JS asset reference that doesn't already have one
+  html = html.replace(/(href|src)="(\/[^"]+\.(css|js))(\?[^"]*)?">/g,
+    (_, attr, p, _ext, q) => `${attr}="${p}?v=${BUILD}">`);
+  return html;
+}
+
+const PAGES = {};
+for (const f of ['index.html', 'about.html', 'queue.html']) {
+  PAGES[f] = stampHtml(f);
+}
+
 // ── Middleware ────────────────────────────────────────────────
 app.use(compression());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'), {
-  setHeaders: (res) => { res.setHeader('Cache-Control', 'no-cache'); }
+
+function sendPage(res, html) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Clear-Site-Data', '"cache"');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+}
+
+// Serve HTML pages dynamically — never cached
+app.get('/', (req, res) => sendPage(res, PAGES['index.html']));
+app.get('/about.html', (req, res) => sendPage(res, PAGES['about.html']));
+app.get('/queue.html', (req, res) => sendPage(res, PAGES['queue.html']));
+
+// Static assets — long cache (versioned via ?v=BUILD stamp in HTML)
+app.use(express.static(PUBLIC, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  },
 }));
 
 // ── Corpus stats ─────────────────────────────────────────────
