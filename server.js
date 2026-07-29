@@ -128,10 +128,23 @@ function sendPage(res, html) {
   res.send(html);
 }
 
-// Serve HTML pages dynamically — never cached
-app.get('/', (req, res) => sendPage(res, PAGES['index.html']));
-app.get('/about.html', (req, res) => sendPage(res, PAGES['about.html']));
-app.get('/queue.html', (req, res) => sendPage(res, PAGES['queue.html']));
+// Serve HTML pages dynamically.
+// Redirect bare URLs to a stamped version so the browser can never serve
+// a bfcache / disk-cached copy — the stamped URL changes every restart.
+function htmlRoute(page) {
+  return (req, res) => {
+    if (!req.query.v && !req.query.bust) {
+      // No version stamp → redirect to stamped URL (no-store so redirect itself isn't cached)
+      res.setHeader('Cache-Control', 'no-store');
+      return res.redirect(302, req.path + '?v=' + BUILD);
+    }
+    sendPage(res, PAGES[page]);
+  };
+}
+
+app.get('/',          htmlRoute('index.html'));
+app.get('/about.html', htmlRoute('about.html'));
+app.get('/queue.html', htmlRoute('queue.html'));
 
 // ── Legacy-cache busters ──────────────────────────────────────
 // Old cached index.html loads /data/corpus.js and /js/search.js (unversioned).
