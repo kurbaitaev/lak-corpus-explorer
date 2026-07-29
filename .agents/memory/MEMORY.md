@@ -1,2 +1,2 @@
 - [Corpus data extraction](corpus-extraction.md) — DATA/STATS/ALIASES are one `const` statement; `], STATS=` marks the array end.
-- [GitHub push auth](github-push.md) — HTTPS push blocked; user must add a PAT or SSH remote.
+- [GitHub push auth](github-push.md) — shell `git push` fails (no password auth); use the git-remote skill's `gitPush` callback instead.
