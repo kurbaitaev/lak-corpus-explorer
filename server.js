@@ -22,16 +22,36 @@ let CORPUS_STATS   = {};
 let CORPUS_ALIASES = {};
 
 function loadCorpus() {
+  const dataPath = path.join(__dirname, 'data/corpus-data.json');
+  const metaPath = path.join(__dirname, 'data/corpus-meta.json');
+
+  // Data files are generated (gitignored). If missing, rebuild them from
+  // the canonical index.html via the extraction script.
+  if (!fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
+    console.log('Corpus data files missing — running scripts/extract-corpus.py …');
+    const { spawnSync } = require('child_process');
+    const result = spawnSync('python3', [path.join(__dirname, 'scripts/extract-corpus.py')], {
+      stdio: 'inherit',
+    });
+    if (result.status !== 0 || !fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
+      console.error(
+        'FATAL: corpus data files are missing and could not be regenerated.\n' +
+        'Run "python3 scripts/extract-corpus.py" manually (requires the canonical index.html at the project root).'
+      );
+      process.exit(1);
+    }
+  }
+
   try {
-    const dataPath = path.join(__dirname, 'public/data/corpus-data.json');
-    const metaPath = path.join(__dirname, 'public/data/corpus-meta.json');
     CORPUS_DATA = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
     const meta  = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
     CORPUS_STATS   = meta.stats;
     CORPUS_ALIASES = meta.aliases;
     console.log(`Corpus loaded: ${CORPUS_DATA.length} records`);
   } catch (err) {
-    console.error('Failed to load corpus:', err.message);
+    console.error('FATAL: failed to load corpus data:', err.message);
+    console.error('Run "python3 scripts/extract-corpus.py" to regenerate the data files.');
+    process.exit(1);
   }
 }
 loadCorpus();
@@ -171,6 +191,15 @@ app.get('/login.html', (req, res) => sendPage(res, PAGES['login.html']));
 const RELOAD_SHIM = `/* Page reload shim — superseded by server-side search */
 (function(){location.replace(location.pathname+'?bust='+Date.now());})();`;
 
+  const {
+    q       = '',
+    kind    = '',
+    source  = '',
+    variety = '',
+    page    = '1',
+    limit   = '50',
+  } = req.query;
+
 app.get('/data/corpus.js', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -220,7 +249,7 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 app.get('/api/auth/me', (req, res) => {
-  const session = readSession(req);
+    const session   = readSession(req);
   res.json({ reviewer: session ? session.name : null });
 });
 
@@ -269,7 +298,9 @@ app.get('/api/corpus/search', (req, res) => {
   const total       = displayed.length;
   const pages       = Math.max(1, Math.ceil(total / pageSize));
   const safePageNum = Math.min(pageNum, pages);
-  const rows        = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize);
+    const rows = result.rows.map(r =>
+      [r.record_id, r.state, r.correction, r.note, r.reviewer_name, r.reviewer_verified, r.created_at, r.updated_at].map(escCsv).join(',')
+    ).join('\n');
 
   // Compute senses for concept card (lexicon entries matching expansion)
   let senses = [];
@@ -319,20 +350,23 @@ app.get('/api/reviews', async (req, res) => {
     }
     sql += ` ORDER BY updated_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     params.push(Math.min(Number(limit) || 100, 500), Math.max(Number(offset) || 0, 0));
-    const result = await pool.query(sql, params);
-    res.json({ reviews: result.rows });
-  } catch (err) {
-    console.error('GET /api/reviews:', err.message);
-    res.status(500).json({ error: 'Database error' });
-  }
+    const result = await pool.query(
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
+    );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
+    res.setHeader('Content-Disposition', 'attachment; filename="lak-corpus-reviews.json"');
+    res.json({ exported_at: new Date().toISOString(), reviews: result.rows });
+  } catch (err) { res.status(500).json({ error: 'Export failed' }); }
 });
 
-app.get('/api/reviews/:recordId', async (req, res) => {
+app.get('/api/export.csv', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews WHERE record_id = $1',
-      [req.params.recordId]
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     res.json({ review: result.rows[0] || null });
   } catch (err) {
     res.status(500).json({ error: 'Database error' });
@@ -353,18 +387,10 @@ app.post('/api/reviews', async (req, res) => {
       ? session.name
       : (reviewer_name ? String(reviewer_name).slice(0, 100) : null);
     const result = await pool.query(
-      `INSERT INTO reviews (record_id, state, correction, note, reviewer_name, reviewer_verified, updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,NOW())
-       ON CONFLICT (record_id) DO UPDATE
-         SET state=EXCLUDED.state, correction=EXCLUDED.correction,
-             note=EXCLUDED.note, reviewer_name=EXCLUDED.reviewer_name,
-             reviewer_verified=EXCLUDED.reviewer_verified, updated_at=NOW()
-       RETURNING *`,
-      [record_id, state,
-       correction ? String(correction).slice(0, 2000) : null,
-       note       ? String(note).slice(0, 2000)       : null,
-       finalName, !!session]
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     res.json({ review: result.rows[0] });
   } catch (err) {
     console.error('POST /api/reviews:', err.message);
@@ -378,9 +404,10 @@ app.post('/api/reviews/bulk', async (req, res) => {
     if (!Array.isArray(record_ids) || !record_ids.length) return res.json({ reviews: {} });
     const ids = record_ids.slice(0, 200).map(String);
     const result = await pool.query(
-      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, updated_at FROM reviews WHERE record_id = ANY($1::text[])',
-      [ids]
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     const byId = {};
     for (const row of result.rows) byId[row.record_id] = row;
     res.json({ reviews: byId });
@@ -391,7 +418,11 @@ app.post('/api/reviews/bulk', async (req, res) => {
 
 app.get('/api/stats/reviews', async (req, res) => {
   try {
-    const result = await pool.query('SELECT state, COUNT(*) AS count FROM reviews GROUP BY state');
+    const result = await pool.query(
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
+    );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     const counts = { approved: 0, flagged: 0, unreviewed: 0 };
     for (const row of result.rows) counts[row.state] = Number(row.count);
     res.json(counts);
@@ -405,6 +436,8 @@ app.get('/api/export.json', async (req, res) => {
     const result = await pool.query(
       'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     res.setHeader('Content-Disposition', 'attachment; filename="lak-corpus-reviews.json"');
     res.json({ exported_at: new Date().toISOString(), reviews: result.rows });
   } catch (err) { res.status(500).json({ error: 'Export failed' }); }
@@ -415,6 +448,8 @@ app.get('/api/export.csv', async (req, res) => {
     const result = await pool.query(
       'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
+
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     const header = 'record_id,state,correction,note,reviewer_name,reviewer_verified,created_at,updated_at\n';
     const rows = result.rows.map(r =>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate public/data/corpus-data.json and corpus-meta.json from the
+"""Regenerate data/corpus-data.json and corpus-meta.json from the
 canonical index.html at the project root.
 
 The original minified script in index.html contains a single declaration:
@@ -13,7 +13,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'index.html')
-OUT_DIR = os.path.join(ROOT, 'public', 'data')
+OUT_DIR = os.path.join(ROOT, 'data')
 DATA_OUT = os.path.join(OUT_DIR, 'corpus-data.json')
 META_OUT = os.path.join(OUT_DIR, 'corpus-meta.json')
 
