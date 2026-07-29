@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reviewer Login — Lak Corpus Explorer</title>
-<meta name="description" content="Log in as a reviewer to attribute your reviews of Lak corpus records.">
+<title>Log in — Lak Corpus Explorer</title>
+<meta name="description" content="Log in with a contributor account or as a trusted reviewer.">
 <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
@@ -14,44 +14,64 @@
     <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
     <div class="nav-links">
       <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/validate.html">Validate</a>
+      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
       <a class="nav-link" href="/about.html">About &amp; Research</a>
       <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link active" id="auth-link" href="/login.html">Reviewer login</a>
+      <a class="nav-link active" id="auth-link" href="/login.html">Log in</a>
     </div>
   </div>
 </nav>
 
 <div class="container" style="padding-top:40px; padding-bottom:48px; max-width:480px;">
-  <h1 style="margin-bottom:8px;">Reviewer login</h1>
+  <h1 style="margin-bottom:8px;">Log in</h1>
   <p style="color:var(--text2); font-size:14px; margin-bottom:24px;">
-    Logging in attributes your reviews to a verified identity. Searching and reading the
-    corpus is fully open — no login is needed for that.
+    Searching and reading the corpus is fully open — no login needed. Accounts are for
+    validation, reviews, and stewardship.
   </p>
 
-  <div id="login-card" style="border:1px solid var(--border,#ddd); border-radius:10px; padding:24px;">
-    <form id="login-form">
+  <div id="account-card" class="card" style="margin-bottom:20px;">
+    <h2 style="font-size:16px; margin-bottom:12px;">Contributor account</h2>
+    <form id="account-form">
+      <div class="field-wrap" style="margin-bottom:12px;">
+        <label for="a-email">Email</label>
+        <input id="a-email" type="email" autocomplete="email" required style="width:100%;">
+      </div>
       <div class="field-wrap" style="margin-bottom:14px;">
+        <label for="a-pass">Password</label>
+        <input id="a-pass" type="password" autocomplete="current-password" required style="width:100%;">
+      </div>
+      <button class="btn btn-ok" type="submit" style="width:100%; min-height:44px;">Log in</button>
+      <div id="account-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
+    </form>
+    <p style="font-size:13px; color:var(--text3); margin-top:12px;">
+      No account yet? <a href="/register.html" style="color:var(--accent);">Create one — it's free</a>.
+    </p>
+  </div>
+
+  <div id="login-card" class="card">
+    <h2 style="font-size:16px; margin-bottom:12px;">Trusted reviewer passphrase</h2>
+    <form id="login-form">
+      <div class="field-wrap" style="margin-bottom:12px;">
         <label for="login-name">Your name</label>
         <input id="login-name" type="text" autocomplete="username" maxlength="100" required
                placeholder="e.g. M. Abdullaev" style="width:100%;">
       </div>
-      <div class="field-wrap" style="margin-bottom:18px;">
+      <div class="field-wrap" style="margin-bottom:16px;">
         <label for="login-pass">Reviewer passphrase</label>
         <input id="login-pass" type="password" autocomplete="current-password" required
                placeholder="Shared reviewer passphrase" style="width:100%;">
       </div>
-      <button class="btn btn-ok" type="submit" style="width:100%;">Log in</button>
+      <button class="btn" type="submit" style="width:100%;">Log in as reviewer</button>
       <div id="login-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
     </form>
   </div>
 
-  <div id="logged-in-card" style="display:none; border:1px solid var(--border,#ddd); border-radius:10px; padding:24px;">
-    <p style="font-size:14px; margin-bottom:16px;">
-      You are logged in as <b id="current-reviewer"></b>. Your reviews will be attributed
-      to this name and marked as verified.
-    </p>
-    <div style="display:flex; gap:10px;">
-      <a class="btn btn-ok" href="/">Go to search</a>
+  <div id="logged-in-card" style="display:none;" class="card">
+    <p style="font-size:14px; margin-bottom:16px;" id="logged-in-text"></p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn btn-ok" href="/validate.html">Go to validation</a>
+      <a class="btn" href="/">Go to search</a>
       <button class="btn" id="logout-btn">Log out</button>
     </div>
   </div>
@@ -61,12 +81,38 @@
 <script src="/js/auth.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-  const me = await window.fetchReviewer();
-  if (me) {
+  const { reviewer, account } = await window.fetchIdentity();
+  if (reviewer || account) {
     document.getElementById('login-card').style.display = 'none';
-    document.getElementById('logged-in-card').style.display = '';
-    document.getElementById('current-reviewer').textContent = me;
+    document.getElementById('account-card').style.display = 'none';
+    const card = document.getElementById('logged-in-card');
+    card.style.display = '';
+    document.getElementById('logged-in-text').innerHTML = account
+      ? `You are logged in as contributor <b>${account.display_name}</b> (${account.role.replace(/_/g, ' ')}).` +
+        (reviewer ? ` You also hold a reviewer session as <b>${reviewer}</b>.` : '')
+      : `You are logged in as reviewer <b>${reviewer}</b>. Your reviews will be attributed and marked as verified.`;
   }
+
+  document.getElementById('account-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('account-error');
+    errEl.style.display = 'none';
+    try {
+      const res = await fetch('/api/auth/account-login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('a-email').value.trim(),
+          password: document.getElementById('a-pass').value,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      location.href = '/validate.html';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = '';
+    }
+  });
 
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -91,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('logout-btn').addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch('/api/auth/account-logout', { method: 'POST' });
     location.reload();
   });
 });

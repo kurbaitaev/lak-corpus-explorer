@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My profile — Lak Corpus Explorer</title>
+<meta name="description" content="Manage your contributor profile, privacy settings, and see your progress.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/validate.html">Validate</a>
+      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link active" id="auth-link" href="/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top:32px; padding-bottom:56px; max-width:640px;">
+  <div id="need-login" style="display:none;" class="card">
+    <p style="font-size:14px; margin-bottom:14px;">You need a contributor account to view this page.</p>
+    <a class="btn btn-ok" href="/login.html">Log in</a>
+    <a class="btn" href="/register.html">Create account</a>
+  </div>
+
+  <div id="content" style="display:none;">
+    <h1 style="font-size:24px; margin-bottom:4px;" id="p-title">My profile</h1>
+    <p style="color:var(--text2); font-size:14px; margin-bottom:18px;">
+      Role: <b id="p-role"></b> <span id="p-band"></span>
+    </p>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:12px;">Profile</h2>
+      <form id="profile-form">
+        <div class="field-wrap" style="margin-bottom:10px;">
+          <label for="p-name">Display name (public, pseudonyms welcome)</label>
+          <input id="p-name" type="text" maxlength="100" style="width:100%;">
+        </div>
+        <div class="field-wrap" style="margin-bottom:10px;">
+          <label for="p-affil">Affiliation (optional)</label>
+          <input id="p-affil" type="text" maxlength="200" placeholder="e.g. independent researcher, village community, university" style="width:100%;">
+        </div>
+        <div class="field-wrap" style="margin-bottom:10px;">
+          <label for="p-langs">Languages / dialects</label>
+          <input id="p-langs" type="text" maxlength="300" placeholder="e.g. Lak (Vitskhi), Russian, English" style="width:100%;">
+        </div>
+        <div class="field-wrap" style="margin-bottom:14px;">
+          <label for="p-exp">Short expertise description</label>
+          <textarea id="p-exp" rows="2" maxlength="500" placeholder="e.g. native speaker of the Vikhli variety; fieldwork on Lak folklore" style="width:100%;"></textarea>
+        </div>
+        <h3 style="font-size:14px; margin-bottom:8px;">Privacy</h3>
+        <label class="check-row"><input type="checkbox" id="p-public"> Make my profile public (name, affiliation, languages, expertise, badges — never email)</label>
+        <label class="check-row"><input type="checkbox" id="p-lb"> List me on the public leaderboard</label>
+        <button class="btn btn-ok" type="submit" style="margin-top:14px;">Save</button>
+        <span id="save-msg" style="color:var(--ok); font-size:13px; margin-left:10px;"></span>
+      </form>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Progress</h2>
+      <div class="me-grid" id="p-stats"></div>
+      <div id="p-achv" style="margin-top:12px;"></div>
+      <div id="p-quests" style="margin-top:12px;"></div>
+      <p style="margin-top:14px; font-size:13px;">
+        <a href="/leaderboard.html" style="color:var(--accent);">Leaderboard &amp; relative ranking</a> ·
+        <a href="/how-it-works.html" style="color:var(--accent);">How points &amp; reliability work</a>
+      </p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:8px;">Appeal a decision</h2>
+      <p style="color:var(--text2); font-size:13px; margin-bottom:10px;">
+        If points were revoked or a judgment seems wrong, you can appeal. An administrator
+        reviews every appeal; the audit trail is never deleted.
+      </p>
+      <form id="appeal-form">
+        <div class="field-wrap" style="margin-bottom:10px;">
+          <label for="a-reason">What happened, and why should it be reconsidered?</label>
+          <textarea id="a-reason" rows="3" maxlength="2000" required style="width:100%;"></textarea>
+        </div>
+        <button class="btn" type="submit">Submit appeal</button>
+        <span id="appeal-msg" style="color:var(--ok); font-size:13px; margin-left:10px;"></span>
+      </form>
+    </div>
+
+    <button class="btn" id="logout-btn">Log out</button>
+  </div>
+</main>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script src="/js/profile.js"></script>
+</body>
+</html>

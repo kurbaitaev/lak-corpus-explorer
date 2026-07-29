@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steward dashboard — Lak Corpus Explorer</title>
+<meta name="description" content="Validation backlog, disputes, reliability, and administration for Lak Corpus stewards.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/validate.html">Validate</a>
+      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top:28px; padding-bottom:64px; max-width:960px;">
+  <h1 style="font-size:24px; margin-bottom:4px;">Steward dashboard</h1>
+  <p style="color:var(--text2); font-size:13px; margin-bottom:18px;" id="dash-sub">
+    For trusted validators, verified experts, and administrators.
+  </p>
+
+  <div id="denied" class="card" style="display:none;">
+    <p style="font-size:14px;">This dashboard requires a trusted validator, verified expert, or administrator role.
+    <a href="/validate.html" style="color:var(--accent);">Validate tasks</a> or
+    <a href="/how-it-works.html" style="color:var(--accent);">learn how roles are granted</a>.</p>
+  </div>
+
+  <div id="dash" style="display:none;">
+    <div class="dash-grid" id="dash-cards"></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Disputed items <span style="color:var(--text3); font-weight:normal; font-size:12px;">— your adjudication decides</span></h2>
+      <div id="disputes"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">High-priority unresolved queries</h2>
+      <div id="high-priority"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Gold-task performance</h2>
+      <div id="gold-perf" style="overflow-x:auto;"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Suspicious activity</h2>
+      <div id="suspicion"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Open appeals</h2>
+      <div id="appeals"></div>
+    </div>
+
+    <div id="admin-only" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="font-size:16px; margin-bottom:10px;">Grant a role <span class="badge badge-admin">admin</span></h2>
+        <div class="admin-form">
+          <input id="g-cid" type="text" placeholder="Contributor id (c_…)">
+          <select id="g-role">
+            <option value="contributor">contributor</option>
+            <option value="trusted_validator">trusted_validator</option>
+            <option value="verified_expert">verified_expert</option>
+            <option value="administrator">administrator</option>
+          </select>
+          <input id="g-basis" type="text" placeholder="Basis of expertise (required for trusted/expert)" style="flex:2;">
+          <button class="btn btn-ok" id="g-btn">Grant</button>
+        </div>
+        <div class="admin-msg" id="g-msg"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="font-size:16px; margin-bottom:10px;">Create an invitation <span class="badge badge-admin">admin</span></h2>
+        <div class="admin-form">
+          <select id="i-role">
+            <option value="trusted_validator">trusted_validator</option>
+            <option value="verified_expert">verified_expert</option>
+            <option value="administrator">administrator</option>
+          </select>
+          <input id="i-note" type="text" placeholder="Invitee's expertise basis" style="flex:2;">
+          <button class="btn btn-ok" id="i-btn">Create invite</button>
+        </div>
+        <div class="admin-msg" id="i-msg"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="font-size:16px; margin-bottom:10px;">Invalidate abusive points <span class="badge badge-admin">admin</span></h2>
+        <p style="color:var(--text3); font-size:12px; margin-bottom:8px;">Points are revoked, never deleted — the audit trail keeps everything.</p>
+        <div class="admin-form">
+          <input id="x-cid" type="text" placeholder="Contributor id (c_…)">
+          <input id="x-reason" type="text" placeholder="Reason (goes to audit trail)" style="flex:2;">
+          <label class="check-row" style="white-space:nowrap;"><input type="checkbox" id="x-all"> include confirmed</label>
+          <button class="btn" id="x-btn">Revoke</button>
+        </div>
+        <div class="admin-msg" id="x-msg"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="font-size:16px; margin-bottom:10px;">Add a validation task <span class="badge badge-admin">admin</span></h2>
+        <div class="admin-form" style="flex-direction:column; align-items:stretch;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="t-kind">
+              <option value="translation_correctness">translation_correctness</option>
+              <option value="sense_choice">sense_choice</option>
+              <option value="moon_vs_month">moon_vs_month</option>
+              <option value="dialect">dialect</option>
+              <option value="spelling">spelling</option>
+              <option value="ocr_quality">ocr_quality</option>
+              <option value="example_usefulness">example_usefulness</option>
+              <option value="source_reliability">source_reliability</option>
+            </select>
+            <input id="t-id" type="text" placeholder="Task id (optional)">
+            <input id="t-priority" type="number" min="0" max="100" placeholder="Priority 0–100" style="width:130px;">
+            <label class="check-row"><input type="checkbox" id="t-gold"> gold standard</label>
+          </div>
+          <input id="t-ru" type="text" placeholder="Russian prompt (optional)">
+          <input id="t-lak" type="text" placeholder="Lak text (optional)">
+          <input id="t-options" type="text" placeholder="Options, comma-separated (e.g. moon,month)">
+          <input id="t-answer" type="text" placeholder="Gold answer (required for gold tasks)">
+          <button class="btn btn-ok" id="t-btn">Add task</button>
+        </div>
+        <div class="admin-msg" id="t-msg"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

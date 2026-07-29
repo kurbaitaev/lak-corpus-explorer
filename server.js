@@ -2,7 +2,6 @@
 
 const express = require('express');
 const compression = require('compression');
-const { Pool } = require('pg');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -11,10 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Database ─────────────────────────────────────────────────
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: false,
-});
+const { pool, migrate } = require('./lib/db');
 
 // ── Load corpus data at startup ───────────────────────────────
 let CORPUS_DATA    = [];
@@ -64,6 +60,9 @@ const CURATED_ALIASES = {
 // Ensure reviewer_verified column exists
 pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
   .catch(err => console.error('Migration failed:', err.message));
+
+// Validation & gamification schema (idempotent, backward-compatible)
+migrate().catch(err => console.error('Schema migration failed:', err.message));
 
 // ── Normalisation (mirrors client-side) ──────────────────────
 function norm(s) {
@@ -169,13 +168,18 @@ function stampHtml(file) {
 }
 
 const PAGES = {};
-for (const f of ['index.html', 'about.html', 'queue.html', 'login.html']) {
+for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
+                 'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
+                 'dashboard.html', 'how-it-works.html']) {
   PAGES[f] = stampHtml(f);
 }
 
 // ── Middleware ────────────────────────────────────────────────
 app.use(compression());
 app.use(express.json());
+
+// Expert-validation & gamification API
+app.use(require('./routes/validation')({ pool }));
 
 function sendPage(res, html) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -188,9 +192,9 @@ function sendPage(res, html) {
 
 // ── HTML pages ────────────────────────────────────────────────
 app.get('/', (req, res) => sendPage(res, PAGES['index.html']));
-app.get('/about.html', (req, res) => sendPage(res, PAGES['about.html']));
-app.get('/queue.html', (req, res) => sendPage(res, PAGES['queue.html']));
-app.get('/login.html', (req, res) => sendPage(res, PAGES['login.html']));
+for (const f of Object.keys(PAGES)) {
+  if (f !== 'index.html') app.get('/' + f, (req, res) => sendPage(res, PAGES[f]));
+}
 
 // ── Legacy-cache busters ──────────────────────────────────────
 const RELOAD_SHIM = `/* Page reload shim — superseded by server-side search */
@@ -245,8 +249,15 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 app.get('/api/auth/me', (req, res) => {
-    const session   = readSession(req);
-  res.json({ reviewer: session ? session.name : null });
+  const session = readSession(req);
+  const { readAccountSession } = require('./lib/auth');
+  const account = readAccountSession(req);
+  res.json({
+    reviewer: session ? session.name : null,
+    account: account
+      ? { id: account.aid, display_name: account.name, role: account.role }
+      : null,
+  });
 });
 
 // ── Corpus stats ─────────────────────────────────────────────
@@ -377,12 +388,24 @@ app.post('/api/reviews', async (req, res) => {
       return res.status(400).json({ error: 'state must be approved, flagged, or unreviewed' });
     // Logged-in reviewers get authoritative attribution; anonymous free-text still allowed
     const session   = readSession(req);
-    if (state === 'approved' && !session)
+    // Contributor accounts with a trusted/expert/admin role may also approve —
+    // canonical corpus changes stay restricted to trusted reviewers, experts, admins.
+    let accountIdentity = null;
+    if (!session) {
+      const { getIdentity, TRUSTED_PLUS } = require('./lib/auth');
+      const candidate = getIdentity(req);
+      if (candidate && candidate.type === 'account') {
+        const roleRow = await pool.query('SELECT role FROM contributors WHERE id = $1', [candidate.id]);
+        if (roleRow.rows[0] && TRUSTED_PLUS.includes(roleRow.rows[0].role)) accountIdentity = candidate;
+      }
+    }
+    const approver = session || accountIdentity;
+    if (state === 'approved' && !approver)
       return res.status(403).json({
-        error: 'Approving a record requires a trusted reviewer login. Anonymous visitors can flag problems or submit suggestions.',
+        error: 'Approving a record requires a trusted reviewer, expert, or administrator login. Anonymous visitors can flag problems or submit suggestions.',
       });
-    const finalName = session
-      ? session.name
+    const finalName = approver
+      ? approver.name
       : (reviewer_name ? String(reviewer_name).slice(0, 100) : null);
     const result = await pool.query(
       `INSERT INTO reviews (record_id, state, correction, note, reviewer_name, reviewer_verified)
@@ -395,7 +418,7 @@ app.post('/api/reviews', async (req, res) => {
          reviewer_verified = EXCLUDED.reviewer_verified,
          updated_at = now()
        RETURNING id, record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at`,
-      [record_id, state, correction || null, note || null, finalName, !!session]
+      [record_id, state, correction || null, note || null, finalName, !!approver]
     );
     res.json({ review: result.rows[0] });
   } catch (err) {

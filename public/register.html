@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create account — Lak Corpus Explorer</title>
+<meta name="description" content="Create a free contributor account to help validate the Lak corpus.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/validate.html">Validate</a>
+      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link active" id="auth-link" href="/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top:36px; padding-bottom:56px; max-width:480px;">
+  <h1 style="font-size:24px; margin-bottom:8px;">Become a contributor</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:20px;">
+    Accounts make validation attributable and auditable. Everyone starts as a
+    <b>contributor</b> — trusted validator and verified expert status is granted by
+    administrators after relevant expertise is recorded; it cannot be self-assigned.
+  </p>
+
+  <div class="card">
+    <form id="reg-form">
+      <div class="field-wrap" style="margin-bottom:12px;">
+        <label for="r-name">Display name (a pseudonym is fine)</label>
+        <input id="r-name" type="text" maxlength="100" required placeholder="e.g. Aisha M." style="width:100%;">
+      </div>
+      <div class="field-wrap" style="margin-bottom:12px;">
+        <label for="r-email">Email (never shown publicly)</label>
+        <input id="r-email" type="email" autocomplete="email" maxlength="200" required style="width:100%;">
+      </div>
+      <div class="field-wrap" style="margin-bottom:12px;">
+        <label for="r-pass">Password (at least 8 characters)</label>
+        <input id="r-pass" type="password" autocomplete="new-password" minlength="8" required style="width:100%;">
+      </div>
+      <div class="field-wrap" style="margin-bottom:16px;">
+        <label for="r-invite">Invitation code (optional — for invited validators/experts)</label>
+        <input id="r-invite" type="text" maxlength="100" placeholder="Leave empty if you don't have one" style="width:100%;">
+      </div>
+      <button class="btn btn-ok" type="submit" style="width:100%; min-height:46px;">Create account</button>
+      <div id="reg-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
+    </form>
+  </div>
+  <p style="color:var(--text3); font-size:13px; margin-top:14px;">
+    Already have an account? <a href="/login.html" style="color:var(--accent);">Log in</a> ·
+    <a href="/how-it-works.html" style="color:var(--accent);">How validation works</a>
+  </p>
+</main>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('reg-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('reg-error');
+    errEl.style.display = 'none';
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          display_name: document.getElementById('r-name').value.trim(),
+          email: document.getElementById('r-email').value.trim(),
+          password: document.getElementById('r-pass').value,
+          invite_token: document.getElementById('r-invite').value.trim() || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Registration failed');
+      location.href = '/validate.html';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = '';
+    }
+  });
+});
+</script>
+</body>
+</html>

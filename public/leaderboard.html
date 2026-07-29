@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leaderboard — Lak Corpus Explorer</title>
+<meta name="description" content="Contributors ranked by confirmed quality — verified validations, reliability, and streaks, not raw clicks.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/validate.html">Validate</a>
+      <a class="nav-link active" href="/leaderboard.html">Leaderboard</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top:28px; padding-bottom:56px; max-width:860px;">
+  <h1 style="font-size:24px; margin-bottom:6px;">Community leaderboard</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:18px;">
+    Ranked by <b>confirmed quality points</b> — points that held up against consensus,
+    reference answers, or expert review. Listing is opt-in and uses display names only.
+    What matters most is a preserved language, not the ranking itself.
+  </p>
+
+  <div id="me-panel" class="card" style="display:none; margin-bottom:20px;"></div>
+
+  <div class="lb-tabs" role="tablist" aria-label="Leaderboard period">
+    <button class="lb-tab" data-period="week" role="tab">This week</button>
+    <button class="lb-tab" data-period="month" role="tab">This month</button>
+    <button class="lb-tab active" data-period="all" role="tab" aria-selected="true">All time</button>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="lb-table" id="lb-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Contributor</th><th>Verified validations</th>
+          <th>Reliability</th><th>Streak</th><th>Confirmed points</th>
+        </tr>
+      </thead>
+      <tbody id="lb-body">
+        <tr><td colspan="6" style="text-align:center; color:var(--text3); padding:24px;">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--text3); font-size:12px; margin-top:10px;">
+    Contributors appear here only if they opted in on their profile. Pseudonymous display
+    names are welcome; email addresses and private fields are never shown.
+  </p>
+</main>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script src="/js/leaderboard.js"></script>
+</body>
+</html>

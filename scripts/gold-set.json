@@ -1,0 +1,128 @@
+[
+  {
+    "id": "eval:solnce-barg",
+    "kind": "translation_correctness",
+    "prompt_ru": "солнце",
+    "lak_text": "баргь",
+    "options": ["correct", "incorrect", "uncertain"],
+    "is_gold": true,
+    "gold_answer": "correct",
+    "priority": 10,
+    "context": { "note": "Curated alias added in the v1.0 research preview; verify the mapping.", "source": "curated" }
+  },
+  {
+    "id": "eval:luna-barz-moon",
+    "kind": "moon_vs_month",
+    "prompt_ru": "луна",
+    "lak_text": "барз",
+    "options": ["moon", "month"],
+    "is_gold": true,
+    "gold_answer": "moon",
+    "priority": 10,
+    "context": { "note": "Context: “Барз бакъасса, хъинну цӀансса хьхьу диркӀу” — the moon rising in the night sky.", "source": "PCMLBE" }
+  },
+  {
+    "id": "eval:luna-barz-sense",
+    "kind": "sense_choice",
+    "prompt_ru": "луна",
+    "lak_text": "барз",
+    "options": ["moon", "month", "both senses are active"],
+    "is_gold": false,
+    "priority": 9,
+    "context": { "note": "IDS lists both moon and month for барз. Which reading dominates in modern usage?", "source": "IDS" }
+  },
+  {
+    "id": "eval:zemlya-arshi",
+    "kind": "translation_correctness",
+    "prompt_ru": "земля",
+    "lak_text": "аьрщи",
+    "options": ["correct", "incorrect", "uncertain"],
+    "is_gold": true,
+    "gold_answer": "correct",
+    "priority": 10,
+    "context": { "note": "From the extracted alias dictionary.", "source": "dictionary aliases" }
+  },
+  {
+    "id": "eval:spasibo-barchallagi",
+    "kind": "translation_correctness",
+    "prompt_ru": "спасибо",
+    "lak_text": "барчаллагь",
+    "options": ["correct", "incorrect", "uncertain"],
+    "is_gold": true,
+    "gold_answer": "correct",
+    "priority": 10,
+    "context": { "note": "Common greeting/thanking formula.", "source": "dictionary aliases" }
+  },
+  {
+    "id": "eval:s-dnem-rozhdeniya",
+    "kind": "translation_correctness",
+    "prompt_ru": "с днем рождения",
+    "lak_text": null,
+    "options": ["a canonical Lak greeting exists", "no established translation", "uncertain"],
+    "is_gold": false,
+    "priority": 10,
+    "context": { "note": "High-priority unresolved query from the regression set. Community input needed on how birthdays are actually wished in Lak.", "source": "community" }
+  },
+  {
+    "id": "eval:ocr-gsyats",
+    "kind": "ocr_quality",
+    "prompt_ru": null,
+    "lak_text": "Гьсяць",
+    "options": ["clean", "ocr_noise", "uncertain"],
+    "is_gold": true,
+    "gold_answer": "ocr_noise",
+    "priority": 8,
+    "context": { "note": "Appears as a Russian gloss of барз in the Uslar 1890 OCR import.", "source": "Uslar 1890 (OCR)" }
+  },
+  {
+    "id": "eval:ocr-olnolune",
+    "kind": "ocr_quality",
+    "prompt_ru": null,
+    "lak_text": "олнолуне",
+    "options": ["clean", "ocr_noise", "uncertain"],
+    "is_gold": true,
+    "gold_answer": "ocr_noise",
+    "priority": 8,
+    "context": { "note": "Likely a truncated OCR of “полнолуние” (full moon).", "source": "Uslar 1890 (OCR)" }
+  },
+  {
+    "id": "eval:uslar-reliability",
+    "kind": "source_reliability",
+    "prompt_ru": null,
+    "lak_text": "Uslar 1890 OCR import",
+    "options": ["reliable with caution", "partially reliable", "unreliable until verified"],
+    "is_gold": false,
+    "priority": 6,
+    "context": { "note": "≈1,469 records (~6% of the corpus) come from a partial OCR digitisation of Uslar's 1890 Lak grammar. How should the corpus treat unverified OCR glosses?", "source": "Uslar 1890 (OCR)" }
+  },
+  {
+    "id": "eval:spelling-barchallagi",
+    "kind": "spelling",
+    "prompt_ru": "спасибо",
+    "lak_text": "барчаллагь",
+    "options": ["correct", "incorrect", "uncertain"],
+    "is_gold": false,
+    "priority": 5,
+    "context": { "note": "Check the spelling against your own usage.", "source": "dictionary aliases" }
+  },
+  {
+    "id": "eval:dialect-barz",
+    "kind": "dialect",
+    "prompt_ru": "луна / месяц",
+    "lak_text": "барз",
+    "options": ["standard literary Lak", "Vikhli variety", "Kumukh variety", "other variety", "uncertain"],
+    "is_gold": false,
+    "priority": 5,
+    "context": { "note": "Which variety does this form belong to in your experience?", "source": "IDS" }
+  },
+  {
+    "id": "eval:example-barz",
+    "kind": "example_usefulness",
+    "prompt_ru": "луна",
+    "lak_text": "Барз бакъасса, хъинну цӀансса хьхьу диркӀу.",
+    "options": ["very useful", "somewhat useful", "not useful"],
+    "is_gold": false,
+    "priority": 4,
+    "context": { "note": "Is this example sentence useful for learners and researchers?", "source": "PCMLBE" }
+  }
+]

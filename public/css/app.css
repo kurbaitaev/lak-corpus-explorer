@@ -775,3 +775,125 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .stats-row { flex-wrap: wrap; }
   .status-bar { flex-wrap: wrap; gap: 8px; }
 }
+
+/* ── Validation & gamification components ──────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.badge {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  background: var(--accent-lt); color: var(--accent); vertical-align: middle;
+}
+.badge-expert { background: var(--ok-lt); color: var(--ok); }
+.badge-admin { background: var(--warn-lt); color: var(--warn); }
+.badge-trusted { background: var(--accent-lt); color: var(--accent-dk); }
+
+.band { padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.band-high { background: var(--ok-lt); color: var(--ok); }
+.band-established { background: var(--accent-lt); color: var(--accent-dk); }
+.band-developing { background: var(--warn-lt); color: var(--warn); }
+.band-new { background: var(--surface2); color: var(--text3); }
+
+/* Validation workspace */
+.val-stats { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.val-stat { display: flex; flex-direction: column; align-items: center; min-width: 72px; }
+.val-stat b { font-size: 20px; }
+.val-stat span { font-size: 11px; color: var(--text3); }
+.val-quests { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+.quest { font-size: 12px; color: var(--text2); display: flex; flex-direction: column; gap: 3px; }
+.quest-bar { display: block; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.quest-bar span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+.val-prompt {
+  background: var(--surface2); border-radius: var(--radius); padding: 10px 14px;
+  margin-bottom: 8px; font-size: 15px;
+}
+.val-prompt.lak { font-family: var(--font-serif); font-size: 17px; }
+.val-lang {
+  display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text3); margin-right: 8px; font-family: var(--font-body);
+}
+.val-option {
+  display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px;
+  cursor: pointer; min-height: 48px; font-size: 15px; transition: var(--transition);
+}
+.val-option:hover { border-color: var(--accent); background: var(--accent-lt); }
+.val-option input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+.dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; }
+.dist-value { min-width: 90px; font-weight: 600; }
+.dist-bar { flex: 1; height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+.dist-bar span { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+.dist-n { min-width: 64px; text-align: right; color: var(--text3); font-size: 12px; }
+
+/* Leaderboard */
+.lb-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.lb-tab {
+  padding: 8px 16px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text2); font-size: 13px; cursor: pointer;
+  min-height: 40px; transition: var(--transition);
+}
+.lb-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lb-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.lb-table th {
+  text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--text3); border-bottom: 1px solid var(--border);
+}
+.lb-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.lb-table tr:last-child td { border-bottom: none; }
+.lb-me { background: var(--accent-lt); }
+.me-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.quest-chip {
+  display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px;
+  background: var(--surface2); color: var(--text2); margin: 2px 4px 2px 0;
+}
+.quest-chip.done { background: var(--ok-lt); color: var(--ok); }
+
+/* Dashboard */
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.dash-card { text-align: center; padding: 16px 10px; }
+.dash-card b { display: block; font-size: 20px; margin-bottom: 4px; }
+.dash-card span { font-size: 11px; color: var(--text3); }
+.dispute-row {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.dispute-row:last-child { border-bottom: none; }
+.admin-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.admin-form input, .admin-form select {
+  padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font: inherit; font-size: 13px; flex: 1; min-width: 140px;
+}
+.admin-msg { font-size: 13px; margin-top: 8px; }
+
+.check-row { display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 8px; cursor: pointer; min-height: 32px; }
+.check-row input { width: 17px; height: 17px; accent-color: var(--accent); }
+
+.hiw-section { margin-bottom: 16px; }
+.hiw-section h2 { font-size: 17px; margin-bottom: 10px; }
+.hiw-section p { font-size: 14px; color: var(--text2); margin-bottom: 8px; }
+
+/* Mobile: leaderboard becomes stacked cards, options stay thumb-sized */
+@media (max-width: 600px) {
+  .lb-table thead { display: none; }
+  .lb-table, .lb-table tbody, .lb-table tr, .lb-table td { display: block; width: 100%; }
+  .lb-table tr {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    margin: 10px; padding: 8px 4px;
+  }
+  .lb-table td { border: none; padding: 5px 14px; }
+  .lb-table td[data-label]::before {
+    content: attr(data-label); display: block; font-size: 10px;
+    text-transform: uppercase; letter-spacing: .05em; color: var(--text3);
+  }
+  .val-stats { gap: 10px; }
+  .admin-form input, .admin-form select { min-width: 100%; }
+  .dispute-row input { width: 100% !important; }
+}

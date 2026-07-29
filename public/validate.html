@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Validate — Lak Corpus Explorer</title>
+<meta name="description" content="Help validate Lak translations one small task at a time. Every careful answer preserves the Lak language.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link active" href="/validate.html">Validate</a>
+      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top:28px; padding-bottom:56px; max-width:720px;">
+
+  <div id="need-login" style="display:none;" class="card">
+    <h1 style="font-size:22px; margin-bottom:10px;">Join the validation effort</h1>
+    <p style="color:var(--text2); font-size:14px; margin-bottom:16px;">
+      Validation is done by registered contributors so that every judgment can be
+      attributed, audited, and weighted by reliability. Accounts are free; searching
+      the corpus never requires an account.
+    </p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn btn-ok" href="/register.html">Create a contributor account</a>
+      <a class="btn" href="/login.html">Log in</a>
+      <a class="btn" href="/how-it-works.html">How validation works</a>
+    </div>
+  </div>
+
+  <div id="workspace" style="display:none;">
+    <div class="val-stats" id="val-stats" aria-live="polite"></div>
+
+    <div class="card" id="task-card" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+        <span class="badge" id="task-kind"></span>
+        <span style="color:var(--text3); font-size:12px;" id="task-id"></span>
+      </div>
+      <p id="task-question" style="font-size:16px; margin-bottom:12px;"></p>
+      <div id="task-prompt" style="margin-bottom:14px;"></div>
+
+      <form id="vote-form">
+        <div id="options" role="radiogroup" aria-label="Your assessment"></div>
+
+        <details style="margin-top:16px;">
+          <summary style="cursor:pointer; color:var(--accent); font-size:13px;">Add a correction or evidence (optional, earns extra points when confirmed)</summary>
+          <div class="field-wrap" style="margin-top:10px;">
+            <label for="f-correction">Proposed correction</label>
+            <input id="f-correction" type="text" maxlength="500" placeholder="The corrected Lak text, sense, or spelling">
+          </div>
+          <div class="field-wrap">
+            <label for="f-evidence">Evidence note</label>
+            <textarea id="f-evidence" rows="2" maxlength="1000" placeholder="Why is this your answer? Context, dialect knowledge, comparison…"></textarea>
+          </div>
+          <div class="field-wrap">
+            <label for="f-source">Source reference</label>
+            <input id="f-source" type="text" maxlength="300" placeholder="e.g. Uslar 1890, p. 42; PCMLBE 2007; native-speaker knowledge">
+          </div>
+        </details>
+
+        <button class="btn btn-ok" type="submit" id="submit-btn" disabled
+                style="width:100%; margin-top:18px; min-height:48px; font-size:15px;">Submit assessment</button>
+      </form>
+    </div>
+
+    <div class="card" id="result-card" style="display:none;" aria-live="polite">
+      <h2 style="font-size:17px; margin-bottom:8px;" id="result-title">Community view</h2>
+      <p style="color:var(--text2); font-size:13px; margin-bottom:14px;" id="result-sub"></p>
+      <div id="dist-bars"></div>
+      <div id="points-line" style="margin-top:14px; font-size:14px;"></div>
+      <div id="achv-line" style="margin-top:8px; font-size:14px; color:var(--ok);"></div>
+      <button class="btn btn-ok" id="next-btn" style="width:100%; margin-top:18px; min-height:48px;">Next task</button>
+    </div>
+
+    <div class="card" id="empty-card" style="display:none;">
+      <h2 style="font-size:17px; margin-bottom:8px;">All caught up</h2>
+      <p style="color:var(--text2); font-size:14px;">
+        There are no open tasks for you right now. New material is added regularly —
+        thank you for helping preserve Lak.
+      </p>
+    </div>
+  </div>
+</main>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script src="/js/validate.js"></script>
+</body>
+</html>
