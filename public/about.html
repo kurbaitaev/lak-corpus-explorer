@@ -260,7 +260,7 @@
 </div>
 
 <script>
-fetch('/data/corpus-meta.json').then(r => r.json()).then(({ stats: s }) => {
+fetch('/api/corpus/stats').then(r => r.json()).then(({ stats: s }) => {
   const fmt = n => typeof n === 'number' ? n.toLocaleString() : String(n ?? '');
   document.getElementById('s-docs').textContent   = fmt(s.documents);
   document.getElementById('s-segs').textContent   = fmt(s.sentences);

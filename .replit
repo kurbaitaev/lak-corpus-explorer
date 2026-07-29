@@ -37,3 +37,8 @@ externalPort = 80
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 60000
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "server.js"]
+build = ["python3", "scripts/extract-corpus.py"]
