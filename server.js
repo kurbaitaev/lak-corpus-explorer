@@ -50,6 +50,53 @@ function tokenHas(value, form) {
   return text.includes(' ' + form + ' ');
 }
 
+// ── Matched-span computation (for result highlighting) ───────
+// Builds a normalised copy of `text` plus an index map back to the
+// original string, so spans found in normalised space can be
+// reported as [start, end) offsets into the original text.
+function buildNormMap(text) {
+  let normStr = '';
+  const map = [];
+  for (let i = 0; i < text.length; i++) {
+    const n = norm(text[i]);
+    for (let j = 0; j < n.length; j++) { normStr += n[j]; map.push(i); }
+  }
+  return { normStr, map };
+}
+
+const WORD_CHAR = /[\p{L}\p{N}]/u;
+
+// forms: normalised search forms; tokenOnly: require word boundaries
+function findMatchSpans(text, forms, tokenOnly) {
+  const src = String(text ?? '');
+  if (!src) return [];
+  const { normStr, map } = buildNormMap(src);
+  const spans = [];
+  for (const form of forms) {
+    if (!form) continue;
+    let idx = 0;
+    while ((idx = normStr.indexOf(form, idx)) !== -1) {
+      const end = idx + form.length;
+      const okStart = idx === 0 || !WORD_CHAR.test(normStr[idx - 1]);
+      const okEnd   = end >= normStr.length || !WORD_CHAR.test(normStr[end]);
+      if (!tokenOnly || (okStart && okEnd)) {
+        const oStart = map[idx];
+        const oEnd   = (end - 1 < map.length) ? map[end - 1] + 1 : src.length;
+        spans.push([oStart, oEnd]);
+      }
+      idx = end;
+    }
+  }
+  spans.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const s of spans) {
+    const last = merged[merged.length - 1];
+    if (last && s[0] <= last[1]) last[1] = Math.max(last[1], s[1]);
+    else merged.push([s[0], s[1]]);
+  }
+  return merged;
+}
+
 // ── Build stamp (changes every restart → busts all asset caches) ─
 const BUILD = Date.now();
 const PUBLIC = path.join(__dirname, 'public');
@@ -178,10 +225,24 @@ app.get('/api/corpus/search', (req, res) => {
     senses = [...senseSet].slice(0, 8);
   }
 
+  // Matched spans in the Lak text (r[1]) for each returned row
+  const normForms = expanded.map(f => norm(f)).filter(Boolean);
+  const matches = rows.map(r => {
+    if (!currentQ) return [];
+    if (normForms.length) {
+      // Alias-expanded: highlight whole-token matches of the Lak forms;
+      // fall back to a literal substring match of the raw query.
+      const spans = findMatchSpans(r[1], normForms, true);
+      return spans.length ? spans : findMatchSpans(r[1], [currentQ], false);
+    }
+    return findMatchSpans(r[1], [currentQ], false);
+  });
+
   res.json({
     query: q,
     expanded,
     senses,
+    matches,
     total,
     pages,
     page: safePageNum,

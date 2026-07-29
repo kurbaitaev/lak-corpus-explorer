@@ -102,7 +102,7 @@ async function search(page = 1) {
     currentSenses   = data.senses   || [];
 
     renderConceptCard(q, currentExpanded, currentSenses);
-    renderResults(data.rows);
+    renderResults(data.rows, data.matches || []);
     renderPagination();
 
     // Fetch review badges for visible records
@@ -148,7 +148,20 @@ function renderPagination() {
   [$next,$next2].forEach(b => b.disabled = currentPage >= currentPages);
 }
 
-function renderResults(rows) {
+// Wrap matched spans ([start, end) offsets) in <mark class="hl">
+function highlightSpans(text, spans) {
+  const s = String(text ?? '');
+  if (!spans || !spans.length) return esc(s);
+  let out = '', last = 0;
+  for (const [a, b] of spans) {
+    if (a < last) continue;
+    out += esc(s.slice(last, a)) + `<mark class="hl">${esc(s.slice(a, b))}</mark>`;
+    last = b;
+  }
+  return out + esc(s.slice(last));
+}
+
+function renderResults(rows, matches = []) {
   if (!rows.length) {
     $tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
       <div class="icon">🔍</div><h3>No records match</h3>
@@ -157,7 +170,7 @@ function renderResults(rows) {
     return;
   }
 
-  $tbody.innerHTML = rows.map(r => {
+  $tbody.innerHTML = rows.map((r, i) => {
     const [type, lak, meaning, source, variety, recordId, url] = r;
     const typeTag = type === 'text'
       ? `<span class="tag tag-text">Text</span>`
@@ -176,7 +189,7 @@ function renderResults(rows) {
 
     return `<tr data-record="${esc(recordId)}">
       <td class="td-type">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
-      <td class="td-lak"><span class="lak-text" lang="lbe">${esc(lak)}</span></td>
+      <td class="td-lak"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
       <td class="td-meaning">${esc(meaning)}</td>
       <td>${sourceCell}</td>
       <td>${varietyLabel}</td>
