@@ -47,6 +47,8 @@
           <p>Tokens are counted as space-delimited, punctuation-stripped word forms.
           The lexicon includes all forms recorded across standard, Arakul, Balkhar,
           Shali, and historical varieties plus Uslar 1890 OCR material.</p>
+          <p><strong>Corpus version:</strong> v1.0 — research preview,
+          released 29 July 2026. Counts above are live from the running corpus.</p>
         </div>
 
         <div class="about-section">
@@ -66,9 +68,10 @@
                 <td><strong>PCMLBE</strong></td>
                 <td>Annotated text corpus</td>
                 <td>Unspecified / mixed</td>
-                <td><span class="quality-badge q-approved">Reviewed</span></td>
+                <td><span class="quality-badge q-unreviewed">Source import — unreviewed</span></td>
                 <td>Parallel Corpus of Mountain Languages of the North-East Caucasus;
-                    41 source files; primary prose and poetry texts.</td>
+                    41 source files; primary prose and poetry texts. Imported in bulk;
+                    individual records have not been human-checked.</td>
               </tr>
               <tr>
                 <td><strong>Lak Wikipedia</strong></td>
@@ -89,9 +92,10 @@
                 <td><strong>IDS</strong></td>
                 <td>Lexicon</td>
                 <td>Standard + dialects</td>
-                <td><span class="quality-badge q-approved">Reviewed</span></td>
+                <td><span class="quality-badge q-unreviewed">Source import — unreviewed</span></td>
                 <td>Intercontinental Dictionary Series; four files; comparative Caucasian
-                    vocabulary organised by semantic field.</td>
+                    vocabulary organised by semantic field. Imported in bulk;
+                    individual records have not been human-checked.</td>
               </tr>
               <tr>
                 <td><strong>Uslar 1890</strong></td>
@@ -101,7 +105,10 @@
                 <td>Peter von Uslar's 1890 grammar of Lak, digitised via OCR.
                     Archaic orthography, possible scan errors. <strong>Not silently modernised.</strong>
                     All entries are preserved exactly as extracted and marked explicitly
-                    as OCR-sourced.</td>
+                    as OCR-sourced. Coverage is partial: roughly 1,469 records (≈6% of the
+                    corpus) from selected portions of the grammar — not a complete
+                    digitisation — and no entry has been individually verified against
+                    the scan.</td>
               </tr>
             </tbody>
           </table>
@@ -162,15 +169,19 @@
                 <strong>Uslar 1890 OCR source</strong>
                 Extracted from a scanned 19th-century document. Text is presented
                 exactly as recognised; no modernisation applied. Expect scan
-                artefacts and archaic forms.
+                artefacts and archaic forms. In search results, OCR-sourced material
+                appears only in a clearly separated unverified section — never mixed
+                into the primary translation answer.
               </div>
             </div>
             <div class="ql-row">
-              <div class="ql-badge"><span class="quality-badge q-unreviewed">Unreviewed</span></div>
+              <div class="ql-badge"><span class="quality-badge q-unreviewed">Source import — unreviewed</span></div>
               <div class="ql-desc">
-                <strong>Imported, not yet checked</strong>
-                The default state for newly imported records. The source is reliable
-                but individual records have not been individually verified.
+                <strong>Bulk-imported, not individually checked</strong>
+                The default state for records imported from published sources
+                (PCMLBE, IDS, Lak Wikipedia, Digiev phrasebook). The sources are
+                reputable, but no record carries human verification until a
+                logged-in reviewer approves it.
               </div>
             </div>
           </div>
@@ -206,8 +217,10 @@
             Caucasian languages who wish to co-develop evaluation benchmarks.</li>
           </ul>
           <p>The review system on this site allows immediate contribution: any visitor can
-          approve records, flag problems, and leave corrections. Systematic contributions
-          are welcome via the GitHub repository.</p>
+          flag problems and submit corrections or notes as suggestions. Canonical
+          <strong>Approved</strong> states can only be created by logged-in trusted
+          reviewers, so every approved record carries verified attribution.
+          Systematic contributions are welcome via the GitHub repository.</p>
         </div>
 
       </div>

@@ -101,7 +101,7 @@ async function search(page = 1) {
     currentExpanded = data.expanded || [];
     currentSenses   = data.senses   || [];
 
-    renderConceptCard(q, currentExpanded, currentSenses);
+    renderConceptCard(q, currentExpanded, currentSenses, data.ocrSenses || []);
     renderResults(data.rows, data.matches || []);
     renderPagination();
 
@@ -119,7 +119,7 @@ async function search(page = 1) {
   }
 }
 
-function renderConceptCard(q, expanded, senses) {
+function renderConceptCard(q, expanded, senses, ocrSenses = []) {
   if (!expanded.length) {
     $concept.classList.remove('visible');
     $concept.innerHTML = '';
@@ -135,7 +135,12 @@ function renderConceptCard(q, expanded, senses) {
       <div class="concept-label">Lak translation</div>
       <div class="concept-val" lang="lbe">${expanded.map(esc).join(' · ')}</div>
       ${senses.length ? `<div class="concept-senses">Dictionary senses: ${senses.map(esc).join(', ')}</div>` : ''}
-    </div>`;
+    </div>
+    ${ocrSenses.length ? `
+    <div class="concept-ocr">
+      <span class="quality-badge q-ocr">OCR — unverified</span>
+      <span>Historical senses from Uslar 1890 (unreviewed OCR): ${ocrSenses.map(esc).join(', ')}</span>
+    </div>` : ''}`;
   $concept.classList.add('visible');
 }
 
@@ -188,11 +193,11 @@ function renderResults(rows, matches = []) {
     const varietyLabel = variety ? variety.charAt(0).toUpperCase() + variety.slice(1) : '—';
 
     return `<tr data-record="${esc(recordId)}">
-      <td class="td-type">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
-      <td class="td-lak"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
-      <td class="td-meaning">${esc(meaning)}</td>
-      <td>${sourceCell}</td>
-      <td>${varietyLabel}</td>
+      <td class="td-type" data-label="Type / quality">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
+      <td class="td-lak" data-label="Lak"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
+      <td class="td-meaning" data-label="Meaning / document">${esc(meaning)}</td>
+      <td data-label="Source">${sourceCell}</td>
+      <td data-label="Variety">${varietyLabel}</td>
       <td class="td-actions"><button class="btn btn-sm" data-id="${esc(recordId)}" onclick="toggleReview(this)">Review</button></td>
     </tr>`;
   }).join('');
@@ -264,7 +269,9 @@ window.toggleReview = function(btn) {
           : `<input type="text" id="rv-name" placeholder="Reviewer name or anonymous" value="${esc(review.reviewer_name || '')}" style="width:260px;">`}
       </div>
       <div class="review-actions">
-        <button class="btn btn-ok" onclick="submitReview('${esc(recordId)}','approved')">✓ Approve</button>
+        ${window.REVIEWER
+          ? `<button class="btn btn-ok" onclick="submitReview('${esc(recordId)}','approved')">✓ Approve</button>`
+          : `<span class="review-login-hint">You can flag problems or leave suggestions. <a href="/login.html">Log in as a reviewer</a> to approve records.</span>`}
         <button class="btn btn-warn" onclick="submitReview('${esc(recordId)}','flagged')">⚑ Flag</button>
         <button class="btn" onclick="submitReview('${esc(recordId)}','unreviewed')">↺ Mark unreviewed</button>
         <button class="btn" onclick="document.querySelector('.review-row')?.remove();openReviewId=null;">Cancel</button>
@@ -283,7 +290,10 @@ window.submitReview = async function(recordId, state) {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ record_id: recordId, state, correction, note, reviewer_name }),
     });
-    if (!res.ok) throw new Error('Server error');
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error || `Server error (${res.status})`);
+    }
     const data = await res.json();
     reviewCache[recordId] = data.review;
     document.querySelector('.review-row')?.remove();
@@ -300,8 +310,8 @@ window.submitReview = async function(recordId, state) {
       dataRow.querySelector('.tag')?.insertAdjacentElement('afterend', nb);
     }
     toast(`Review saved: ${state}`, 'ok');
-  } catch {
-    toast('Failed to save review. Please try again.', 'err');
+  } catch (err) {
+    toast(err.message || 'Failed to save review. Please try again.', 'err');
   }
 };
 

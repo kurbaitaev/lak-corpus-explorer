@@ -56,6 +56,11 @@ function loadCorpus() {
 }
 loadCorpus();
 
+// ── Curated alias additions (fill gaps in the extracted alias dictionary) ──
+const CURATED_ALIASES = {
+  'солнце': ['баргь'],
+};
+
 // Ensure reviewer_verified column exists
 pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
   .catch(err => console.error('Migration failed:', err.message));
@@ -262,7 +267,8 @@ app.get('/api/corpus/search', (req, res) => {
   } = req.query;
 
   const currentQ = norm(q.trim());
-  const expanded = currentQ ? (CORPUS_ALIASES[currentQ] || []) : [];
+  // Curated overlay takes precedence over extracted aliases for known gaps
+  const expanded = currentQ ? (CURATED_ALIASES[currentQ] || CORPUS_ALIASES[currentQ] || []) : [];
 
   let filtered = CORPUS_DATA.filter(r => {
     if (kind    && r[0] !== kind)    return false;
@@ -284,6 +290,13 @@ app.get('/api/corpus/search', (req, res) => {
     displayed = filtered.filter(r => r[0] === 'text');
   }
 
+  // Source-aware prioritisation: modern/verified sources first,
+  // historical OCR (Uslar 1890) last within the result set.
+  displayed = [
+    ...displayed.filter(r => r[3] !== 'Uslar 1890'),
+    ...displayed.filter(r => r[3] === 'Uslar 1890'),
+  ];
+
   const pageNum     = Math.max(1, parseInt(page) || 1);
   const pageSize    = Math.min(Math.max(1, parseInt(limit) || 50), 200);
   const total       = displayed.length;
@@ -291,15 +304,22 @@ app.get('/api/corpus/search', (req, res) => {
   const safePageNum = Math.min(pageNum, pages);
   const rows = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize);
 
-  // Compute senses for concept card (lexicon entries matching expansion)
+  // Compute senses for concept card (lexicon entries matching expansion).
+  // Modern/verified dictionary evidence forms the primary answer;
+  // historical OCR senses (Uslar 1890) are returned separately and labelled.
   let senses = [];
+  let ocrSenses = [];
   if (expanded.length) {
-    const senseSet = new Set(
-      CORPUS_DATA
-        .filter(r => r[0] === 'lexicon' && expanded.some(form => tokenHas(r[1], norm(form))))
-        .map(r => r[2]).filter(Boolean)
-    );
-    senses = [...senseSet].slice(0, 8);
+    const senseSet = new Set();
+    const ocrSet  = new Set();
+    for (const r of CORPUS_DATA) {
+      if (r[0] !== 'lexicon' || !r[2]) continue;
+      if (!expanded.some(form => tokenHas(r[1], norm(form)))) continue;
+      if (r[3] === 'Uslar 1890') ocrSet.add(r[2]);
+      else senseSet.add(r[2]);
+    }
+    senses    = [...senseSet].slice(0, 8);
+    ocrSenses = [...ocrSet].slice(0, 8);
   }
 
   // Matched spans in the Lak text (r[1]) for each returned row
@@ -317,6 +337,7 @@ app.get('/api/corpus/search', (req, res) => {
     query: q,
     expanded,
     senses,
+    ocrSenses,
     matches,
     total,
     pages,
@@ -356,6 +377,10 @@ app.post('/api/reviews', async (req, res) => {
       return res.status(400).json({ error: 'state must be approved, flagged, or unreviewed' });
     // Logged-in reviewers get authoritative attribution; anonymous free-text still allowed
     const session   = readSession(req);
+    if (state === 'approved' && !session)
+      return res.status(403).json({
+        error: 'Approving a record requires a trusted reviewer login. Anonymous visitors can flag problems or submit suggestions.',
+      });
     const finalName = session
       ? session.name
       : (reviewer_name ? String(reviewer_name).slice(0, 100) : null);

@@ -713,6 +713,23 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
 .toast-err { border-left: 3px solid var(--warn); color: var(--warn); }
 @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: none; opacity: 1; } }
 
+/* ── OCR-separated concept notes & review hints ─────────────── */
+.concept-card { flex-wrap: wrap; }
+.concept-ocr {
+  flex-basis: 100%;
+  border-top: 1px dashed var(--border);
+  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text2);
+}
+.review-login-hint { font-size: 12.5px; color: var(--text3); align-self: center; }
+.review-login-hint a { color: var(--text2); }
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .controls-grid { grid-template-columns: 1fr 1fr; }
@@ -727,4 +744,34 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .nav-brand { margin-right: 12px; }
   .search-header-inner { flex-direction: column; }
   .review-panel { grid-template-columns: 1fr; }
+
+  /* Navigation fits on narrow screens */
+  .nav-inner { flex-wrap: wrap; row-gap: 4px; }
+  .nav-links { flex-wrap: wrap; }
+  .nav-link { padding: 6px 10px; font-size: 13px; }
+
+  /* Search results: table → readable stacked cards */
+  .table-wrap { border: none; overflow: visible; }
+  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; width: 100%; }
+  .table-wrap thead { display: none; }
+  .table-wrap tr {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+  }
+  .table-wrap td { border: none; padding: 5px 0; }
+  .table-wrap td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text3);
+  }
+  .td-lak, .td-meaning { max-width: none; }
+  .stats-row { flex-wrap: wrap; }
+  .status-bar { flex-wrap: wrap; gap: 8px; }
 }
