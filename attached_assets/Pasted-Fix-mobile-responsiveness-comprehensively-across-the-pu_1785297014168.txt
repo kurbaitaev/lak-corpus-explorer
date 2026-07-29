@@ -1,0 +1,15 @@
+Fix mobile responsiveness comprehensively across the published Lak Corpus Explorer while preserving desktop behavior, corpus data, authentication, validation logic, points, reviews, and source provenance.
+
+I audited production at 390x844 and confirmed specific failures: Search expands to 776px because its results table remains 760px; Leaderboard keeps a 760px table; About expands to 818px because its sections/stat grid remain about 802px; and the shared navigation wraps over page titles and subtitles. Validate and Login avoid horizontal overflow but share the broken header.
+
+Build a coherent responsive shell for every route. On phones use a compact accessible mobile menu that never overlaps content, indicates the current page, is keyboard/screen-reader accessible, closes after navigation, and keeps login/account actions reachable. Prevent long Lak/Russian text, identifiers, links, badges, and buttons from widening the document.
+
+Search: use readable stacked result cards on phones, including type/quality, Lak form, meaning/document, source, variety, match explanation, and review action. Keep the desktop table at larger widths. Fix loading/empty/error states so they do not retain desktop table width. Keep filters, translation cards, pagination, source labels, and controls touch-friendly and unclipped.
+
+Leaderboard: use ranked contributor cards on phones with rank, name, validations, reliability, streak, badges, and confirmed points. Keep period controls and privacy copy usable; retain desktop table at larger widths and a good empty state.
+
+About: make statistics, source tables/lists, methodology, citations, and long links fit as single-column cards or labeled stacked rows. No page-level horizontal scroll.
+
+Audit and fix Validate, Login/Register, Review Queue, profile, personal progress, expert/admin dashboard, invites, disputes, quests, achievements, and audit history too. Forms should be single-column, dialogs fit the viewport, dense tables become cards, and important scientific metadata must remain visible.
+
+Test widths 320, 360, 375, 390, 414, 768, and desktop. Acceptance: document scroll width never exceeds viewport on any route; no header/content overlap; no clipped controls; readable without zoom; visible focus states; portrait tests with long Russian/Lak strings and loading/empty/error/populated states for logged-out and authenticated roles. Add automated responsive regressions and preserve all 121 functional tests. Commit, push GitHub, verify preview, and report exact route/viewport results and whether production must be republished. Do not claim production is fixed until it is deployed and checked.
