@@ -1,0 +1,31 @@
+Build the first complete Lak Translation Lab now in the current Replit workspace. Treat the current republished workspace as source of truth; preserve all mobile, performance, corpus-v1.1, validation, gamification, security, and review work. Do not reset to GitHub, because GitHub main is stale. Do not publish automatically.
+
+GOAL
+Create a controlled Russian↔Lak translation-proposal and parallel-data collection system. It must never present model output as verified translation. The complete loop is: user enters text → server retrieves exact dictionary senses and similar corpus examples → optional model produces a structured proposal grounded in that evidence → UI shows proposal, alternatives, evidence, uncertainty and model/version → signed-in contributor edits/corrects or abstains → expert/consensus validates → accepted pair becomes a versioned parallel-corpus record → export excludes benchmark and unauthorized/unvalidated material by default.
+
+FIRST AUDIT
+Before edits, inspect current git status/commits, replit.md, database schema/migrations, auth roles, corpus v1.1 import status, current model/API secrets by NAME ONLY, public and dev behavior, and existing tests. Preserve dirty work. Report inconsistencies in working notes, then implement.
+
+DATA MODEL
+Add migrations/tables (or normalized equivalent) for translation_requests/proposals, proposal_evidence, parallel_pairs, parallel_pair_versions, pair_reviews/adjudications, benchmark_items/splits, and model_runs. Required fields include stable IDs; source_text; target_text; direction ru_to_lak/lak_to_ru; literal and natural target variants; Lak variety/orthography; source type; provenance and rights/access status; contributor/translator/reviewer IDs; review state; confidence; abstention/error categories; model/provider/model_version/prompt_version; evidence record IDs; timestamps; supersedes/version lineage. Benchmark split must be server-only and impossible to include in training export.
+
+TRANSLATION API
+Implement provider abstraction. If an existing authorized model secret exists, use it server-side only with strict structured output and retrieved evidence. If no secret exists, ship an evidence-only mode that builds lexical coverage and lets humans write translations; do not invent credentials or expose secrets. The model prompt must forbid unsupported claims, require alternatives for ambiguity, preserve parenthetical dictionary senses (e.g. луна vs месяц), cite evidence IDs, return token/phrase coverage and explicit unknowns, and abstain when evidence is insufficient. Never send private/permission-pending full texts to a third-party model; restrict model context to public/allowed or explicitly approved snippets.
+
+RETRIEVAL
+Use exact headword/sense lookup first, then normalized phrase and corpus concordance. Show source, review state and access status. Do not treat monolingual literary examples as Russian↔Lak translations. Clearly distinguish dictionary evidence, attested Lak usage, and validated parallel examples. Prevent historical OCR/unreviewed items from outranking validated modern evidence.
+
+UI
+Add Translation Lab to responsive navigation. Page must support both directions, text input, translate/propose button, evidence-only fallback, proposal + alternative, confidence/unknowns, word/phrase evidence, side-by-side editable correction, variety/orthography, literal vs natural choice, abstain/flag, submit-for-review, version history, and a clear banner: “Model proposal — not verified.” Require authentication for saving; anonymous users may inspect a proposal but cannot validate. Add a contributor dashboard view of pair status. Mobile acceptance at 320, 390 and 414 px, menu closed/open, no horizontal overflow.
+
+VALIDATION + GAMIFICATION
+Reuse existing roles, reliability, audit history, anti-abuse, points ledger, opt-out/privacy, and expert adjudication. Award provisional points for substantive translation/correction, confirm only after independent agreement/expert approval, revoke on reversal. Prevent self-review, duplicate farming, trivial-edit farming, repeated model-output submission, and invite race/idempotency problems. Experts can compare versions and adjudicate without overwriting source history.
+
+BENCHMARK + EXPORT
+Create an admin/expert-only benchmark workflow and split labels train/dev/test. Seed NO fake Lak translations. Provide import template for 500 expert benchmark sentences, but keep test references server-side. Add JSONL/TSV/Hugging Face-style export for approved train/dev pairs only, including provenance/license/status/model lineage; default exclude test, rejected, unreviewed, synthetic-only, private/permission-pending, and withdrawn records. Add dataset card endpoint/page with counts by direction, variety, status, source and human/synthetic origin.
+
+TESTS
+Add unit/integration tests for auth, schema migration, evidence ranking, exact sense separation (луна→барз (ссавнийсса), месяц→барз (шинал), солнце→баргь, спасибо→барчаллагь), model abstention, secret isolation, no private-context transmission, self-review block, idempotent adjudication/points, benchmark leakage prevention, export filters, audit/version lineage, abuse/rate limits, old corpus-search regressions, and performance. Test evidence-only mode without external API writes. If an API exists, mock it in tests; do not spend API credits for automated tests.
+
+ACCEPTANCE
+Create an unpublished checkpoint. Report exact schema/files/endpoints, whether a usable model provider is configured (name only, no secret), test counts/results, corpus-v1.1 status, benchmark/export safeguards, mobile screenshots, performance, GitHub divergence, and every blocker. Do not publish, merge stale GitHub main, seed fake translations, or call output verified.
