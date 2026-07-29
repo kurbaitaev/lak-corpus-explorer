@@ -86,6 +86,29 @@ app.get('/', (req, res) => sendPage(res, PAGES['index.html']));
 app.get('/about.html', (req, res) => sendPage(res, PAGES['about.html']));
 app.get('/queue.html', (req, res) => sendPage(res, PAGES['queue.html']));
 
+// ── Legacy-cache busters ──────────────────────────────────────
+// Old cached index.html loads /data/corpus.js and /js/search.js (unversioned).
+// Serve a JS shim that forces a hard reload so any stuck browser recovers.
+const RELOAD_SHIM = `/* Page reload shim — superseded by server-side search */
+(function(){location.replace(location.pathname+'?bust='+Date.now());})();`;
+
+app.get('/data/corpus.js', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.send(RELOAD_SHIM);
+});
+
+// Unversioned /js/search.js only ever came from the old cached HTML
+app.get('/js/search.js', (req, res, next) => {
+  if (!req.query.v) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    return res.send(RELOAD_SHIM);
+  }
+  // versioned request — fall through to static middleware
+  next();
+});
+
 // Static assets — long cache (versioned via ?v=BUILD stamp in HTML)
 app.use(express.static(PUBLIC, {
   setHeaders: (res, filePath) => {
