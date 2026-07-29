@@ -18,8 +18,17 @@
     const links = nav.querySelector('.nav-links');
     if (!inner || !links) return;
 
-    // Keep the Translation Lab present on every legacy page without requiring
-    // ten duplicated navigation fragments to stay in sync.
+    // Keep newer public sections present on every legacy page without requiring
+    // duplicated navigation fragments to stay in sync.
+    if (!links.querySelector('a[href="/observatory.html"]')) {
+      const observatory = document.createElement('a');
+      observatory.className = 'nav-link';
+      observatory.href = '/observatory.html';
+      observatory.textContent = 'Observatory';
+      const validate = links.querySelector('a[href="/validate.html"]');
+      links.insertBefore(observatory, validate || links.firstChild);
+    }
+
     if (!links.querySelector('a[href="/lab.html"]')) {
       const lab = document.createElement('a');
       lab.className = 'nav-link';

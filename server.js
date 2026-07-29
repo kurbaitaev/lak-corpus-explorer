@@ -5,6 +5,7 @@ const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { loadObservatory } = require('./lib/observatory');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +52,13 @@ function loadCorpus() {
   }
 }
 loadCorpus();
+
+// The Observatory is a provenance/acquisition registry. It is deliberately
+// loaded through an independent path and never appended to CORPUS_DATA.
+const OBSERVATORY = loadObservatory();
+const OBSERVATORY_IDS = new Set(OBSERVATORY.resources.map(resource => resource.id));
+console.log(`Observatory loaded: ${OBSERVATORY.resources.length} non-Bible resources`);
+const withoutObservatoryReviews = rows => rows.filter(row => !OBSERVATORY_IDS.has(row.record_id));
 
 // ── Curated alias additions (fill gaps in the extracted alias dictionary) ──
 const CURATED_ALIASES = {
@@ -176,7 +184,7 @@ function stampHtml(file) {
 const PAGES = {};
 for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
-                  'dashboard.html', 'how-it-works.html', 'lab.html']) {
+                   'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -259,6 +267,11 @@ app.get('/api/auth/me', (req, res) => {
 // ── Corpus stats ─────────────────────────────────────────────
 app.get('/api/corpus/stats', (req, res) => {
   res.json({ stats: CORPUS_STATS, totalRecords: CORPUS_DATA.length });
+});
+
+// Observatory registry API — intentionally separate from corpus and Lab APIs.
+app.get('/api/observatory/resources', (req, res) => {
+  res.json(OBSERVATORY);
 });
 
 // ── Corpus search ─────────────────────────────────────────────
@@ -368,7 +381,7 @@ app.get('/api/reviews', async (req, res) => {
     sql += ` ORDER BY updated_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     params.push(Math.min(Number(limit) || 100, 500), Math.max(Number(offset) || 0, 0));
     const result = await pool.query(sql, params);
-    res.json({ reviews: result.rows });
+    res.json({ reviews: withoutObservatoryReviews(result.rows) });
   } catch (err) {
     res.status(500).json({ error: 'Database error' });
   }
@@ -380,6 +393,10 @@ app.post('/api/reviews', async (req, res) => {
     const validStates = ['approved', 'flagged', 'unreviewed'];
     if (!record_id || typeof record_id !== 'string' || record_id.length > 200)
       return res.status(400).json({ error: 'Invalid record_id' });
+    if (OBSERVATORY_IDS.has(record_id))
+      return res.status(400).json({
+        error: 'Observatory records are provenance leads and cannot enter corpus validation',
+      });
     if (!state || !validStates.includes(state))
       return res.status(400).json({ error: 'state must be approved, flagged, or unreviewed' });
     // Logged-in reviewers get authoritative attribution; anonymous free-text still allowed
@@ -427,7 +444,8 @@ app.post('/api/reviews/bulk', async (req, res) => {
   try {
     const { record_ids } = req.body;
     if (!Array.isArray(record_ids) || !record_ids.length) return res.json({ reviews: {} });
-    const ids = record_ids.slice(0, 200).map(String);
+    const ids = record_ids.slice(0, 200).map(String).filter(id => !OBSERVATORY_IDS.has(id));
+    if (!ids.length) return res.json({ reviews: {} });
     const result = await pool.query(
       `SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at
        FROM reviews WHERE record_id = ANY($1)`,
@@ -443,9 +461,9 @@ app.post('/api/reviews/bulk', async (req, res) => {
 
 app.get('/api/stats/reviews', async (req, res) => {
   try {
-    const result = await pool.query('SELECT state, COUNT(*) AS count FROM reviews GROUP BY state');
+    const result = await pool.query('SELECT record_id, state FROM reviews');
     const counts = { approved: 0, flagged: 0, unreviewed: 0 };
-    for (const row of result.rows) counts[row.state] = Number(row.count);
+    for (const row of withoutObservatoryReviews(result.rows)) counts[row.state]++;
     res.json(counts);
   } catch (err) {
     res.status(500).json({ error: 'Database error' });
@@ -460,7 +478,7 @@ app.get('/api/export.json', async (req, res) => {
 
     const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     res.setHeader('Content-Disposition', 'attachment; filename="lak-corpus-reviews.json"');
-    res.json({ exported_at: new Date().toISOString(), reviews: result.rows });
+    res.json({ exported_at: new Date().toISOString(), reviews: withoutObservatoryReviews(result.rows) });
   } catch (err) { res.status(500).json({ error: 'Export failed' }); }
 });
 
@@ -472,7 +490,7 @@ app.get('/api/export.csv', async (req, res) => {
 
     const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
     const header = 'record_id,state,correction,note,reviewer_name,reviewer_verified,created_at,updated_at\n';
-    const rows = result.rows.map(r =>
+    const rows = withoutObservatoryReviews(result.rows).map(r =>
       [r.record_id, r.state, r.correction, r.note, r.reviewer_name, r.reviewer_verified, r.created_at, r.updated_at].map(escCsv).join(',')
     ).join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
