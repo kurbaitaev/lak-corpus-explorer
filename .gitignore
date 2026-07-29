@@ -7,3 +7,7 @@ yarn-error.log*
 .DS_Store
 *.log
 .cache/
+
+# Generated corpus data (rebuild with: python3 scripts/extract-corpus.py)
+public/data/corpus-data.json
+public/data/corpus-meta.json
