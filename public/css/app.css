@@ -116,6 +116,34 @@ a:hover { text-decoration: underline; }
 .nav-link:hover { color: var(--text); text-decoration: none; }
 .nav-link.active { color: var(--accent); border-bottom-color: var(--accent); }
 
+/* Mobile menu toggle — hidden on desktop, shown by the nav media query */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 40px;
+  flex-shrink: 0;
+}
+.nav-toggle:hover { background: var(--surface2); }
+.nav-toggle-icon { font-size: 14px; line-height: 1; }
+
+/* Visible keyboard focus everywhere */
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ── Search Page ───────────────────────────────────────────── */
 .search-header {
   padding: 28px 0 20px;
@@ -327,8 +355,10 @@ input[type="search"]::placeholder { color: var(--text3); }
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 760px;
 }
+
+/* Only scrollable results tables get a width floor; other tables shrink */
+.table-wrap table { min-width: 760px; }
 
 thead th {
   position: sticky;
@@ -735,24 +765,48 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .controls-grid { grid-template-columns: 1fr 1fr; }
   .controls-grid .field-wrap:first-child { grid-column: 1 / -1; }
   .about-grid { grid-template-columns: 1fr; }
+
+  /* Collapsible navigation: brand left, Menu toggle right, drawer below */
+  .nav-inner { flex-wrap: wrap; height: auto; min-height: 56px; }
+  .nav-brand { margin-right: auto; }
+  .nav-toggle { display: inline-flex; }
+
+  /* Drawer: hidden (zero height) unless the nav is open */
+  .nav-links {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    gap: 0;
+    padding: 4px 0 12px;
+  }
+  .nav.open .nav-links { display: flex; }
+  .nav-links .nav-link {
+    height: auto;
+    width: 100%;
+    padding: 12px 4px;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+  .nav-links .nav-link.active {
+    border-bottom: none;
+    border-left-color: var(--accent);
+    padding-left: 8px;
+  }
 }
 
 @media (max-width: 600px) {
   .container { padding: 0 16px; }
   .controls-grid { grid-template-columns: 1fr; }
   .controls-grid .field-wrap:first-child { grid-column: auto; }
-  .nav-brand { margin-right: 12px; }
   .search-header-inner { flex-direction: column; }
   .review-panel { grid-template-columns: 1fr; }
-
-  /* Navigation fits on narrow screens */
-  .nav-inner { flex-wrap: wrap; row-gap: 4px; }
-  .nav-links { flex-wrap: wrap; }
-  .nav-link { padding: 6px 10px; font-size: 13px; }
+  .review-panel input[type="text"] { width: 100% !important; max-width: 100%; }
 
   /* Search results: table → readable stacked cards */
-  .table-wrap { border: none; overflow: visible; }
-  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; width: 100%; }
+  .table-wrap { border: none; overflow: visible; box-shadow: none; background: transparent; }
+  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td {
+    display: block; width: 100%; min-width: 0;
+  }
   .table-wrap thead { display: none; }
   .table-wrap tr {
     border: 1px solid var(--border);
@@ -774,6 +828,24 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .td-lak, .td-meaning { max-width: none; }
   .stats-row { flex-wrap: wrap; }
   .status-bar { flex-wrap: wrap; gap: 8px; }
+
+  /* About-page source table: 5 columns → stacked cards */
+  .source-table, .source-table tbody, .source-table tr, .source-table td {
+    display: block; width: 100%;
+  }
+  .source-table thead { display: none; }
+  .source-table tr { border-bottom: 1px solid var(--border); padding: 8px 0; }
+  .source-table tr:last-child { border-bottom: none; }
+  .source-table td { border: none; padding: 4px 0; }
+  .source-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text3);
+  }
 }
 
 /* ── Validation & gamification components ──────────────────── */
@@ -883,7 +955,9 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
 /* Mobile: leaderboard becomes stacked cards, options stay thumb-sized */
 @media (max-width: 600px) {
   .lb-table thead { display: none; }
-  .lb-table, .lb-table tbody, .lb-table tr, .lb-table td { display: block; width: 100%; }
+  .lb-table, .lb-table tbody, .lb-table tr, .lb-table td {
+    display: block; width: 100%; min-width: 0;
+  }
   .lb-table tr {
     border: 1px solid var(--border); border-radius: var(--radius);
     margin: 10px; padding: 8px 4px;

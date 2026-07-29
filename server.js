@@ -182,10 +182,10 @@ app.use(express.json());
 app.use(require('./routes/validation')({ pool }));
 
 function sendPage(res, html) {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Clear-Site-Data', '"cache"');
+  // Revalidate HTML on every navigation so markup never goes stale,
+  // while still allowing ETag-based 304s (fast). No Clear-Site-Data —
+  // wiping the whole cache per visit is what made the app feel slow.
+  res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
 }
@@ -196,33 +196,14 @@ for (const f of Object.keys(PAGES)) {
   if (f !== 'index.html') app.get('/' + f, (req, res) => sendPage(res, PAGES[f]));
 }
 
-// ── Legacy-cache busters ──────────────────────────────────────
-const RELOAD_SHIM = `/* Page reload shim — superseded by server-side search */
-(function(){location.replace(location.pathname+'?bust='+Date.now());})();`;
-
-app.get('/data/corpus.js', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-  res.send(RELOAD_SHIM);
-});
-
-app.get('/js/search.js', (req, res, next) => {
-  if (!req.query.v) {
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    return res.send(RELOAD_SHIM);
-  }
-  next();
-});
-
 // ── Static assets ─────────────────────────────────────────────
+// Use no-cache (ETag revalidation) for everything so updated code is
+// always picked up. The old `immutable, 1-year` policy served stale JS
+// against fresh HTML, which is what made buttons stop responding.
+// express.static sends ETags by default, so unchanged files return 304.
 app.use(express.static(PUBLIC, {
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-store');
-    } else {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    }
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache');
   },
 }));
 
