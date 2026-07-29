@@ -18,6 +18,17 @@
     const links = nav.querySelector('.nav-links');
     if (!inner || !links) return;
 
+    // Keep the Translation Lab present on every legacy page without requiring
+    // ten duplicated navigation fragments to stay in sync.
+    if (!links.querySelector('a[href="/lab.html"]')) {
+      const lab = document.createElement('a');
+      lab.className = 'nav-link';
+      lab.href = '/lab.html';
+      lab.textContent = 'Translation Lab';
+      const validate = links.querySelector('a[href="/validate.html"]');
+      links.insertBefore(lab, validate || links.firstChild);
+    }
+
     if (!links.id) links.id = 'nav-links';
 
     const btn = document.createElement('button');

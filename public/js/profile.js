@@ -48,6 +48,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('p-quests').innerHTML = (data.quests || []).map(q =>
     `<span class="quest-chip${q.done ? ' done' : ''}">${esc(q.label)} ${q.progress}/${q.target}${q.done ? ' ✓' : ''}</span>`).join(' ');
 
+  const pairBox = document.getElementById('p-pairs');
+  try {
+    const pairRes = await fetch('/api/lab/my-pairs');
+    const pairData = await pairRes.json();
+    const pairs = pairData.pairs || [];
+    pairBox.innerHTML = pairs.length ? pairs.slice(0, 8).map(pair => `
+      <div class="pair-status-row">
+        <div><b>${esc(pair.source_text)}</b><span>${esc(pair.direction).replace('_', ' → ')} · v${pair.current_version}</span></div>
+        <span class="quality-badge ${pair.status === 'approved' ? 'q-approved' : pair.status === 'rejected' ? 'q-flagged' : 'q-unreviewed'}">${esc(pair.status)}</span>
+      </div>`).join('') : '<p style="color:var(--text3); font-size:13px;">No translation pairs submitted yet.</p>';
+  } catch {
+    pairBox.innerHTML = '<p style="color:var(--text3); font-size:13px;">Translation status is temporarily unavailable.</p>';
+  }
+
   document.getElementById('profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const res2 = await fetch('/api/profile', {

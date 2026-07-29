@@ -88,6 +88,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       <button class="btn ap-btn">Resolve</button>
     </div>`).join('') || '<p style="color:var(--text3); font-size:13px;">No open appeals.</p>';
 
+  try {
+    const pairRes = await fetch('/api/lab/review-queue');
+    const pairData = await pairRes.json();
+    document.getElementById('lab-pairs').innerHTML = (pairData.pairs || []).map(p => `
+      <div class="pair-status-row">
+        <div><b>${esc(p.source_text)}</b><span>${esc(p.direction).replace('_', ' → ')} · ${esc(p.contributor_name || 'contributor')} · v${p.current_version}</span></div>
+        <a class="btn" href="/lab.html?pair=${encodeURIComponent(p.id)}">Review</a>
+      </div>`).join('') || '<p style="color:var(--text3); font-size:13px;">No translation pairs await review.</p>';
+  } catch {
+    document.getElementById('lab-pairs').innerHTML = '<p style="color:var(--text3); font-size:13px;">Translation queue is temporarily unavailable.</p>';
+  }
+
   document.querySelectorAll('.adj-btn').forEach(btn => btn.addEventListener('click', async () => {
     const row = btn.closest('.dispute-row');
     try {

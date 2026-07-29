@@ -56,6 +56,12 @@ loadCorpus();
 const CURATED_ALIASES = {
   'солнце': ['баргь'],
 };
+// Lab-only sense labels must not replace the broader search alias expansion.
+const LAB_CURATED_ALIASES = {
+  ...CURATED_ALIASES,
+  'луна': ['барз (ссавнийсса)'],
+  'месяц': ['барз (шинал)'],
+};
 
 // Ensure reviewer_verified column exists
 pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
@@ -170,7 +176,7 @@ function stampHtml(file) {
 const PAGES = {};
 for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
-                 'dashboard.html', 'how-it-works.html']) {
+                  'dashboard.html', 'how-it-works.html', 'lab.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -180,6 +186,15 @@ app.use(express.json());
 
 // Expert-validation & gamification API
 app.use(require('./routes/validation')({ pool }));
+// Evidence-grounded Translation Lab (evidence-only until a provider is authorized).
+app.use(require('./routes/lab')({
+  pool,
+  corpusData: CORPUS_DATA,
+  corpusAliases: CORPUS_ALIASES,
+  curatedAliases: LAB_CURATED_ALIASES,
+  norm,
+  tokenHas,
+}));
 
 function sendPage(res, html) {
   // Revalidate HTML on every navigation so markup never goes stale,

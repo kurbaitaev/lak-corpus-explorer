@@ -63,6 +63,11 @@
       <div id="appeals"></div>
     </div>
 
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px; margin-bottom:10px;">Translation pairs awaiting review</h2>
+      <div id="lab-pairs"></div>
+    </div>
+
     <div id="admin-only" style="display:none;">
       <div class="card" style="margin-bottom:16px;">
         <h2 style="font-size:16px; margin-bottom:10px;">Grant a role <span class="badge badge-admin">admin</span></h2>
@@ -131,6 +136,14 @@
           <button class="btn btn-ok" id="t-btn">Add task</button>
         </div>
         <div class="admin-msg" id="t-msg"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h2 style="font-size:16px; margin-bottom:10px;">Benchmark import template <span class="badge badge-admin">admin</span></h2>
+        <p style="color:var(--text2); font-size:13px; margin-bottom:10px;">
+          Download a blank 500-item template. Test references remain server-only and are never included in training exports.
+        </p>
+        <a class="btn" href="/api/lab/benchmark/template.tsv">Download 500-item TSV template</a>
       </div>
     </div>
   </div>
