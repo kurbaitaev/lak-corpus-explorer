@@ -21,16 +21,36 @@ let CORPUS_STATS   = {};
 let CORPUS_ALIASES = {};
 
 function loadCorpus() {
+  const dataPath = path.join(__dirname, 'public/data/corpus-data.json');
+  const metaPath = path.join(__dirname, 'public/data/corpus-meta.json');
+
+  // Data files are generated (gitignored). If missing, rebuild them from
+  // the canonical index.html via the extraction script.
+  if (!fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
+    console.log('Corpus data files missing — running scripts/extract-corpus.py …');
+    const { spawnSync } = require('child_process');
+    const result = spawnSync('python3', [path.join(__dirname, 'scripts/extract-corpus.py')], {
+      stdio: 'inherit',
+    });
+    if (result.status !== 0 || !fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
+      console.error(
+        'FATAL: corpus data files are missing and could not be regenerated.\n' +
+        'Run "python3 scripts/extract-corpus.py" manually (requires the canonical index.html at the project root).'
+      );
+      process.exit(1);
+    }
+  }
+
   try {
-    const dataPath = path.join(__dirname, 'public/data/corpus-data.json');
-    const metaPath = path.join(__dirname, 'public/data/corpus-meta.json');
     CORPUS_DATA = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
     const meta  = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
     CORPUS_STATS   = meta.stats;
     CORPUS_ALIASES = meta.aliases;
     console.log(`Corpus loaded: ${CORPUS_DATA.length} records`);
   } catch (err) {
-    console.error('Failed to load corpus:', err.message);
+    console.error('FATAL: failed to load corpus data:', err.message);
+    console.error('Run "python3 scripts/extract-corpus.py" to regenerate the data files.');
+    process.exit(1);
   }
 }
 loadCorpus();

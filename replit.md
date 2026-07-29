@@ -6,7 +6,7 @@ A publicly accessible, source-aware research corpus of the Lak language (лак�
 
 - **Backend**: Node.js + Express (`server.js`, port 5000)
 - **Database**: Replit PostgreSQL — `reviews` table (record_id, state, correction, note, reviewer_name, timestamps)
-- **Corpus data**: `public/data/corpus.js` — ~4.5 MB self-contained JS file with `CORPUS_DATA`, `CORPUS_STATS`, `CORPUS_ALIASES` (extracted from original `index.html`)
+- **Corpus data**: `public/data/corpus-data.json` + `public/data/corpus-meta.json` — **generated files, gitignored**. Rebuilt from the canonical `index.html` (project root) with `python3 scripts/extract-corpus.py`. `server.js` auto-runs the script at startup if the files are missing, and aborts with a clear error if regeneration fails.
 - **Frontend**: Vanilla JS, multi-page (`public/index.html`, `public/about.html`, `public/queue.html`)
 
 ## How to run

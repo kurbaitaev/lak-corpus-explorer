@@ -17,4 +17,6 @@ Boundary markers (raw bytes):
 
 **Why:** The original minified script puts all three vars in one declaration with commas. Search for the boundary tokens above, not for `const` keywords per variable.
 
-**How to apply:** Use this in any future extraction/rebuild script. See `scripts/extract-corpus.py` if created.
+**How to apply:** Use this in any future extraction/rebuild script. Implemented in `scripts/extract-corpus.py`.
+
+Also: ALIASES string values contain `;`, so never scan for the statement-terminating semicolon to find the object end — use `json.JSONDecoder().raw_decode` on the text starting at the ALIASES value.
