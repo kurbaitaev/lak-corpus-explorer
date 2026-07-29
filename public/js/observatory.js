@@ -14,17 +14,16 @@
   function isHttp(url) { return /^https?:\/\//i.test(String(url || '')); }
   function card(r, index) {
     const link = isHttp(r.public_url || r.url)
-      ? '<a href="' + esc(r.public_url || r.url) + '" target="_blank" rel="noopener noreferrer">Open public source</a>'
-      : '<span class="obs-local">Local provenance · not a public link</span>';
+      ? '<a class="obs-source-button" href="' + esc(r.public_url || r.url) + '" target="_blank" rel="noopener noreferrer">Open public source <span class="obs-external-indicator" aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>'
+      : '<span class="obs-local">Local provenance — not publicly accessible</span>';
     const sensitive = r.permission_sensitive ? '<span class="obs-tag rights">Permission-sensitive</span>' : '';
     return '<article class="obs-card" style="animation-delay:' + Math.min(index * 24, 240) + 'ms">' +
-      '<div class="obs-card-head"><div><h2>' + esc(r.title) + '</h2><div class="obs-id">' + esc(r.id) + '</div></div><span class="obs-priority ' + esc(String(r.priority || '').toLowerCase()) + '">' + esc(r.priority) + '</span></div>' +
-      '<div class="obs-byline">' + esc(r.creator) + ' · ' + esc(r.year) + '</div>' +
-      '<div class="obs-tags"><span class="obs-tag">' + esc(r.category) + '</span><span class="obs-tag status">' + esc(r.status) + '</span><span class="obs-tag">' + esc(r.access) + '</span>' + sensitive + '</div>' +
-      '<dl class="obs-facts"><div class="obs-fact"><dt>Language</dt><dd>' + esc(r.language) + '</dd></div><div class="obs-fact"><dt>Rights boundary</dt><dd>' + esc(r.rights) + '</dd></div><div class="obs-fact"><dt>Scale</dt><dd>' + esc(r.scale) + '</dd></div><div class="obs-fact"><dt>Evidence group</dt><dd>' + esc(r.evidence_group) + '</dd></div><div class="obs-fact"><dt>Research value</dt><dd>' + esc(r.value) + ' / 5</dd></div><div class="obs-fact"><dt>Record access</dt><dd>' + esc(r.access) + '</dd></div></dl>' +
+      '<div class="obs-card-head"><div><h2>' + esc(r.title) + '</h2><div class="obs-byline">' + esc(r.creator) + (r.year ? ' · ' + esc(r.year) : '') + '</div></div><span class="obs-priority ' + esc(String(r.priority || '').toLowerCase()) + '">' + esc(r.priority) + '</span></div>' +
+      '<div class="obs-tags"><span class="obs-tag">' + esc(r.category) + '</span><span class="obs-tag status">' + esc(r.status) + '</span>' + sensitive + '</div>' +
+      '<dl class="obs-facts"><div class="obs-fact"><dt>Language</dt><dd>' + esc(r.language) + '</dd></div><div class="obs-fact"><dt>Rights boundary</dt><dd>' + esc(r.rights) + '</dd></div><div class="obs-fact"><dt>Scale</dt><dd>' + esc(r.scale) + '</dd></div></dl>' +
       '<div class="obs-action"><strong>Next concrete action</strong>' + esc(r.action) + '</div>' +
       (r.notes ? '<p class="obs-notes"><strong>Notes:</strong> ' + esc(r.notes) + '</p>' : '') +
-      '<div class="obs-source">' + link + '<span>' + esc(r.url && !isHttp(r.public_url || r.url) ? 'Evidence held locally' : '') + '</span></div></article>';
+      '<div class="obs-source">' + link + '</div></article>';
   }
   function matches(r) {
     const hay = Object.values(r).join(' ').toLowerCase();

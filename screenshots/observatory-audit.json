@@ -1,0 +1,417 @@
+{
+  "generatedAt": "2026-07-29T20:10:57.578Z",
+  "desktop": {
+    "name": "desktop",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "cardCount": 68,
+    "dimensions": {
+      "viewportWidth": 1280,
+      "viewportHeight": 720,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "scrollHeight": 17088
+    },
+    "contrasts": [
+      {
+        "name": "title",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 22,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "creator",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13.5,
+        "fontWeight": "500",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "fact value",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "fact label",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 10,
+        "fontWeight": "700",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "notes",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 12.5,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "next action",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(48, 45, 36)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 11.66
+      },
+      {
+        "name": "next action label",
+        "color": "rgb(240, 162, 123)",
+        "background": "rgb(48, 45, 36)",
+        "fontSize": 10,
+        "fontWeight": "700",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 6.66
+      },
+      {
+        "name": "public button",
+        "color": "rgb(16, 28, 43)",
+        "background": "rgb(130, 185, 255)",
+        "fontSize": 13,
+        "fontWeight": "800",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 8.45
+      },
+      {
+        "name": "local provenance",
+        "color": "rgb(213, 217, 209)",
+        "background": "rgb(37, 43, 39)",
+        "fontSize": 12.5,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 10.1
+      },
+      {
+        "name": "control label",
+        "color": "rgb(200, 196, 184)",
+        "background": "color(srgb 0.0784314 0.0745098 0.0666667 / 0.94)",
+        "fontSize": 11,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 10.65
+      },
+      {
+        "name": "search value",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(37, 35, 32)",
+        "fontSize": 15,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 13.29
+      },
+      {
+        "name": "inactive tab",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "active tab",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(49, 91, 67)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.75
+      },
+      {
+        "name": "result count",
+        "color": "rgb(176, 172, 159)",
+        "background": "color(srgb 0.0784314 0.0745098 0.0666667 / 0.94)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 8.18
+      }
+    ],
+    "failingContrast": [],
+    "publicButtons": 60,
+    "publicLabel": "Open public source\n↗\n(opens in a new tab)",
+    "cardIsClickable": false,
+    "localState": {
+      "text": "Local provenance — not publicly accessible",
+      "tag": "SPAN",
+      "cursor": "auto",
+      "hasHref": false,
+      "onclick": false
+    },
+    "focusChecks": [
+      {
+        "selector": "#resource-search",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#category-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#status-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#priority-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": ".obs-tab",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": ".obs-source-button",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      }
+    ],
+    "searchedCount": 2,
+    "p0Count": 21,
+    "contactCount": 25,
+    "clickedUrl": "https://lingconlab.ru/lak_corpus/",
+    "bottomVisible": true,
+    "consoleErrors": [],
+    "screenshot": "screenshots/observatory-desktop-dark.png"
+  },
+  "mobile": {
+    "name": "390x844",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "cardCount": 68,
+    "dimensions": {
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 38719
+    },
+    "contrasts": [
+      {
+        "name": "title",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 22,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "creator",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13.5,
+        "fontWeight": "500",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "fact value",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 14.41
+      },
+      {
+        "name": "fact label",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 10,
+        "fontWeight": "700",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "notes",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 12.5,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "next action",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(48, 45, 36)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 11.66
+      },
+      {
+        "name": "next action label",
+        "color": "rgb(240, 162, 123)",
+        "background": "rgb(48, 45, 36)",
+        "fontSize": 10,
+        "fontWeight": "700",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 6.66
+      },
+      {
+        "name": "public button",
+        "color": "rgb(16, 28, 43)",
+        "background": "rgb(130, 185, 255)",
+        "fontSize": 13,
+        "fontWeight": "800",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 8.45
+      },
+      {
+        "name": "local provenance",
+        "color": "rgb(213, 217, 209)",
+        "background": "rgb(37, 43, 39)",
+        "fontSize": 12.5,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 10.1
+      },
+      {
+        "name": "control label",
+        "color": "rgb(200, 196, 184)",
+        "background": "color(srgb 0.0784314 0.0745098 0.0666667 / 0.94)",
+        "fontSize": 11,
+        "fontWeight": "600",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 10.65
+      },
+      {
+        "name": "search value",
+        "color": "rgb(240, 236, 226)",
+        "background": "rgb(37, 35, 32)",
+        "fontSize": 15,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 13.29
+      },
+      {
+        "name": "inactive tab",
+        "color": "rgb(176, 172, 159)",
+        "background": "rgb(30, 28, 25)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.49
+      },
+      {
+        "name": "active tab",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(49, 91, 67)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 7.75
+      },
+      {
+        "name": "result count",
+        "color": "rgb(176, 172, 159)",
+        "background": "color(srgb 0.0784314 0.0745098 0.0666667 / 0.94)",
+        "fontSize": 13,
+        "fontWeight": "400",
+        "outlineWidth": "3px",
+        "outlineStyle": "none",
+        "ratio": 8.18
+      }
+    ],
+    "failingContrast": [],
+    "publicButtons": 60,
+    "publicLabel": "Open public source\n↗\n(opens in a new tab)",
+    "cardIsClickable": false,
+    "localState": {
+      "text": "Local provenance — not publicly accessible",
+      "tag": "SPAN",
+      "cursor": "auto",
+      "hasHref": false,
+      "onclick": false
+    },
+    "focusChecks": [
+      {
+        "selector": "#resource-search",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#category-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#status-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": "#priority-filter",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": ".obs-tab",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      },
+      {
+        "selector": ".obs-source-button",
+        "outlineWidth": "3px",
+        "outlineStyle": "solid"
+      }
+    ],
+    "searchedCount": 2,
+    "p0Count": 21,
+    "contactCount": 25,
+    "clickedUrl": "https://lingconlab.ru/lak_corpus/",
+    "bottomVisible": true,
+    "consoleErrors": [],
+    "screenshot": "screenshots/observatory-390x844-dark.png"
+  }
+}
