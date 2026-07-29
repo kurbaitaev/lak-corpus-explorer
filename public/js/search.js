@@ -258,8 +258,10 @@ window.toggleReview = function(btn) {
         </div>
       </div>
       <div>
-        <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;margin-top:8px;">Your name (optional)</label>
-        <input type="text" id="rv-name" placeholder="Reviewer name or anonymous" value="${esc(review.reviewer_name || '')}" style="width:260px;">
+        <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;margin-top:8px;">${window.REVIEWER ? 'Reviewing as' : 'Your name (optional)'}</label>
+        ${window.REVIEWER
+          ? `<input type="text" id="rv-name" value="${esc(window.REVIEWER)}" readonly style="width:260px;background:var(--bg2,#f4f4f4);" title="Attributed to your reviewer login"> <span class="quality-badge q-approved" style="font-size:10.5px;">✓ logged in</span>`
+          : `<input type="text" id="rv-name" placeholder="Reviewer name or anonymous" value="${esc(review.reviewer_name || '')}" style="width:260px;">`}
       </div>
       <div class="review-actions">
         <button class="btn btn-ok" onclick="submitReview('${esc(recordId)}','approved')">✓ Approve</button>

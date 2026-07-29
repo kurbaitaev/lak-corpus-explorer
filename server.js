@@ -5,6 +5,7 @@ const compression = require('compression');
 const { Pool } = require('pg');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,39 +22,23 @@ let CORPUS_STATS   = {};
 let CORPUS_ALIASES = {};
 
 function loadCorpus() {
-  const dataPath = path.join(__dirname, 'public/data/corpus-data.json');
-  const metaPath = path.join(__dirname, 'public/data/corpus-meta.json');
-
-  // Data files are generated (gitignored). If missing, rebuild them from
-  // the canonical index.html via the extraction script.
-  if (!fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
-    console.log('Corpus data files missing — running scripts/extract-corpus.py …');
-    const { spawnSync } = require('child_process');
-    const result = spawnSync('python3', [path.join(__dirname, 'scripts/extract-corpus.py')], {
-      stdio: 'inherit',
-    });
-    if (result.status !== 0 || !fs.existsSync(dataPath) || !fs.existsSync(metaPath)) {
-      console.error(
-        'FATAL: corpus data files are missing and could not be regenerated.\n' +
-        'Run "python3 scripts/extract-corpus.py" manually (requires the canonical index.html at the project root).'
-      );
-      process.exit(1);
-    }
-  }
-
   try {
+    const dataPath = path.join(__dirname, 'public/data/corpus-data.json');
+    const metaPath = path.join(__dirname, 'public/data/corpus-meta.json');
     CORPUS_DATA = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
     const meta  = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
     CORPUS_STATS   = meta.stats;
     CORPUS_ALIASES = meta.aliases;
     console.log(`Corpus loaded: ${CORPUS_DATA.length} records`);
   } catch (err) {
-    console.error('FATAL: failed to load corpus data:', err.message);
-    console.error('Run "python3 scripts/extract-corpus.py" to regenerate the data files.');
-    process.exit(1);
+    console.error('Failed to load corpus:', err.message);
   }
 }
 loadCorpus();
+
+// Ensure reviewer_verified column exists
+pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
+  .catch(err => console.error('Migration failed:', err.message));
 
 // ── Normalisation (mirrors client-side) ──────────────────────
 function norm(s) {
@@ -71,9 +56,6 @@ function tokenHas(value, form) {
 }
 
 // ── Matched-span computation (for result highlighting) ───────
-// Builds a normalised copy of `text` plus an index map back to the
-// original string, so spans found in normalised space can be
-// reported as [start, end) offsets into the original text.
 function buildNormMap(text) {
   let normStr = '';
   const map = [];
@@ -86,7 +68,6 @@ function buildNormMap(text) {
 
 const WORD_CHAR = /[\p{L}\p{N}]/u;
 
-// forms: normalised search forms; tokenOnly: require word boundaries
 function findMatchSpans(text, forms, tokenOnly) {
   const src = String(text ?? '');
   if (!src) return [];
@@ -117,6 +98,39 @@ function findMatchSpans(text, forms, tokenOnly) {
   return merged;
 }
 
+// ── Reviewer session helpers (signed cookie, no extra deps) ──
+const SESSION_SECRET      = process.env.SESSION_SECRET;
+const REVIEWER_PASSPHRASE = process.env.REVIEWER_PASSPHRASE || '';
+const COOKIE_NAME         = 'reviewer_session';
+const COOKIE_MAX_AGE      = 30 * 24 * 3600; // 30 days in seconds
+
+function signPayload(p) {
+  return crypto.createHmac('sha256', SESSION_SECRET).update(p).digest('base64url');
+}
+
+function makeSessionCookie(name) {
+  const p = Buffer.from(JSON.stringify({ name }), 'utf8').toString('base64url');
+  return `${p}.${signPayload(p)}`;
+}
+
+function readSession(req) {
+  const cookies = req.headers.cookie || '';
+  const match = cookies.split(/;\s*/).find(c => c.startsWith(COOKIE_NAME + '='));
+  if (!match) return null;
+  const val = decodeURIComponent(match.slice(COOKIE_NAME.length + 1));
+  const dot = val.lastIndexOf('.');
+  if (dot < 0) return null;
+  const payload = val.slice(0, dot);
+  const sig     = val.slice(dot + 1);
+  const expect  = signPayload(payload);
+  const a = Buffer.from(sig), b = Buffer.from(expect);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  try {
+    const s = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    return s && typeof s.name === 'string' && s.name ? s : null;
+  } catch { return null; }
+}
+
 // ── Build stamp (changes every restart → busts all asset caches) ─
 const BUILD = Date.now();
 const PUBLIC = path.join(__dirname, 'public');
@@ -124,14 +138,13 @@ const PUBLIC = path.join(__dirname, 'public');
 // Pre-load and stamp HTML files at startup
 function stampHtml(file) {
   let html = fs.readFileSync(path.join(PUBLIC, file), 'utf-8');
-  // Inject ?v=<stamp> into every CSS/JS asset reference that doesn't already have one
   html = html.replace(/(href|src)="(\/[^"]+\.(css|js))(\?[^"]*)?">/g,
     (_, attr, p, _ext, q) => `${attr}="${p}?v=${BUILD}">`);
   return html;
 }
 
 const PAGES = {};
-for (const f of ['index.html', 'about.html', 'queue.html']) {
+for (const f of ['index.html', 'about.html', 'queue.html', 'login.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -148,27 +161,13 @@ function sendPage(res, html) {
   res.send(html);
 }
 
-// Serve HTML pages dynamically.
-// Redirect bare URLs to a stamped version so the browser can never serve
-// a bfcache / disk-cached copy — the stamped URL changes every restart.
-function htmlRoute(page) {
-  return (req, res) => {
-    if (!req.query.v && !req.query.bust) {
-      // No version stamp → redirect to stamped URL (no-store so redirect itself isn't cached)
-      res.setHeader('Cache-Control', 'no-store');
-      return res.redirect(302, req.path + '?v=' + BUILD);
-    }
-    sendPage(res, PAGES[page]);
-  };
-}
-
-app.get('/',          htmlRoute('index.html'));
-app.get('/about.html', htmlRoute('about.html'));
-app.get('/queue.html', htmlRoute('queue.html'));
+// ── HTML pages ────────────────────────────────────────────────
+app.get('/', (req, res) => sendPage(res, PAGES['index.html']));
+app.get('/about.html', (req, res) => sendPage(res, PAGES['about.html']));
+app.get('/queue.html', (req, res) => sendPage(res, PAGES['queue.html']));
+app.get('/login.html', (req, res) => sendPage(res, PAGES['login.html']));
 
 // ── Legacy-cache busters ──────────────────────────────────────
-// Old cached index.html loads /data/corpus.js and /js/search.js (unversioned).
-// Serve a JS shim that forces a hard reload so any stuck browser recovers.
 const RELOAD_SHIM = `/* Page reload shim — superseded by server-side search */
 (function(){location.replace(location.pathname+'?bust='+Date.now());})();`;
 
@@ -178,18 +177,16 @@ app.get('/data/corpus.js', (req, res) => {
   res.send(RELOAD_SHIM);
 });
 
-// Unversioned /js/search.js only ever came from the old cached HTML
 app.get('/js/search.js', (req, res, next) => {
   if (!req.query.v) {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     return res.send(RELOAD_SHIM);
   }
-  // versioned request — fall through to static middleware
   next();
 });
 
-// Static assets — long cache (versioned via ?v=BUILD stamp in HTML)
+// ── Static assets ─────────────────────────────────────────────
 app.use(express.static(PUBLIC, {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {
@@ -200,6 +197,33 @@ app.use(express.static(PUBLIC, {
   },
 }));
 
+// ── Auth endpoints ────────────────────────────────────────────
+app.post('/api/auth/login', (req, res) => {
+  if (!REVIEWER_PASSPHRASE) {
+    return res.status(503).json({ error: 'Reviewer login is not configured (REVIEWER_PASSPHRASE not set)' });
+  }
+  const { name, passphrase } = req.body || {};
+  const cleanName = String(name || '').trim().slice(0, 100);
+  if (!cleanName) return res.status(400).json({ error: 'Name is required' });
+  const a = Buffer.from(String(passphrase || ''));
+  const b = Buffer.from(REVIEWER_PASSPHRASE);
+  const ok = a.length === b.length && crypto.timingSafeEqual(a, b);
+  if (!ok) return res.status(401).json({ error: 'Incorrect passphrase' });
+  res.setHeader('Set-Cookie',
+    `${COOKIE_NAME}=${encodeURIComponent(makeSessionCookie(cleanName))}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}`);
+  res.json({ reviewer: cleanName });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  res.setHeader('Set-Cookie', `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+  res.json({ ok: true });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  const session = readSession(req);
+  res.json({ reviewer: session ? session.name : null });
+});
+
 // ── Corpus stats ─────────────────────────────────────────────
 app.get('/api/corpus/stats', (req, res) => {
   res.json({ stats: CORPUS_STATS, totalRecords: CORPUS_DATA.length });
@@ -209,20 +233,20 @@ app.get('/api/corpus/stats', (req, res) => {
 // GET /api/corpus/search?q=&kind=&source=&variety=&page=&limit=
 app.get('/api/corpus/search', (req, res) => {
   const {
-    q      = '',
-    kind   = '',
-    source = '',
-    variety= '',
-    page   = '1',
-    limit  = '50',
+    q       = '',
+    kind    = '',
+    source  = '',
+    variety = '',
+    page    = '1',
+    limit   = '50',
   } = req.query;
 
   const currentQ = norm(q.trim());
   const expanded = currentQ ? (CORPUS_ALIASES[currentQ] || []) : [];
 
   let filtered = CORPUS_DATA.filter(r => {
-    if (kind   && r[0] !== kind)   return false;
-    if (source && r[3] !== source) return false;
+    if (kind    && r[0] !== kind)    return false;
+    if (source  && r[3] !== source)  return false;
     if (variety && r[4] !== variety) return false;
     if (!currentQ) return true;
 
@@ -240,12 +264,12 @@ app.get('/api/corpus/search', (req, res) => {
     displayed = filtered.filter(r => r[0] === 'text');
   }
 
-  const pageNum  = Math.max(1, parseInt(page) || 1);
-  const pageSize = Math.min(Math.max(1, parseInt(limit) || 50), 200);
-  const total    = displayed.length;
-  const pages    = Math.max(1, Math.ceil(total / pageSize));
+  const pageNum     = Math.max(1, parseInt(page) || 1);
+  const pageSize    = Math.min(Math.max(1, parseInt(limit) || 50), 200);
+  const total       = displayed.length;
+  const pages       = Math.max(1, Math.ceil(total / pageSize));
   const safePageNum = Math.min(pageNum, pages);
-  const rows     = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize);
+  const rows        = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize);
 
   // Compute senses for concept card (lexicon entries matching expansion)
   let senses = [];
@@ -263,8 +287,6 @@ app.get('/api/corpus/search', (req, res) => {
   const matches = rows.map(r => {
     if (!currentQ) return [];
     if (normForms.length) {
-      // Alias-expanded: highlight whole-token matches of the Lak forms;
-      // fall back to a literal substring match of the raw query.
       const spans = findMatchSpans(r[1], normForms, true);
       return spans.length ? spans : findMatchSpans(r[1], [currentQ], false);
     }
@@ -290,13 +312,13 @@ app.get('/api/reviews', async (req, res) => {
   try {
     const { state, limit = 100, offset = 0 } = req.query;
     const validStates = ['approved', 'flagged', 'unreviewed'];
-    let sql = `SELECT id, record_id, state, correction, note, reviewer_name, created_at, updated_at FROM reviews`;
+    let sql = `SELECT id, record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews`;
     const params = [];
     if (state && validStates.includes(state)) {
       sql += ' WHERE state = $1'; params.push(state);
     }
-    sql += ` ORDER BY updated_at DESC LIMIT $${params.length+1} OFFSET $${params.length+2}`;
-    params.push(Math.min(Number(limit)||100, 500), Math.max(Number(offset)||0, 0));
+    sql += ` ORDER BY updated_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(Math.min(Number(limit) || 100, 500), Math.max(Number(offset) || 0, 0));
     const result = await pool.query(sql, params);
     res.json({ reviews: result.rows });
   } catch (err) {
@@ -308,7 +330,7 @@ app.get('/api/reviews', async (req, res) => {
 app.get('/api/reviews/:recordId', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, record_id, state, correction, note, reviewer_name, created_at, updated_at FROM reviews WHERE record_id = $1',
+      'SELECT id, record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews WHERE record_id = $1',
       [req.params.recordId]
     );
     res.json({ review: result.rows[0] || null });
@@ -325,17 +347,23 @@ app.post('/api/reviews', async (req, res) => {
       return res.status(400).json({ error: 'Invalid record_id' });
     if (!state || !validStates.includes(state))
       return res.status(400).json({ error: 'state must be approved, flagged, or unreviewed' });
+    // Logged-in reviewers get authoritative attribution; anonymous free-text still allowed
+    const session   = readSession(req);
+    const finalName = session
+      ? session.name
+      : (reviewer_name ? String(reviewer_name).slice(0, 100) : null);
     const result = await pool.query(
-      `INSERT INTO reviews (record_id, state, correction, note, reviewer_name, updated_at)
-       VALUES ($1,$2,$3,$4,$5,NOW())
+      `INSERT INTO reviews (record_id, state, correction, note, reviewer_name, reviewer_verified, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,NOW())
        ON CONFLICT (record_id) DO UPDATE
          SET state=EXCLUDED.state, correction=EXCLUDED.correction,
-             note=EXCLUDED.note, reviewer_name=EXCLUDED.reviewer_name, updated_at=NOW()
+             note=EXCLUDED.note, reviewer_name=EXCLUDED.reviewer_name,
+             reviewer_verified=EXCLUDED.reviewer_verified, updated_at=NOW()
        RETURNING *`,
       [record_id, state,
-       correction ? String(correction).slice(0,2000) : null,
-       note       ? String(note).slice(0,2000)       : null,
-       reviewer_name ? String(reviewer_name).slice(0,100) : null]
+       correction ? String(correction).slice(0, 2000) : null,
+       note       ? String(note).slice(0, 2000)       : null,
+       finalName, !!session]
     );
     res.json({ review: result.rows[0] });
   } catch (err) {
@@ -350,7 +378,7 @@ app.post('/api/reviews/bulk', async (req, res) => {
     if (!Array.isArray(record_ids) || !record_ids.length) return res.json({ reviews: {} });
     const ids = record_ids.slice(0, 200).map(String);
     const result = await pool.query(
-      'SELECT record_id, state, correction, note, reviewer_name, updated_at FROM reviews WHERE record_id = ANY($1::text[])',
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, updated_at FROM reviews WHERE record_id = ANY($1::text[])',
       [ids]
     );
     const byId = {};
@@ -375,7 +403,7 @@ app.get('/api/stats/reviews', async (req, res) => {
 app.get('/api/export.json', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT record_id, state, correction, note, reviewer_name, created_at, updated_at FROM reviews ORDER BY record_id'
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
     res.setHeader('Content-Disposition', 'attachment; filename="lak-corpus-reviews.json"');
     res.json({ exported_at: new Date().toISOString(), reviews: result.rows });
@@ -385,12 +413,12 @@ app.get('/api/export.json', async (req, res) => {
 app.get('/api/export.csv', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT record_id, state, correction, note, reviewer_name, created_at, updated_at FROM reviews ORDER BY record_id'
+      'SELECT record_id, state, correction, note, reviewer_name, reviewer_verified, created_at, updated_at FROM reviews ORDER BY record_id'
     );
-    const esc = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
-    const header = 'record_id,state,correction,note,reviewer_name,created_at,updated_at\n';
+    const escCsv = v => v == null ? '' : '"' + String(v).replace(/"/g, '""') + '"';
+    const header = 'record_id,state,correction,note,reviewer_name,reviewer_verified,created_at,updated_at\n';
     const rows = result.rows.map(r =>
-      [r.record_id,r.state,r.correction,r.note,r.reviewer_name,r.created_at,r.updated_at].map(esc).join(',')
+      [r.record_id, r.state, r.correction, r.note, r.reviewer_name, r.reviewer_verified, r.created_at, r.updated_at].map(escCsv).join(',')
     ).join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="lak-corpus-reviews.csv"');

@@ -93,7 +93,7 @@ function renderTable() {
     return `<tr>
       <td><span style="font-family:var(--font-mono); font-size:12.5px;">${esc(r.record_id)}</span></td>
       <td>${stateBadge}</td>
-      <td style="font-size:13px; color:var(--text2);">${esc(r.reviewer_name || '—')}</td>
+      <td style="font-size:13px; color:var(--text2);">${esc(r.reviewer_name || '—')}${r.reviewer_verified ? ' <span class="quality-badge q-approved" title="Submitted by a logged-in reviewer" style="font-size:10.5px;">✓ verified</span>' : ''}</td>
       <td>${correction}${note}${!correction && !note ? '<span style="color:var(--text3); font-size:13px;">—</span>' : ''}</td>
       <td style="font-size:13px; color:var(--text2); white-space:nowrap;">${dt}</td>
     </tr>`;
@@ -102,6 +102,7 @@ function renderTable() {
 
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.fetchReviewer) window.fetchReviewer();
   loadStats();
   loadReviews(true);
 

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reviewer Login — Lak Corpus Explorer</title>
+<meta name="description" content="Log in as a reviewer to attribute your reviews of Lak corpus records.">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link" href="/about.html">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html">Review Queue</a>
+      <a class="nav-link active" id="auth-link" href="/login.html">Reviewer login</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:40px; padding-bottom:48px; max-width:480px;">
+  <h1 style="margin-bottom:8px;">Reviewer login</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:24px;">
+    Logging in attributes your reviews to a verified identity. Searching and reading the
+    corpus is fully open — no login is needed for that.
+  </p>
+
+  <div id="login-card" style="border:1px solid var(--border,#ddd); border-radius:10px; padding:24px;">
+    <form id="login-form">
+      <div class="field-wrap" style="margin-bottom:14px;">
+        <label for="login-name">Your name</label>
+        <input id="login-name" type="text" autocomplete="username" maxlength="100" required
+               placeholder="e.g. M. Abdullaev" style="width:100%;">
+      </div>
+      <div class="field-wrap" style="margin-bottom:18px;">
+        <label for="login-pass">Reviewer passphrase</label>
+        <input id="login-pass" type="password" autocomplete="current-password" required
+               placeholder="Shared reviewer passphrase" style="width:100%;">
+      </div>
+      <button class="btn btn-ok" type="submit" style="width:100%;">Log in</button>
+      <div id="login-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
+    </form>
+  </div>
+
+  <div id="logged-in-card" style="display:none; border:1px solid var(--border,#ddd); border-radius:10px; padding:24px;">
+    <p style="font-size:14px; margin-bottom:16px;">
+      You are logged in as <b id="current-reviewer"></b>. Your reviews will be attributed
+      to this name and marked as verified.
+    </p>
+    <div style="display:flex; gap:10px;">
+      <a class="btn btn-ok" href="/">Go to search</a>
+      <button class="btn" id="logout-btn">Log out</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const me = await window.fetchReviewer();
+  if (me) {
+    document.getElementById('login-card').style.display = 'none';
+    document.getElementById('logged-in-card').style.display = '';
+    document.getElementById('current-reviewer').textContent = me;
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('login-name').value.trim(),
+          passphrase: document.getElementById('login-pass').value,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      location.href = '/';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = '';
+    }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    location.reload();
+  });
+});
+</script>
+</body>
+</html>
