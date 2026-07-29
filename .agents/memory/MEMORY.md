@@ -1,2 +1,3 @@
 - [Corpus data extraction](corpus-extraction.md) — DATA/STATS/ALIASES are one `const` statement; `], STATS=` marks the array end.
 - [GitHub push auth](github-push.md) — shell `git push` fails (no password auth); use the git-remote skill's `gitPush` callback instead.
+- [Release test suites](test-suites.md) — regression-check + test-validation must both pass; keep anti-gaming thresholds env-overridable.
