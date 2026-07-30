@@ -74,7 +74,29 @@ async function main() {
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('lang')), 'ru');
     await page.reload({ waitUntil: 'networkidle' });
     assert.strictEqual(await page.locator('html').getAttribute('lang'), 'ru');
-    assert.strictEqual(await page.locator('.obs-method').textContent().then(v => /Публичная доступность/.test(v)), true);
+    assert.strictEqual(await page.locator('.obs-method[data-i18n-html="obs.method"]').textContent()
+      .then(v => /Публичная доступность/.test(v)), true);
+
+    // Private research layer: bilingual, count-accurate, content-free.
+    await page.locator('.obs-private-card').first().waitFor();
+    const privateRu = await page.locator('.obs-private').innerText();
+    assert(/Закрытый исследовательский слой/.test(privateRu), 'private panel is not in Russian');
+    assert(/9294|9\u00a0294|9 294/.test(privateRu), 'private panel does not show the Khaydakov count');
+    assert(/3154\.894/.test(privateRu), 'private panel does not show the audited audio duration');
+    assert(!/Дагучпедгиз/.test(privateRu), 'private panel leaks candidate content');
+    assert.strictEqual(await page.locator('.obs-private-card').count(), 5,
+      'private panel does not list the five audited source groups');
+    await page.locator('.lang-toggle-desktop .lang-btn[data-lang="en"]').click();
+    await page.locator('.obs-private-card').first().waitFor();
+    const privateEn = await page.locator('.obs-private').innerText();
+    assert(/Private research layer/.test(privateEn), 'private panel did not switch to English');
+    assert(/Permission pending/i.test(privateEn), 'private panel hides the permission state');
+    assert(/Not training-ready/i.test(privateEn), 'private panel hides the training state');
+    assert(/Consent unknown/i.test(privateEn), 'private panel hides the unknown audio consent');
+    assert.deepStrictEqual(
+      (privateEn.match(/\b(?:obs|help)\.[a-z][\w.]+/gi) || []), [], 'private panel exposes raw keys');
+    await page.locator('.lang-toggle-desktop .lang-btn[data-lang="ru"]').click();
+    await page.locator('.obs-private-card').first().waitFor();
     assert.strictEqual(await page.locator('.obs-local').first().textContent(), ru.t('obs.localProvenance'));
     assert.deepStrictEqual(await page.locator('#priority-filter option').evaluateAll(options => options.map(o => o.value)), ['', 'P0', 'P1', 'P2']);
 
@@ -156,6 +178,26 @@ async function main() {
     await page.goto(`${BASE}/observatory.html`, { waitUntil: 'networkidle' });
     await page.locator('.obs-card').first().scrollIntoViewIfNeeded();
     await page.screenshot({ path: 'screenshots/i18n-observatory-ru-390x844.png' });
+
+    // The private research panel must also fit and read correctly on mobile.
+    await page.locator('.obs-private-card').first().scrollIntoViewIfNeeded();
+    const privateMobile = await page.evaluate(() => {
+      const section = document.querySelector('.obs-private');
+      const card = document.querySelector('.obs-private-card');
+      return {
+        text: section.innerText,
+        cards: document.querySelectorAll('.obs-private-card').length,
+        cardRight: card.getBoundingClientRect().right,
+        clientWidth: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      };
+    });
+    assert.strictEqual(privateMobile.cards, 5, 'private panel is incomplete at 390px');
+    assert.strictEqual(privateMobile.clientWidth, privateMobile.scrollWidth,
+      'private panel overflows at 390px');
+    assert(privateMobile.cardRight <= 390, 'private card is wider than the 390px viewport');
+    assert(/Закрытое исследование/.test(privateMobile.text), 'mobile private panel is not in Russian');
+    await page.screenshot({ path: 'screenshots/i18n-observatory-private-ru-390x844.png' });
     await mobile.close();
     console.log(`i18n checks passed: ${Object.keys(ru._dict).length} keys, ${routes.length} routes, desktop + 390x844`);
   } finally {

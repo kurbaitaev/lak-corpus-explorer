@@ -152,6 +152,33 @@ a:hover { text-decoration: underline; }
 @media (max-width: 780px) { .obs-controls { grid-template-columns: 1fr 1fr; } .obs-controls .field-wrap:first-child { grid-column:1 / -1; } .obs-grid { grid-template-columns:1fr; } }
 @media (max-width: 600px) { .observatory .obs-hero { padding:30px 0 24px; } .observatory .obs-stats { grid-template-columns:1fr 1fr; } .observatory .obs-toolbar { position: static; } .observatory .obs-controls { grid-template-columns:1fr; } .observatory .obs-controls .field-wrap:first-child { grid-column:auto; } .observatory .obs-card { padding:15px; } .observatory .obs-facts { gap:9px 12px; } .observatory .obs-viewbar { align-items:flex-start; flex-direction:column; } .observatory .obs-tab { min-height:44px; } }
 
+/* Private research layer — visually separated from the public register so the
+   two are never read as the same thing. */
+.obs-private { border-top: 1px solid var(--border); background: var(--surface2); padding: 34px 0 46px; }
+.obs-private-title { font: normal 26px/1.15 var(--font-serif); letter-spacing:-.03em; display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.obs-private-intro { max-width: 760px; color: var(--text2); font-size: 15px; line-height: 1.65; }
+.obs-private-intro strong { color: var(--text); font-weight: 600; }
+.obs-private .obs-stats { margin-top: 20px; }
+.obs-private .obs-grid { margin-top: 18px; }
+.obs-private-card h3 { font: normal 19px/1.2 var(--font-serif); letter-spacing:-.02em; }
+.obs-private-corroboration { margin-top:18px; max-width:760px; color:var(--text2); font-size:14px; line-height:1.6; border-left:3px solid var(--border); padding-left:12px; }
+.obs-private-status { flex: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing:.05em; border-radius: 999px; padding: 5px 10px; border: 1px solid var(--border); }
+.obs-private-status.pending { background: #fdf3e2; border-color:#e2c894; color:#7a5610; }
+.obs-private-status.ok { background: #e8f2e6; border-color:#a9c8a4; color:#33582f; }
+@media (prefers-color-scheme: dark) {
+  .obs-private-status.pending { background:#3a2c10; border-color:#6b5423; color:#f0cf8f; }
+  .obs-private-status.ok { background:#1f3524; border-color:#436b46; color:#bfe0bd; }
+}
+@media (max-width: 600px) {
+  .obs-private { padding: 26px 0 34px; }
+  .obs-private .obs-stats { grid-template-columns:1fr 1fr; }
+  /* The status pill is wide in Russian: give the heading the full row so
+     source titles never break mid-word. */
+  .obs-private-card .obs-card-head { flex-direction: column; gap: 8px; }
+  .obs-private-status { align-self: flex-start; }
+}
+.obs-private-card h3 { overflow-wrap: break-word; word-break: normal; hyphens: auto; }
+
 /* Observatory accessibility pass: explicit contrast, hierarchy, and source states. */
 .observatory {
   --obs-ink: #18251d;

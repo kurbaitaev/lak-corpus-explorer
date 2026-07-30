@@ -98,6 +98,92 @@
     fillSelect('status-filter', list(data.options && data.options.statuses), 'status');
     render();
   }
+  // ── Private research layer (audited v1.2 sources) ──────────
+  // Counts and states only. Candidate content is never fetched here: it is
+  // served exclusively to authorized reviewers by the source-import API.
+  function privateCard(source, index) {
+    const status = String(source.status || 'awaiting_manifest');
+    const verified = status === 'verified';
+    const staged = source.imported_record_count || 0;
+    const audio = source.layer === 'audio_inventory'
+      ? (source.metrics && source.metrics.file_count != null ? source.metrics : source.expected_metrics)
+      : null;
+    const badges = [
+      t('obs.private.badge.privateResearch', 'Private research'),
+      t('obs.private.badge.permissionPending', 'Permission pending'),
+      t('obs.private.badge.unreviewed', 'Import unreviewed'),
+      t('obs.private.badge.notTrainingReady', 'Not training-ready'),
+      t('obs.private.badge.excludedFromSearch', 'Excluded from search and exports'),
+    ];
+    if (source.layer === 'audio_inventory') {
+      badges.push(t('obs.private.badge.consentUnknown', 'Consent unknown'));
+      badges.push(t('obs.private.badge.noBinaries', 'No binaries served'));
+    }
+    const facts =
+      '<div class="obs-fact"><dt>' + esc(t('obs.private.fact.expected', 'Expected from audit')) + '</dt><dd>' + esc(source.expected_record_count) + '</dd></div>' +
+      '<div class="obs-fact"><dt>' + esc(t('obs.private.fact.staged', 'Staged privately')) + '</dt><dd>' + esc(staged) + '</dd></div>' +
+      '<div class="obs-fact"><dt>' + esc(t('obs.private.fact.reviewed', 'Human-reviewed')) + '</dt><dd>' + esc(source.reviewed_record_count || 0) + '</dd></div>' +
+      (audio ? '<div class="obs-fact"><dt>' + esc(t('obs.private.fact.audio', 'Audio inventory')) + '</dt><dd>' +
+        esc(t('obs.private.audioSummary', audio.file_count + ' WAV files · ' + audio.total_duration_seconds + ' seconds total · no file URLs published',
+          { files: audio.file_count, seconds: audio.total_duration_seconds })) + '</dd></div>' : '');
+    const blocked = verified ? '' :
+      '<div class="obs-action"><strong>' + esc(t('obs.private.blockedLabel', 'Why nothing was imported')) + '</strong>' +
+      esc(t('obs.private.blocked.' + (source.blocked_reason_code || 'verification_failed'),
+        t('obs.private.notImported',
+          'The verified processed package for this source is not present or did not pass its integrity checks, so the audited count is shown as an expectation and no candidate was ingested.'))) +
+      '</div>';
+    return '<article class="obs-card obs-private-card" style="animation-delay:' + Math.min(index * 24, 240) + 'ms">' +
+      '<div class="obs-card-head"><div><h3>' +
+      esc(t('obs.private.title.' + source.description_key, source.title)) + '</h3>' +
+      '<div class="obs-byline">' + esc(t('obs.private.granularity.' + source.provenance_granularity, source.provenance_granularity)) + '</div></div>' +
+      '<span class="obs-private-status ' + (verified ? 'ok' : 'pending') + '">' +
+      esc(t('obs.private.status.' + status, status)) + '</span></div>' +
+      '<div class="obs-tags"><span class="obs-tag">' + esc(t('obs.private.layer.' + source.layer, source.layer)) + '</span>' +
+      badges.map((b) => '<span class="obs-tag rights">' + esc(b) + '</span>').join('') + '</div>' +
+      '<dl class="obs-facts">' + facts + '</dl>' +
+      '<p class="obs-notes">' + esc(t('obs.private.source.' + source.description_key, '')) + '</p>' +
+      blocked + '</article>';
+  }
+
+  function renderPrivate(data) {
+    state.privateLayer = data;
+    const sources = Array.isArray(data.sources) ? data.sources : [];
+    const counts = data.counts || {};
+    const staged = sources.reduce((sum, s) => sum + (s.imported_record_count || 0), 0);
+    const exposed = sources.reduce((sum, s) =>
+      sum + (s.public_record_count || 0) + (s.training_ready_record_count || 0), 0);
+    const corroboration = data.corroboration || null;
+    $('obs-private-stats').innerHTML =
+      stat(t('obs.private.stat.sources', 'Audited sources'), counts.sources_total || sources.length) +
+      stat(t('obs.private.stat.expected', 'Expected records'), counts.expected_records || 0) +
+      stat(t('obs.private.stat.staged', 'Staged privately'), staged) +
+      stat(t('obs.private.stat.publicOrTraining', 'Public or training-ready'), exposed) +
+      (corroboration ? stat(t('obs.private.stat.corroborated', 'Corroborating spellings'),
+        corroboration.overlapping_forms || 0) : '');
+    const content = $('obs-private-content');
+    content.setAttribute('aria-busy', 'false');
+    const corroborationNote = corroboration
+      ? '<p class="obs-private-corroboration">' + esc(t('obs.private.corroboration',
+        corroboration.overlapping_forms + ' spellings occur in both lexical sources; they are linked as corroboration and never merged.',
+        { forms: corroboration.overlapping_forms, pairs: corroboration.candidate_pairs })) + '</p>'
+      : '';
+    content.innerHTML = corroborationNote +
+      '<div class="obs-grid">' + sources.map(privateCard).join('') + '</div>';
+  }
+
+  function showPrivateError() {
+    $('obs-private-content').setAttribute('aria-busy', 'false');
+    $('obs-private-content').innerHTML = '<div class="obs-error"><h3>' +
+      esc(t('obs.private.error.title', 'The private layer summary is unavailable')) + '</h3><p>' +
+      esc(t('obs.private.error.body', 'We could not load the private research summary. The material itself remains private either way.')) + '</p></div>';
+  }
+
+  function loadPrivate() {
+    fetch('/api/source-import/status', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+      .then((response) => { if (!response.ok) throw new Error('Fetch failed'); return response.json(); })
+      .then(renderPrivate).catch(showPrivateError);
+  }
+
   function showError() {
     $('obs-content').setAttribute('aria-busy', 'false');
     $('obs-content').innerHTML = '<div class="obs-error"><h2>' + esc(t('obs.error.title', 'The register is temporarily unavailable')) + '</h2><p>' + esc(t('obs.error.body', 'We could not load the resource register. Please try again.')) + '</p><button class="btn btn-primary" id="obs-retry" type="button">' + esc(t('obs.tryAgain', 'Try again')) + '</button></div>';
@@ -134,9 +220,11 @@
       relocalizeSelect('priority-filter', 'priority');
       render();
     }
+    if (state.privateLayer) renderPrivate(state.privateLayer);
   }
   if (window.I18n && typeof window.I18n.onChange === 'function') window.I18n.onChange(relocalize);
   else window.addEventListener('i18n:change', relocalize);
 
   load();
+  loadPrivate();
 }());

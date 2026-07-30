@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const { loadObservatory } = require('./lib/observatory');
+const sourceImport = require('./lib/source-import');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -75,66 +76,46 @@ const LAB_CURATED_ALIASES = {
 pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
   .catch(err => console.error('Migration failed:', err.message));
 
-// Validation & gamification schema (idempotent, backward-compatible)
-migrate().catch(err => console.error('Schema migration failed:', err.message));
-
-// ── Normalisation (mirrors client-side) ──────────────────────
-function norm(s) {
-  return String(s ?? '')
-    .normalize('NFKC')
-    .toLocaleLowerCase()
-    .replace(/ё/g, 'е')
-    .replace(/[iіӏ]/g, 'Ӏ')
-    .toLocaleLowerCase();
-}
-
-function tokenHas(value, form) {
-  const text = ' ' + norm(value).replace(/[^\p{L}\p{N}ӀIІ]+/gu, ' ') + ' ';
-  return text.includes(' ' + form + ' ');
-}
-
-// ── Matched-span computation (for result highlighting) ───────
-function buildNormMap(text) {
-  let normStr = '';
-  const map = [];
-  for (let i = 0; i < text.length; i++) {
-    const n = norm(text[i]);
-    for (let j = 0; j < n.length; j++) { normStr += n[j]; map.push(i); }
+// ── Private source-import layer (audited v1.2 research sources) ──
+// Verification runs at boot and never throws: an absent or inconsistent
+// package blocks ingestion for that source instead of guessing at content.
+const SOURCE_IMPORT = sourceImport.verifySources();
+for (const s of SOURCE_IMPORT.sources) {
+  if (s.status === 'verified') {
+    console.log(`Source import verified: ${s.source_id} (${s.records.length} private candidates)`);
+  } else {
+    console.warn(`Source import blocked: ${s.source_id} — ${s.status}: ${s.error}`);
   }
-  return { normStr, map };
+}
+if (SOURCE_IMPORT.overlap) {
+  console.log(`Source import: ${SOURCE_IMPORT.overlap.overlapping_forms} overlapping spellings ` +
+    'linked as corroboration (never merged).');
+}
+if (SOURCE_IMPORT.ingestion_blocked) {
+  console.warn('Source import: candidate ingestion is stopped for unverified sources; ' +
+    'audited counts are shown as expected values only.');
 }
 
-const WORD_CHAR = /[\p{L}\p{N}]/u;
-
-function findMatchSpans(text, forms, tokenOnly) {
-  const src = String(text ?? '');
-  if (!src) return [];
-  const { normStr, map } = buildNormMap(src);
-  const spans = [];
-  for (const form of forms) {
-    if (!form) continue;
-    let idx = 0;
-    while ((idx = normStr.indexOf(form, idx)) !== -1) {
-      const end = idx + form.length;
-      const okStart = idx === 0 || !WORD_CHAR.test(normStr[idx - 1]);
-      const okEnd   = end >= normStr.length || !WORD_CHAR.test(normStr[end]);
-      if (!tokenOnly || (okStart && okEnd)) {
-        const oStart = map[idx];
-        const oEnd   = (end - 1 < map.length) ? map[end - 1] + 1 : src.length;
-        spans.push([oStart, oEnd]);
-      }
-      idx = end;
+// Validation & gamification schema (idempotent, backward-compatible),
+// then import whatever the verification step actually cleared.
+migrate()
+  .then(() => sourceImport.importVerified(pool, SOURCE_IMPORT))
+  .then(result => {
+    for (const entry of result.imported) {
+      console.log(`Source import: ${entry.source_id} → ${entry.imported_count} private candidates` +
+        (entry.already_present ? ' (already staged)' : ''));
     }
-  }
-  spans.sort((a, b) => a[0] - b[0]);
-  const merged = [];
-  for (const s of spans) {
-    const last = merged[merged.length - 1];
-    if (last && s[0] <= last[1]) last[1] = Math.max(last[1], s[1]);
-    else merged.push([s[0], s[1]]);
-  }
-  return merged;
-}
+  })
+  .catch(err => console.error('Schema migration failed:', err.message));
+
+// ── Search primitives (shared with the client-side normalisation) ──
+// Field-scoped matching and phrase-first ranking live in lib/search.js so the
+// same rules can be unit-tested without a running server.
+const {
+  MATCH_PHRASE, MATCH_TOKENS, NO_MATCH, QUERY_FIELDS, META_FIELDS,
+  norm, normalizeQuery, tokenize, tokenHas, recordMatchTier,
+  findMatchSpans, highlightSpansFor,
+} = require('./lib/search');
 
 // ── Reviewer session helpers (signed cookie, no extra deps) ──
 const SESSION_SECRET      = process.env.SESSION_SECRET;
@@ -203,6 +184,9 @@ app.use(require('./routes/lab')({
   norm,
   tokenHas,
 }));
+// Private source-import review layer (fail-closed; candidate content is never
+// served publicly and never enters ordinary corpus search or exports).
+app.use(require('./routes/source-import')({ pool, verification: SOURCE_IMPORT }));
 
 function sendPage(res, html) {
   // Revalidate HTML on every navigation so markup never goes stale,
@@ -286,43 +270,59 @@ app.get('/api/corpus/search', (req, res) => {
     limit   = '50',
   } = req.query;
 
-  const currentQ = norm(q.trim());
+  const currentQ = normalizeQuery(q);
+  const queryTokens = tokenize(currentQ);
   // Curated overlay takes precedence over extracted aliases for known gaps
   const expanded = currentQ ? (CURATED_ALIASES[currentQ] || CORPUS_ALIASES[currentQ] || []) : [];
 
-  let filtered = CORPUS_DATA.filter(r => {
-    if (kind    && r[0] !== kind)    return false;
-    if (source  && r[3] !== source)  return false;
-    if (variety && r[4] !== variety) return false;
-    if (!currentQ) return true;
+  // Rank tier per matched record:
+  //   0 — the query occurs verbatim inside one field (exact word order), or
+  //       the alias expansion matched the Lak form itself
+  //   1 — every query token occurs inside one field in any order
+  // Records matching only some tokens are not returned at all.
+  let filtered = [];
+  CORPUS_DATA.forEach((r, index) => {
+    if (kind    && r[0] !== kind)    return;
+    if (source  && r[3] !== source)  return;
+    if (variety && r[4] !== variety) return;
+    if (!currentQ) { filtered.push({ r, index, tier: MATCH_PHRASE }); return; }
 
     if (expanded.length) {
       const concept = expanded.some(form => tokenHas(r[1], norm(form)));
-      const metaHit = norm(r.slice(2, 6).join(' ')).includes(currentQ);
-      return concept || metaHit;
+      if (concept) { filtered.push({ r, index, tier: MATCH_PHRASE }); return; }
+      const metaTier = recordMatchTier(r, currentQ, queryTokens, META_FIELDS);
+      if (metaTier !== NO_MATCH) filtered.push({ r, index, tier: MATCH_TOKENS });
+      return;
     }
-    return norm(r.slice(1, 6).join(' ')).includes(currentQ);
+    const tier = recordMatchTier(r, currentQ, queryTokens, QUERY_FIELDS);
+    if (tier !== NO_MATCH) filtered.push({ r, index, tier });
   });
 
   // When alias-expanded, show only text (not lexicon) unless kind=lexicon
   let displayed = filtered;
   if (expanded.length && kind !== 'lexicon') {
-    displayed = filtered.filter(r => r[0] === 'text');
+    displayed = filtered.filter(entry => entry.r[0] === 'text');
   }
 
-  // Source-aware prioritisation: modern/verified sources first,
-  // historical OCR (Uslar 1890) last within the result set.
-  displayed = [
-    ...displayed.filter(r => r[3] !== 'Uslar 1890'),
-    ...displayed.filter(r => r[3] === 'Uslar 1890'),
-  ];
+  // Deterministic ordering:
+  //   1. modern/verified sources first, historical OCR (Uslar 1890) last
+  //   2. exact word-order matches above any-order token matches
+  //   3. original corpus order, so paging is stable
+  displayed = displayed.slice().sort((a, b) => {
+    const ocrA = a.r[3] === 'Uslar 1890' ? 1 : 0;
+    const ocrB = b.r[3] === 'Uslar 1890' ? 1 : 0;
+    if (ocrA !== ocrB) return ocrA - ocrB;
+    if (a.tier !== b.tier) return a.tier - b.tier;
+    return a.index - b.index;
+  });
 
   const pageNum     = Math.max(1, parseInt(page) || 1);
   const pageSize    = Math.min(Math.max(1, parseInt(limit) || 50), 200);
   const total       = displayed.length;
   const pages       = Math.max(1, Math.ceil(total / pageSize));
   const safePageNum = Math.min(pageNum, pages);
-  const rows = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize);
+  const rows = displayed.slice((safePageNum - 1) * pageSize, safePageNum * pageSize)
+    .map(entry => entry.r);
 
   // Compute senses for concept card (lexicon entries matching expansion).
   // Modern/verified dictionary evidence forms the primary answer;
@@ -344,14 +344,9 @@ app.get('/api/corpus/search', (req, res) => {
 
   // Matched spans in the Lak text (r[1]) for each returned row
   const normForms = expanded.map(f => norm(f)).filter(Boolean);
-  const matches = rows.map(r => {
-    if (!currentQ) return [];
-    if (normForms.length) {
-      const spans = findMatchSpans(r[1], normForms, true);
-      return spans.length ? spans : findMatchSpans(r[1], [currentQ], false);
-    }
-    return findMatchSpans(r[1], [currentQ], false);
-  });
+  const matches = rows.map(r => highlightSpansFor(r[1], {
+    phrase: currentQ, queryTokens, aliasForms: normForms,
+  }));
 
   res.json({
     query: q,

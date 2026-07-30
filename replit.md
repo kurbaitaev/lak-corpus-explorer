@@ -27,6 +27,24 @@ Workflow: "Start application" → `node server.js` on port 5000.
 - **Review queue page**: all reviews, filter by state, JSON/CSV export
 - **About/Research page**: methodology, sources, quality ladder, statistics, collaboration invitation
 
+## Private source-import layer (audited v1.2 research sources)
+
+Third-party research material that is **not part of the public corpus** is staged privately and
+never served:
+
+- The processed package lives in `private/v1.2/` (gitignored, never under `public/`). Nothing is
+  ingested from a quoted count: `lib/source-import.js` verifies record counts against the
+  package's own `stats.json`, checks provenance and the SHA-256 of each received source file,
+  requires fail-closed policy fields on every record, refuses Bible-derived sources and URLs to
+  protected binaries — and blocks ingestion for any source that fails.
+- Staged rows default to private research / permission pending / import unreviewed /
+  not training-ready. Rights, access, review and training are four separate human decisions
+  (`routes/source-import.js`); publishing or enabling training needs a verified expert plus
+  cleared rights, an accepted review and settled consent.
+- Identical spellings across sources are linked as corroboration; records are never merged.
+- `/api/source-import/status` is public but content-free (counts and states only); candidate text
+  requires a trusted validator or above, and the training export fails closed.
+
 ## Data structure
 
 Each `CORPUS_DATA` row: `[type, lak_text, meaning, source, variety, record_id, url]`

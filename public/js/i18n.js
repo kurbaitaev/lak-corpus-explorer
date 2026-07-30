@@ -151,6 +151,107 @@
       en: '<strong>How to read this register.</strong> Evidence status describes what has been confirmed: a held or processed item is locally accounted for; verified means the source was directly checked; a verified, contact, institutional, or local lead still requires follow-up; catalog-only records and discovery portals establish existence or point onward; a confirmed gap records an evidenced absence. Public access means discoverable, not automatically reusable. Rights text is preserved from the source ledger, while “permission-sensitive” is an operational flag for acquisition work requiring explicit permission, agreement, consent, or careful copying/reproduction review—not a legal conclusion. Public viewability never implies redistribution or model-training permission. Local provenance references are deliberately not published as web links. Bible-derived materials are excluded from the registry, acquisition guidance, corpus, and model recommendations.',
       ru: '<strong>Как читать этот реестр.</strong> Статус подтверждения описывает то, что уже установлено: имеющийся или обработанный материал учтён локально; «проверено» означает, что источник был проверен напрямую; проверенная, контактная, институциональная или локальная наводка всё ещё требует дальнейшей работы; записи только по каталогу и поисковые порталы подтверждают существование или указывают путь дальше; подтверждённый пробел фиксирует доказанное отсутствие. Публичный доступ означает обнаружимость, а не автоматическую возможность повторного использования. Текст о правах сохранён из исходного реестра, а «требует разрешения» — это рабочая пометка для работы по приобретению, требующей явного разрешения, соглашения, согласия либо тщательной проверки копирования/воспроизведения, а не юридический вывод. Публичная доступность для просмотра никогда не подразумевает разрешение на распространение или обучение моделей. Локальные ссылки о происхождении намеренно не публикуются в виде веб-ссылок. Материалы, производные от Библии, исключены из реестра, рекомендаций по приобретению, корпуса и рекомендаций для моделей.'
     },
+    /* Private research layer (audited v1.2 sources) */
+    'obs.private.sectionLabel': { en: 'Private research layer', ru: 'Закрытый исследовательский слой' },
+    'obs.private.h2': { en: 'Private research layer', ru: 'Закрытый исследовательский слой' },
+    'obs.private.intro': {
+      en: 'Audited materials that are <strong>not part of the public corpus</strong>. Each one is held as a private research lead: it is not searchable here, not published, and not available for model training. This panel shows only what has been counted and checked — never the material itself.',
+      ru: 'Проверенные материалы, которые <strong>не входят в публичный корпус</strong>. Каждый хранится как закрытая исследовательская наводка: он не участвует в поиске, не публикуется и не используется для обучения моделей. Здесь показано только то, что подсчитано и проверено, — но не сам материал.'
+    },
+    'obs.private.method': {
+      en: '<strong>How to read this panel.</strong> “Expected” is the count recorded in the source audit; “staged” is how much has actually been imported after a machine-checked manifest passed verification. When no verified manifest is present in the workspace, nothing is imported and the expected count stays a claim about the source, not data we hold. Every staged item starts as private research, permission pending, unreviewed import and not training-ready; rights, access, review and training are four separate human decisions. Page-level OCR stays outside ordinary search until a person has checked it and rights are cleared. Audio is described only as a collection-level inventory — no file URLs, and no claim about alignment, speakers, dialect, consent or redistribution. Duplicates are linked as corroboration and never merged into corpus records. Bible-derived material is excluded throughout.',
+      ru: '<strong>Как читать эту панель.</strong> «Ожидается» — это количество, зафиксированное при аудите источника; «подготовлено» — сколько действительно импортировано после того, как машинно проверяемый манифест прошёл проверку. Если проверенного манифеста в рабочей области нет, ничего не импортируется, а ожидаемое количество остаётся утверждением об источнике, а не данными, которыми мы располагаем. Каждая подготовленная запись начинается со статусов «закрытое исследование», «разрешение ожидается», «импорт не проверен» и «не готово к обучению»; права, доступ, проверка и обучение — четыре отдельных человеческих решения. Постраничный OCR остаётся вне обычного поиска, пока его не проверит человек и не будут урегулированы права. Аудио описано только как опись на уровне коллекции — без ссылок на файлы и без утверждений о выравнивании, дикторах, диалекте, согласии или распространении. Дубликаты связываются как подтверждение и никогда не сливаются с записями корпуса. Материалы, производные от Библии, исключены полностью.'
+    },
+    'obs.private.stat.sources': { en: 'Audited sources', ru: 'Проверенные источники' },
+    'obs.private.stat.expected': { en: 'Expected records', ru: 'Ожидается записей' },
+    'obs.private.stat.staged': { en: 'Staged privately', ru: 'Подготовлено закрыто' },
+    'obs.private.stat.publicOrTraining': { en: 'Public or training-ready', ru: 'Публично или готово к обучению' },
+    'obs.private.stat.corroborated': { en: 'Corroborating spellings', ru: 'Совпадающих написаний' },
+    'obs.private.status.verified': { en: 'Source package verified', ru: 'Пакет источника проверен' },
+    'obs.private.status.awaiting_manifest': { en: 'Awaiting verified package', ru: 'Ожидает проверенного пакета' },
+    'obs.private.status.rejected': { en: 'Source package rejected', ru: 'Пакет источника отклонён' },
+    'obs.private.layer.lexical_candidate': { en: 'Lexical candidates', ru: 'Лексические кандидаты' },
+    'obs.private.layer.ocr_candidate': { en: 'Page-level OCR candidates', ru: 'Постраничные OCR-кандидаты' },
+    'obs.private.layer.audio_inventory': { en: 'Audio inventory (metadata only)', ru: 'Опись аудио (только метаданные)' },
+    'obs.private.layer.reference_metadata': { en: 'Linguistic reference metadata', ru: 'Метаданные лингвистического источника' },
+    'obs.private.granularity.row': { en: 'Row-level provenance', ru: 'Происхождение на уровне строки' },
+    'obs.private.granularity.page': { en: 'Page-level provenance', ru: 'Происхождение на уровне страницы' },
+    'obs.private.granularity.collection': { en: 'Collection-level provenance', ru: 'Происхождение на уровне коллекции' },
+    'obs.private.granularity.work': { en: 'Work-level provenance', ru: 'Происхождение на уровне издания' },
+    'obs.private.fact.expected': { en: 'Expected from audit', ru: 'Ожидается по аудиту' },
+    'obs.private.fact.staged': { en: 'Staged privately', ru: 'Подготовлено закрыто' },
+    'obs.private.fact.reviewed': { en: 'Human-reviewed', ru: 'Проверено человеком' },
+    'obs.private.fact.audio': { en: 'Audio inventory', ru: 'Опись аудио' },
+    'obs.private.audioSummary': {
+      en: '{files} WAV files · {seconds} seconds total · no file URLs published',
+      ru: '{files} файлов WAV · {seconds} секунд всего · ссылки на файлы не публикуются'
+    },
+    'obs.private.badge.privateResearch': { en: 'Private research', ru: 'Закрытое исследование' },
+    'obs.private.badge.permissionPending': { en: 'Permission pending', ru: 'Разрешение ожидается' },
+    'obs.private.badge.unreviewed': { en: 'Import unreviewed', ru: 'Импорт не проверен' },
+    'obs.private.badge.notTrainingReady': { en: 'Not training-ready', ru: 'Не готово к обучению' },
+    'obs.private.badge.consentUnknown': { en: 'Consent unknown', ru: 'Согласие неизвестно' },
+    'obs.private.badge.noBinaries': { en: 'No binaries served', ru: 'Файлы не выдаются' },
+    'obs.private.badge.excludedFromSearch': { en: 'Excluded from search and exports', ru: 'Исключено из поиска и выгрузок' },
+    'obs.private.blockedLabel': { en: 'Why nothing was imported', ru: 'Почему ничего не импортировано' },
+    'obs.private.notImported': {
+      en: 'The verified processed package for this source is not present or did not pass its integrity checks, so the audited count is shown as an expectation and no candidate was ingested.',
+      ru: 'Проверенного обработанного пакета для этого источника нет или он не прошёл проверку целостности, поэтому подсчитанное при аудите число показано как ожидание, и ни один кандидат не был загружен.'
+    },
+    'obs.private.blocked.package_not_present': {
+      en: 'The processed package for this source is not present in the workspace, so nothing was ingested and the audited count is shown as an expectation only.',
+      ru: 'Обработанного пакета этого источника нет в рабочей области, поэтому ничего не загружено, а подсчитанное при аудите число показано только как ожидание.'
+    },
+    'obs.private.blocked.verification_failed': {
+      en: 'The package for this source did not pass its integrity checks, so ingestion was stopped and the audited count is shown as an expectation only.',
+      ru: 'Пакет этого источника не прошёл проверку целостности, поэтому загрузка остановлена, а подсчитанное при аудите число показано только как ожидание.'
+    },
+    'obs.private.corroboration': {
+      en: '{forms} spellings occur in both lexical sources ({pairs} candidate pairs). They are linked as corroboration so a reviewer can compare them; the records stay separate and are never merged automatically. An identical spelling is not proof of an identical sense.',
+      ru: '{forms} написаний встречаются в обоих лексических источниках ({pairs} пар кандидатов). Они связаны как взаимное подтверждение, чтобы проверяющий мог их сравнить; записи остаются раздельными и никогда не сливаются автоматически. Одинаковое написание не доказывает одинаковое значение.'
+    },
+    'obs.private.title.khaydakov_1962': {
+      en: 'Khaydakov 1962 — Lak-Russian dictionary', ru: 'Хайдаков 1962 — Лакско-русский словарь'
+    },
+    'obs.private.title.lexcauc': {
+      en: 'LexCauc Lak — structured lexical records', ru: 'LexCauc Lak — структурированные лексические записи'
+    },
+    'obs.private.title.dzhidalaev_1993': {
+      en: 'Dzhidalaev 1993 — page-level OCR (Russian-Lak dictionary)',
+      ru: 'Джидалаев 1993 — постраничный OCR (Русско-лакский словарь)'
+    },
+    'obs.private.title.lexcauc_audio': {
+      en: 'LexCauc Lak — recording inventory', ru: 'LexCauc Lak — опись аудиозаписей'
+    },
+    'obs.private.title.reference_documents': {
+      en: 'Reference documents — Anderson 1996, Kazenin 2013 and related',
+      ru: 'Справочные издания — Anderson 1996, Казенин 2013 и связанные'
+    },
+    'obs.private.source.khaydakov_1962': {
+      en: 'Lak-to-Russian dictionary entries held as private candidates for later human review. Senses and grammatical markup are kept as source entry text and have not been segmented.',
+      ru: 'Записи лакско-русского словаря, хранящиеся как закрытые кандидаты для последующей проверки человеком. Значения и грамматическая разметка сохранены как исходный текст записи и не разделены.'
+    },
+    'obs.private.source.lexcauc': {
+      en: 'Structured lexical candidates with Russian and English concepts, orthographic and phonemic forms, and row-level provenance. Kept out of the public corpus.',
+      ru: 'Структурированные лексические кандидаты с русскими и английскими понятиями, орфографическими и фонемными формами и происхождением на уровне строки. Не входят в публичный корпус.'
+    },
+    'obs.private.source.dzhidalaev_1993': {
+      en: 'Page-level OCR candidates. Line wrapping and recognition errors make automatic entry segmentation unsafe, so OCR stays outside ordinary search until a person has read it and rights are cleared.',
+      ru: 'Постраничные OCR-кандидаты. Переносы строк и ошибки распознавания делают автоматическое разделение записей небезопасным, поэтому OCR остаётся вне обычного поиска, пока его не прочитает человек и не будут урегулированы права.'
+    },
+    'obs.private.source.lexcauc_audio': {
+      en: 'Collection-level inventory of recordings. Metadata only: no audio is served, and nothing is claimed about alignment, speakers, dialect, consent or redistribution.',
+      ru: 'Опись записей на уровне коллекции. Только метаданные: аудио не выдаётся, и ничего не утверждается о выравнивании, дикторах, диалекте, согласии или распространении.'
+    },
+    'obs.private.source.reference_documents': {
+      en: 'Reference works — including Anderson 1996 and Kazenin 2013 — held as bibliographic metadata with file checksums, not as copied protected content.',
+      ru: 'Справочные издания, включая Anderson 1996 и Казенина 2013, хранятся как библиографические метаданные с контрольными суммами файлов, а не как скопированный охраняемый текст.'
+    },
+    'obs.private.error.title': { en: 'The private layer summary is unavailable', ru: 'Сводка закрытого слоя недоступна' },
+    'obs.private.error.body': {
+      en: 'We could not load the private research summary. The material itself remains private either way.',
+      ru: 'Не удалось загрузить сводку закрытого исследовательского слоя. Сами материалы в любом случае остаются закрытыми.'
+    },
     'obs.registerLabel': { en: 'Resource register', ru: 'Реестр ресурсов' },
     'obs.searchLabel': { en: 'Search resources', ru: 'Поиск по ресурсам' },
     'obs.searchPlaceholder': {
@@ -1456,6 +1557,10 @@
     'help.resourceObservatory': {
       en: 'The resource guide is a catalogue of materials about the Lak language — books, dictionaries, recordings, and archives. For each one it shows what it is, who holds it, whether it may be used, and the next step to obtain it. We provide it so anyone can see what already exists and help track down more.',
       ru: '«Каталог материалов» — это список материалов о лакском языке: книг, словарей, записей и архивов. Для каждого показано, что это, у кого хранится, можно ли использовать и каков следующий шаг для получения. Мы даём его, чтобы каждый видел, что уже существует, и помогал находить новое.'
+    },
+    'help.privateResearchLayer': {
+      en: 'Some materials are kept aside as private research leads instead of being added to the corpus. They are not searchable, not published, and not used to train anything until a person has checked them and the rights are clear. This panel shows the counts and the current state, never the material itself.',
+      ru: 'Часть материалов хранится отдельно как закрытые исследовательские наводки и не добавляется в корпус. Они не участвуют в поиске, не публикуются и не используются для обучения, пока их не проверит человек и не будут урегулированы права. Здесь показаны только количества и текущее состояние, но не сами материалы.'
     }
   };
 

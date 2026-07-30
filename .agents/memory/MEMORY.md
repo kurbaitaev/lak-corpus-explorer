@@ -2,3 +2,5 @@
 - [GitHub push auth](github-push.md) — shell `git push` fails (no password auth); use the git-remote skill's `gitPush` callback instead.
 - [Release test suites](test-suites.md) — regression-check + test-validation must both pass; keep anti-gaming thresholds env-overridable.
 - [Localization canonical values](localization-canonical-values.md) — localize display labels only; persisted/API/export values stay canonical and language-neutral.
+- [Private research layer](private-research-layer.md) — a quoted count is not data: verify the package, fail closed, corroborate duplicates, never merge.
+- [Local test ports](local-test-ports.md) — Node fetch refuses 5060/5061 (blocked ports); pick test server ports outside that list.
