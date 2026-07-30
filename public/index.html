@@ -23,21 +23,22 @@
   </div>
 </nav>
 
-<div class="search-header">
+<main>
+<div class="search-header search-landing">
   <div class="container">
     <div class="search-header-inner">
       <div class="search-title">
         <h1 data-i18n="index.h1">Lak Language Corpus</h1>
-        <p data-i18n="index.subtitle">Source-aware · translation-first Russian→Lak search · quality-tracked</p>
+        <p data-i18n="search.landing.purpose">Find Lak examples by Russian meaning, then follow each record back to its source.</p>
       </div>
       <div id="stats-row" class="stats-row"></div>
     </div>
   </div>
 </div>
 
-<div class="controls-bar">
+<div class="controls-bar search-controls">
   <div class="container">
-    <div class="controls-grid">
+    <form id="search-form" class="controls-grid" novalidate>
       <div class="field-wrap">
         <label for="q" data-i18n="index.searchLabel">Search (Russian or Lak)</label>
         <input id="q" type="search" data-i18n-placeholder="index.searchPlaceholder" placeholder="e.g. луна, земля, спасибо, с днем рождения…" autocomplete="off" spellcheck="false">
@@ -79,14 +80,29 @@
           </select>
         </div>
       </div>
+      <div class="search-submit-wrap">
+        <button class="btn btn-primary search-submit" type="submit" data-i18n="search.landing.searchAction">Search</button>
+      </div>
+    </form>
+    <div class="search-actions">
+      <a class="btn btn-secondary" href="/validate.html" data-i18n="search.landing.validateAction">Check translations</a>
+      <a class="btn btn-secondary" href="/observatory.html" data-i18n="search.landing.resourcesAction">Explore resources</a>
+      <button class="btn btn-quiet" id="browse-all" type="button" data-i18n="search.landing.browseAll">Browse all examples</button>
     </div>
   </div>
 </div>
 
-<div class="container" style="padding-top:14px; padding-bottom:32px;">
+<div class="container search-main" style="padding-top:14px; padding-bottom:32px;">
+  <section class="search-guidance" aria-labelledby="what-to-do-title">
+    <div>
+      <h2 id="what-to-do-title" data-i18n="search.landing.whatToDoTitle">What should I do here?</h2>
+      <p data-i18n="search.landing.whatToDoBody">Search in Russian or Lak to find examples. Open the source document to check context, or check translations when a record needs expert attention.</p>
+    </div>
+    <span class="help-marker" data-help="help.corpusRecord" data-help-fallback="A corpus record is one searchable example, with its Lak form, translation, source, and identifier."></span>
+  </section>
   <div id="concept-card" class="concept-card"></div>
 
-  <div class="status-bar">
+  <div class="status-bar results-only">
     <span id="count-label" style="color:var(--text2); font-size:13.5px;"></span>
     <div class="pager">
       <button class="btn" id="prev-btn" disabled data-i18n="index.prev">← Previous</button>
@@ -95,23 +111,24 @@
     </div>
   </div>
 
-  <div class="table-wrap" id="table-wrap">
+  <div class="table-wrap results-only" id="table-wrap">
     <table>
       <thead>
         <tr>
           <th class="td-type" data-i18n="index.col.type">Type / Quality</th>
           <th class="td-lak" data-i18n="index.col.lak">Lak text / form</th>
-          <th class="td-meaning" data-i18n="index.col.meaning">Meaning / document</th>
-          <th data-i18n="index.col.source">Source</th>
-          <th data-i18n="index.col.variety">Variety</th>
-          <th class="td-actions" data-i18n="index.col.review">Review</th>
+          <th class="td-meaning" data-i18n="search.results.translation">Translation</th>
+          <th class="td-document" data-i18n="search.results.sourceDocument">Source document</th>
+          <th data-i18n="index.col.source">Source <span class="help-marker" data-help="help.source" data-help-fallback="The collection or publication that supplied this record."></span></th>
+          <th data-i18n="index.col.variety">Variety <span class="help-marker" data-help="help.lakVariety" data-help-fallback="The Lak variety or regional form represented in the record."></span></th>
+          <th class="td-actions"><span data-i18n="search.results.validateAction">Validate</span> <span class="help-marker" data-help="help.reviewStatus" data-help-fallback="Review status shows whether contributors have checked this record."></span></th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
-  <div class="status-bar" style="margin-top:12px;">
+  <div class="status-bar results-only" style="margin-top:12px;">
     <span></span>
     <div class="pager">
       <button class="btn" id="prev-btn2" disabled data-i18n="index.prev">← Previous</button>
@@ -120,6 +137,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <div id="toast-container"></div>
 

@@ -27,6 +27,76 @@
     return fallback;
   }
 
+  var helpOpen = null;
+  var helpGlobalsReady = false;
+  function initHelp() {
+    var markers = document.querySelectorAll('[data-help]');
+    if (!markers.length) return;
+    markers.forEach(function (marker, index) {
+      if (marker.dataset.helpReady) return;
+      marker.dataset.helpReady = 'true';
+      var id = 'help-' + index + '-' + Date.now();
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'help-trigger';
+      button.textContent = '?';
+      button.setAttribute('aria-controls', id);
+      button.setAttribute('aria-expanded', 'false');
+      marker.replaceWith(button);
+      var panel = document.createElement('div');
+      panel.id = id;
+      panel.className = 'help-popover';
+      panel.setAttribute('role', 'dialog');
+      panel.hidden = true;
+      document.body.appendChild(panel);
+      function label() { return tr('help.button.aria', 'What does this mean?'); }
+      function closeLabel() { return tr('help.close.aria', 'Close help'); }
+      function render() {
+        button.setAttribute('aria-label', button.getAttribute('aria-expanded') === 'true' ? closeLabel() : label());
+        panel.textContent = tr(button.dataset.helpKey || marker.dataset.help, marker.dataset.helpFallback || 'More information.');
+      }
+      button.dataset.helpKey = marker.dataset.help;
+      function close(returnFocus) {
+        if (helpOpen !== button) return;
+        panel.hidden = true; button.setAttribute('aria-expanded', 'false'); helpOpen = null;
+        if (returnFocus) button.focus();
+      }
+      function open() {
+        if (helpOpen && helpOpen !== button && typeof helpOpen._closeHelp === 'function') helpOpen._closeHelp(false);
+        panel.hidden = false; button.setAttribute('aria-expanded', 'true'); helpOpen = button;
+        var r = button.getBoundingClientRect(), width = Math.min(320, window.innerWidth - 24);
+        panel.style.width = width + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+        panel.style.left = Math.max(12, Math.min(window.innerWidth - width - 12, r.left)) + 'px';
+        var below = r.bottom + 10;
+        var above = r.top - panel.offsetHeight - 10;
+        panel.style.top = (below + panel.offsetHeight <= window.innerHeight - 12
+          ? below : Math.max(12, above)) + 'px';
+      }
+      button._closeHelp = close;
+      button.addEventListener('click', function () { button.getAttribute('aria-expanded') === 'true' ? close(false) : open(); });
+      if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+        button.addEventListener('mouseenter', open);
+      }
+      render();
+      if (I18n && I18n.onChange) I18n.onChange(render);
+    });
+    if (!helpGlobalsReady) {
+      helpGlobalsReady = true;
+      document.addEventListener('click', function (e) {
+        if (helpOpen && !e.target.closest('.help-trigger, .help-popover')) helpOpen._closeHelp(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && helpOpen) {
+          e.preventDefault();
+          helpOpen._closeHelp(true);
+        }
+      });
+    }
+  }
+  var helpObserver = new MutationObserver(function () { initHelp(); });
+
   function buildToggle(placement) {
     // placement: 'desktop' | 'mobile' — only affects class hooks.
     var group = document.createElement('div');
@@ -188,6 +258,8 @@
     }
 
     syncToggles();
+    initHelp();
+    helpObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === 'loading') {

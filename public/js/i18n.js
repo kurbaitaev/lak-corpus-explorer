@@ -53,13 +53,13 @@
     'nav.brand.name': { en: 'Lak Corpus', ru: 'Лакский корпус' },
     'nav.brand.explorer': { en: 'Explorer', ru: 'Обозреватель' },
     'nav.search': { en: 'Search', ru: 'Поиск' },
-    'nav.observatory': { en: 'Observatory', ru: 'Обсерватория' },
-    'nav.lab': { en: 'Translation Lab', ru: 'Переводческая лаборатория' },
-    'nav.lab.short': { en: 'Lab', ru: 'Лаборатория' },
-    'nav.validate': { en: 'Validate', ru: 'Проверка' },
+    'nav.observatory': { en: 'Resource guide', ru: 'Каталог материалов' },
+    'nav.lab': { en: 'Translation workspace', ru: 'Работа с переводами' },
+    'nav.lab.short': { en: 'Workspace', ru: 'Переводы' },
+    'nav.validate': { en: 'Check translations', ru: 'Проверить переводы' },
     'nav.leaderboard': { en: 'Leaderboard', ru: 'Рейтинг' },
     'nav.about': { en: 'About & Research', ru: 'О проекте и исследованиях' },
-    'nav.queue': { en: 'Review Queue', ru: 'Очередь проверки' },
+    'nav.queue': { en: 'Checked translations', ru: 'Проверенные переводы' },
     'nav.login': { en: 'Log in', ru: 'Войти' },
     'nav.primaryLabel': { en: 'Primary navigation', ru: 'Основная навигация' },
     'nav.openMenu': { en: 'Open menu', ru: 'Открыть меню' },
@@ -101,8 +101,8 @@
     'index.title': { en: 'Lak Corpus Explorer', ru: 'Обозреватель лакского корпуса' },
     'index.h1': { en: 'Lak Language Corpus', ru: 'Корпус лакского языка' },
     'index.subtitle': {
-      en: 'Source-aware · translation-first Russian→Lak search · quality-tracked',
-      ru: 'С учётом источников · поиск «сначала перевод» русский→лакский · с контролем качества'
+      en: 'Search Russian or Lak · every result shows its source and whether it has been checked',
+      ru: 'Поиск по-русски или по-лакски · у каждого результата виден источник и проверен ли он'
     },
     'index.searchLabel': { en: 'Search (Russian or Lak)', ru: 'Поиск (по-русски или по-лакски)' },
     'index.searchPlaceholder': {
@@ -115,8 +115,8 @@
     'index.type.lexicon': { en: 'Lexicon only', ru: 'Только лексикон' },
     'index.source': { en: 'Source', ru: 'Источник' },
     'index.source.all': { en: 'All sources', ru: 'Все источники' },
-    'index.variety': { en: 'Variety', ru: 'Разновидность' },
-    'index.variety.all': { en: 'All varieties', ru: 'Все разновидности' },
+    'index.variety': { en: 'Lak variety', ru: 'Вариант лакского' },
+    'index.variety.all': { en: 'All Lak varieties', ru: 'Все варианты лакского' },
     'variety.standard': { en: 'Standard', ru: 'Литературный' },
     'variety.arakul': { en: 'Arakul', ru: 'Аракульский' },
     'variety.balkhar': { en: 'Balkhar', ru: 'Балхарский' },
@@ -129,8 +129,8 @@
     'index.col.lak': { en: 'Lak text / form', ru: 'Лакский текст / форма' },
     'index.col.meaning': { en: 'Meaning / document', ru: 'Значение / документ' },
     'index.col.source': { en: 'Source', ru: 'Источник' },
-    'index.col.variety': { en: 'Variety', ru: 'Разновидность' },
-    'index.col.review': { en: 'Review', ru: 'Проверка' },
+    'index.col.variety': { en: 'Lak variety', ru: 'Вариант лакского' },
+    'index.col.review': { en: 'Check translation', ru: 'Проверить перевод' },
 
     /* ── observatory.html ────────────────────────────────────── */
     'obs.meta.title': {
@@ -138,13 +138,13 @@
       ru: 'Обсерватория лакских ресурсов · Обозреватель лакского корпуса'
     },
     'obs.kicker': {
-      en: 'Public provenance register · 29 July 2026',
-      ru: 'Публичный реестр происхождения · 29 июля 2026'
+      en: 'Public catalogue of materials · 29 July 2026',
+      ru: 'Публичный каталог материалов · 29 июля 2026'
     },
-    'obs.h1': { en: 'The Lak Resource Observatory', ru: 'Обсерватория лакских ресурсов' },
+    'obs.h1': { en: 'Lak resource guide', ru: 'Каталог лакских материалов' },
     'obs.intro': {
-      en: 'A living map of <strong>68 non-Bible resources</strong> around the Lak language: what exists, who holds it, what can be used, and the next careful step.',
-      ru: 'Живая карта <strong>68 небиблейских ресурсов</strong>, связанных с лакским языком: что существует, у кого хранится, что можно использовать и каков следующий осторожный шаг.'
+      en: 'A guide to <strong>68 non-Bible materials</strong> for the Lak language: what exists, who holds it, what may be used, and the next careful step.',
+      ru: 'Каталог <strong>68 небиблейских материалов</strong> по лакскому языку: что есть, у кого хранится, что можно использовать и каков следующий осторожный шаг.'
     },
     'obs.statsLabel': { en: 'Registry summary', ru: 'Сводка реестра' },
     'obs.method': {
@@ -159,7 +159,7 @@
     },
     'obs.category': { en: 'Category', ru: 'Категория' },
     'obs.category.all': { en: 'All categories', ru: 'Все категории' },
-    'obs.status': { en: 'Evidence status', ru: 'Статус подтверждения' },
+    'obs.status': { en: 'Review status', ru: 'Статус проверки' },
     'obs.status.all': { en: 'All statuses', ru: 'Все статусы' },
     'obs.priority': { en: 'Priority', ru: 'Приоритет' },
     'obs.priority.all': { en: 'All priorities', ru: 'Все приоритеты' },
@@ -423,37 +423,37 @@
     },
 
     /* ── validate.html ───────────────────────────────────────── */
-    'validate.meta.title': { en: 'Validate — Lak Corpus Explorer', ru: 'Проверка — Обозреватель лакского корпуса' },
-    'validate.needLogin.h1': { en: 'Join the validation effort', ru: 'Присоединяйтесь к проверке' },
+    'validate.meta.title': { en: 'Check translations — Lak Corpus Explorer', ru: 'Проверить переводы — Обозреватель лакского корпуса' },
+    'validate.needLogin.h1': { en: 'Help check translations', ru: 'Помогите проверять переводы' },
     'validate.needLogin.p': {
-      en: 'Validation is done by registered contributors so that every judgment can be attributed, audited, and weighted by reliability. Accounts are free; searching the corpus never requires an account.',
-      ru: 'Проверку выполняют зарегистрированные участники, чтобы каждое суждение можно было атрибутировать, проверять и взвешивать по надёжности. Аккаунты бесплатны; для поиска по корпусу аккаунт никогда не требуется.'
+      en: 'Checking is done by registered contributors so that every answer is signed to its author, can be reviewed later, and counts more when the person is often right. Accounts are free; searching never needs an account.',
+      ru: 'Проверку выполняют зарегистрированные участники, чтобы каждый ответ был подписан автором, мог быть пересмотрен позже и весил больше, когда человек часто оказывается прав. Аккаунты бесплатны; для поиска аккаунт не нужен.'
     },
     'validate.createAccount': { en: 'Create a contributor account', ru: 'Создать аккаунт участника' },
     'validate.login': { en: 'Log in', ru: 'Войти' },
-    'validate.howItWorks': { en: 'How validation works', ru: 'Как работает проверка' },
-    'validate.optionsLabel': { en: 'Your assessment', ru: 'Ваша оценка' },
+    'validate.howItWorks': { en: 'How checking works', ru: 'Как работает проверка' },
+    'validate.optionsLabel': { en: 'Your answer', ru: 'Ваш ответ' },
     'validate.details.summary': {
-      en: 'Add a correction or evidence (optional, earns extra points when confirmed)',
-      ru: 'Добавить исправление или доказательство (необязательно, приносит дополнительные баллы при подтверждении)'
+      en: 'Add a correction or an explanation (optional, earns extra points when confirmed)',
+      ru: 'Добавить исправление или пояснение (необязательно, приносит дополнительные баллы при подтверждении)'
     },
-    'validate.correction.label': { en: 'Proposed correction', ru: 'Предлагаемое исправление' },
+    'validate.correction.label': { en: 'Suggested correction', ru: 'Предлагаемое исправление' },
     'validate.correction.placeholder': {
-      en: 'The corrected Lak text, sense, or spelling',
+      en: 'The corrected Lak text, meaning, or spelling',
       ru: 'Исправленный лакский текст, значение или написание'
     },
-    'validate.evidence.label': { en: 'Evidence note', ru: 'Примечание с доказательствами' },
+    'validate.evidence.label': { en: 'Why you chose this', ru: 'Почему вы так решили' },
     'validate.evidence.placeholder': {
       en: 'Why is this your answer? Context, dialect knowledge, comparison…',
       ru: 'Почему это ваш ответ? Контекст, знание диалекта, сравнение…'
     },
-    'validate.source.label': { en: 'Source reference', ru: 'Ссылка на источник' },
+    'validate.source.label': { en: 'Where it comes from', ru: 'Откуда это взято' },
     'validate.source.placeholder': {
       en: 'e.g. Uslar 1890, p. 42; PCMLBE 2007; native-speaker knowledge',
       ru: 'напр. Услар 1890, с. 42; PCMLBE 2007; знание носителя языка'
     },
-    'validate.submit': { en: 'Submit assessment', ru: 'Отправить оценку' },
-    'validate.result.title': { en: 'Community view', ru: 'Мнение сообщества' },
+    'validate.submit': { en: 'Send answer', ru: 'Отправить ответ' },
+    'validate.result.title': { en: 'What others said', ru: 'Что ответили другие' },
     'validate.next': { en: 'Next task', ru: 'Следующая задача' },
     'validate.empty.h2': { en: 'All caught up', ru: 'Всё сделано' },
     'validate.empty.p': {
@@ -462,11 +462,11 @@
     },
 
     /* ── queue.html ──────────────────────────────────────────── */
-    'queue.meta.title': { en: 'Review Queue — Lak Corpus Explorer', ru: 'Очередь проверки — Обозреватель лакского корпуса' },
-    'queue.h1': { en: 'Review Queue', ru: 'Очередь проверки' },
+    'queue.meta.title': { en: 'Checked translations — Lak Corpus Explorer', ru: 'Проверенные переводы — Обозреватель лакского корпуса' },
+    'queue.h1': { en: 'Checked translations', ru: 'Проверенные переводы' },
     'queue.subtitle': {
-      en: 'All human reviews submitted via the corpus search. Public read access; no login required to search or export.',
-      ru: 'Все проверки, выполненные людьми и отправленные через поиск по корпусу. Публичный доступ на чтение; вход для поиска или экспорта не требуется.'
+      en: 'Every check that people have submitted from search. Anyone can read or download this; no login is needed.',
+      ru: 'Все проверки, отправленные людьми из поиска. Их может читать и скачивать любой; вход не нужен.'
     },
     'queue.approved': { en: 'Approved', ru: 'Утверждено' },
     'queue.flagged': { en: 'Flagged', ru: 'Помечено' },
@@ -581,13 +581,13 @@
     'profile.section.progress': { en: 'Progress', ru: 'Прогресс' },
     'profile.leaderboardLink': { en: 'Leaderboard & relative ranking', ru: 'Рейтинг и относительное положение' },
     'profile.howPointsLink': { en: 'How points & reliability work', ru: 'Как работают баллы и надёжность' },
-    'profile.pairs.h2': { en: 'My translation pairs', ru: 'Мои пары перевода' },
+    'profile.pairs.h2': { en: 'My translations', ru: 'Мои переводы' },
     'profile.pairs.p': {
-      en: 'Track proposals you submitted to the Translation Lab. Proposals remain unverified until independent agreement or expert adjudication.',
-      ru: 'Отслеживайте предложения, отправленные в Переводческую лабораторию. Предложения остаются непроверенными до независимого согласия или экспертного решения.'
+      en: 'See the translations you sent from the translation workspace. They stay unconfirmed until others independently agree or an expert decides.',
+      ru: 'Смотрите переводы, отправленные из раздела «Работа с переводами». Они остаются неподтверждёнными, пока другие независимо не согласятся или эксперт не примет решение.'
     },
     'profile.pairs.loading': { en: 'Loading translation work…', ru: 'Загрузка переводческой работы…' },
-    'profile.openLab': { en: 'Open Translation Lab', ru: 'Открыть Переводческую лабораторию' },
+    'profile.openLab': { en: 'Open translation workspace', ru: 'Открыть работу с переводами' },
     'profile.appeal.h2': { en: 'Appeal a decision', ru: 'Обжаловать решение' },
     'profile.appeal.p': {
       en: 'If points were revoked or a judgment seems wrong, you can appeal. An administrator reviews every appeal; the audit trail is never deleted.',
@@ -612,12 +612,12 @@
     'dash.denied.validate': { en: 'Validate tasks', ru: 'Проверять задачи' },
     'dash.denied.learn': { en: 'learn how roles are granted', ru: 'узнать, как присваиваются роли' },
     'dash.disputes.h2': { en: 'Disputed items', ru: 'Спорные записи' },
-    'dash.disputes.note': { en: '— your adjudication decides', ru: '— решает ваше суждение' },
+    'dash.disputes.note': { en: '— your expert decision resolves them', ru: '— их решает ваше экспертное решение' },
     'dash.highPriority.h2': { en: 'High-priority unresolved queries', ru: 'Неразрешённые запросы высокого приоритета' },
     'dash.goldPerf.h2': { en: 'Gold-task performance', ru: 'Результаты по эталонным задачам' },
     'dash.suspicion.h2': { en: 'Suspicious activity', ru: 'Подозрительная активность' },
     'dash.appeals.h2': { en: 'Open appeals', ru: 'Открытые апелляции' },
-    'dash.labPairs.h2': { en: 'Translation pairs awaiting review', ru: 'Пары перевода, ожидающие проверки' },
+    'dash.labPairs.h2': { en: 'Translations awaiting review', ru: 'Переводы, ожидающие проверки' },
     'dash.grant.h2': { en: 'Grant a role', ru: 'Назначить роль' },
     'dash.grant.cid': { en: 'Contributor id (c_…)', ru: 'ID участника (c_…)' },
     'dash.grant.basis': { en: 'Basis of expertise (required for trusted/expert)', ru: 'Основание экспертизы (обязательно для доверенного/эксперта)' },
@@ -652,20 +652,20 @@
     'dash.admin': { en: 'admin', ru: 'админ' },
 
     /* ── lab.html ────────────────────────────────────────────── */
-    'lab.meta.title': { en: 'Translation Lab — Lak Corpus Explorer', ru: 'Переводческая лаборатория — Обозреватель лакского корпуса' },
+    'lab.meta.title': { en: 'Translation workspace — Lak Corpus Explorer', ru: 'Работа с переводами — Обозреватель лакского корпуса' },
     'lab.authState.p': {
-      en: 'You can inspect evidence without an account.',
-      ru: 'Вы можете изучать доказательства без аккаунта.'
+      en: 'You can look at the supporting material without an account.',
+      ru: 'Вы можете просматривать подтверждающий материал без аккаунта.'
     },
     'lab.authState.link': { en: 'Log in or register', ru: 'Войти или зарегистрироваться' },
     'lab.authState.tail': {
-      en: 'to save, review, or validate a translation pair.',
-      ru: 'чтобы сохранить, проверить или подтвердить пару перевода.'
+      en: 'to save, review, or confirm a translation.',
+      ru: 'чтобы сохранить, проверить или подтвердить перевод.'
     },
-    'lab.h1': { en: 'Translation Lab', ru: 'Переводческая лаборатория' },
+    'lab.h1': { en: 'Translation workspace', ru: 'Работа с переводами' },
     'lab.subtitle': {
-      en: 'Model-assisted linguistic workbench with rigorous evidence tracking.',
-      ru: 'Лингвистический верстак с помощью модели и строгим отслеживанием доказательств.'
+      en: 'A workspace where the model suggests a translation and you confirm it against real examples.',
+      ru: 'Рабочее место, где модель предлагает перевод, а вы подтверждаете его на реальных примерах.'
     },
     'lab.workbench': { en: 'Workbench', ru: 'Верстак' },
     'lab.myPairs': { en: 'My Pairs', ru: 'Мои пары' },
@@ -674,16 +674,16 @@
     'lab.direction.label': { en: 'Direction', ru: 'Направление' },
     'lab.direction.ru2lak': { en: 'Russian → Lak', ru: 'Русский → Лакский' },
     'lab.direction.lak2ru': { en: 'Lak → Russian', ru: 'Лакский → Русский' },
-    'lab.retrieveEvidence': { en: 'Retrieve evidence', ru: 'Найти доказательства' },
-    'lab.loading': { en: 'Retrieving dictionary senses and corpus evidence…', ru: 'Извлечение словарных значений и корпусных доказательств…' },
+    'lab.retrieveEvidence': { en: 'Find supporting examples', ru: 'Найти подтверждающие примеры' },
+    'lab.loading': { en: 'Finding dictionary meanings and text examples…', ru: 'Поиск словарных значений и примеров из текстов…' },
     'lab.banner': {
-      en: '<strong>Model proposal — not verified.</strong> Review, correct, and provide evidence before saving.',
-      ru: '<strong>Предложение модели — не проверено.</strong> Проверьте, исправьте и приведите доказательства перед сохранением.'
+      en: '<strong>Model suggestion — not confirmed.</strong> Check it, correct it, and add supporting examples before saving.',
+      ru: '<strong>Предложение модели — не подтверждено.</strong> Проверьте, исправьте и добавьте подтверждающие примеры перед сохранением.'
     },
     'lab.literalTarget.label': { en: 'Literal target (word-for-word)', ru: 'Дословный перевод (слово в слово)' },
     'lab.naturalTarget.label': { en: 'Natural target (fluent)', ru: 'Естественный перевод (беглый)' },
-    'lab.context.h3': { en: 'Linguistic Context & Evidence', ru: 'Лингвистический контекст и доказательства' },
-    'lab.variety.label': { en: 'Variety', ru: 'Разновидность' },
+    'lab.context.h3': { en: 'Context & supporting examples', ru: 'Контекст и подтверждающие примеры' },
+    'lab.variety.label': { en: 'Lak variety', ru: 'Вариант лакского' },
     'lab.orthography.label': { en: 'Orthography', ru: 'Письменность' },
     'lab.orthography.cyrillic': { en: 'Cyrillic', ru: 'Кириллица' },
     'lab.orthography.latin': { en: 'Latin', ru: 'Латиница' },
@@ -691,9 +691,9 @@
     'lab.sourceType.label': { en: 'Source Type', ru: 'Тип источника' },
     'lab.sourceType.human': { en: 'Human', ru: 'Человек' },
     'lab.sourceType.humanEvidence': { en: 'Human from retrieved evidence', ru: 'Человек по найденным доказательствам' },
-    'lab.provenance.label': { en: 'Provenance', ru: 'Происхождение' },
+    'lab.provenance.label': { en: 'Source', ru: 'Источник' },
     'lab.provenance.placeholder': { en: 'e.g. Fieldwork, Book title', ru: 'напр. полевая работа, название книги' },
-    'lab.rights.label': { en: 'Rights Status', ru: 'Статус прав' },
+    'lab.rights.label': { en: 'Rights and access', ru: 'Права на использование' },
     'lab.rights.publicDomain': { en: 'Public Domain', ru: 'Общественное достояние' },
     'lab.rights.ccBy': { en: 'CC-BY', ru: 'CC-BY' },
     'lab.rights.restricted': { en: 'Copyrighted / restricted', ru: 'Защищено авторским правом / ограничено' },
@@ -703,7 +703,7 @@
     'lab.access.restricted': { en: 'Restricted', ru: 'Ограниченный' },
     'lab.access.permissionPending': { en: 'Permission pending', ru: 'Ожидается разрешение' },
     'lab.access.private': { en: 'Private', ru: 'Приватный' },
-    'lab.evidenceIds.label': { en: 'Evidence IDs (comma separated)', ru: 'ID доказательств (через запятую)' },
+    'lab.evidenceIds.label': { en: 'Supporting example IDs (comma separated)', ru: 'ID подтверждающих примеров (через запятую)' },
     'lab.evidenceIds.placeholder': { en: 'e.g. 102, 405', ru: 'напр. 102, 405' },
     'lab.abstain': { en: 'Abstain / Uncertain', ru: 'Воздержаться / Не уверен' },
     'lab.errorCat.label': { en: 'Error Category (if correcting model)', ru: 'Категория ошибки (если исправляете модель)' },
@@ -766,9 +766,9 @@
     'search.col.lak': { en: 'Lak', ru: 'Лакский' },
     'search.col.meaningDocument': { en: 'Meaning / document', ru: 'Значение / документ' },
     'search.col.source': { en: 'Source', ru: 'Источник' },
-    'search.col.variety': { en: 'Variety', ru: 'Разновидность' },
-    'search.action.review': { en: 'Review', ru: 'Рецензировать' },
-    'search.review.heading': { en: 'Review', ru: 'Рецензия' },
+    'search.col.variety': { en: 'Lak variety', ru: 'Вариант лакского' },
+    'search.action.review': { en: 'Check translation', ru: 'Проверить перевод' },
+    'search.review.heading': { en: 'Check translation', ru: 'Проверить перевод' },
     'search.review.correctionLabel': { en: 'Correction (optional)', ru: 'Исправление (необязательно)' },
     'search.review.correctionPlaceholder': { en: 'Corrected Lak text or translation…', ru: 'Исправленный лакский текст или перевод…' },
     'search.review.noteLabel': { en: 'Note (optional)', ru: 'Заметка (необязательно)' },
@@ -801,14 +801,14 @@
     'lab.toast.loginHistory': { en: 'Log in to view saved translation pairs.', ru: 'Войдите, чтобы просмотреть сохранённые пары перевода.' },
     'lab.mode.evidence_only': { en: 'evidence-only', ru: 'только доказательства' },
     'lab.confidence': { en: 'Confidence {pct}%', ru: 'Уверенность {pct}%' },
-    'lab.evidenceRecords': { en: '{count} evidence records', ru: 'записей-доказательств: {count}' },
-    'lab.abstainedBadge': { en: 'Insufficient evidence — abstained', ru: 'Недостаточно доказательств — воздержание' },
+    'lab.evidenceRecords': { en: '{count} supporting examples', ru: 'подтверждающих примеров: {count}' },
+    'lab.abstainedBadge': { en: 'Not enough examples — no answer given', ru: 'Недостаточно примеров — ответ не дан' },
     'lab.altHeading': { en: 'Alternatives and unknowns', ru: 'Альтернативы и неизвестные' },
     'lab.noAlternative': { en: 'No supported alternative found.', ru: 'Обоснованных альтернатив не найдено.' },
     'lab.unknownLabel': { en: 'Unknown:', ru: 'Неизвестно:' },
-    'lab.retrievedEvidence': { en: 'Retrieved evidence', ru: 'Найденные доказательства' },
+    'lab.retrievedEvidence': { en: 'Examples found', ru: 'Найденные примеры' },
     'lab.unspecified': { en: 'unspecified', ru: 'не указано' },
-    'lab.noEvidence': { en: 'No authorized evidence found. The system has not invented a translation.', ru: 'Разрешённых доказательств не найдено. Система не придумала перевод.' },
+    'lab.noEvidence': { en: 'No approved examples found. The system has not made up a translation.', ru: 'Разрешённых примеров не найдено. Система не выдумала перевод.' },
     'lab.toast.loginSave': { en: 'Log in to save a translation pair.', ru: 'Войдите, чтобы сохранить пару перевода.' },
     'lab.toast.enterTranslation': { en: 'Enter a human translation or abstain.', ru: 'Введите человеческий перевод или воздержитесь.' },
     'lab.toast.pairSubmitted': { en: 'Translation pair submitted for independent review.', ru: 'Пара перевода отправлена на независимую проверку.' },
@@ -822,7 +822,7 @@
     'obs.value.none': { en: '—', ru: '—' },
     'obs.openPublicSource': { en: 'Open public source', ru: 'Открыть публичный источник' },
     'obs.opensNewTab': { en: '(opens in a new tab)', ru: '(откроется в новой вкладке)' },
-    'obs.localProvenance': { en: 'Local provenance — not publicly accessible', ru: 'Локальное происхождение — недоступно публично' },
+    'obs.localProvenance': { en: 'Material is only in the archive — not available online', ru: 'Материал есть только в архиве — недоступен онлайн' },
     'obs.permissionSensitive': { en: 'Permission-sensitive', ru: 'Требует разрешения' },
     'obs.fact.language': { en: 'Language', ru: 'Язык' },
     'obs.fact.rightsBoundary': { en: 'Rights boundary', ru: 'Границы прав' },
@@ -1143,7 +1143,7 @@
     'obs.resource.pear_stories.notes': { en: 'Comparable narrative elicitation can support discourse and speech research.', ru: 'Сопоставимое вызывание нарратива может поддержать исследования дискурса и речи.' },
 
     /* validate.js */
-    'validate.question.default': { en: 'Your assessment:', ru: 'Ваша оценка:' },
+    'validate.question.default': { en: 'Your answer:', ru: 'Ваш ответ:' },
     'validate.stat.dayStreak': { en: 'day streak', ru: 'дней подряд' },
     'validate.stat.pointsToday': { en: 'points today', ru: 'очков сегодня' },
     'validate.stat.reliability': { en: 'reliability', ru: 'надёжность' },
@@ -1240,7 +1240,7 @@
     'dashboard.dispute.meta': { en: '{votes} votes · v{version} · {id}', ru: 'голосов: {votes} · в.{version} · {id}' },
     'dashboard.dispute.decisionPlaceholder': { en: 'decision (e.g. correct / moon)', ru: 'решение (напр. верно / луна)' },
     'dashboard.dispute.notePlaceholder': { en: 'note (optional)', ru: 'заметка (необязательно)' },
-    'dashboard.adjudicate': { en: 'Adjudicate', ru: 'Вынести решение' },
+    'dashboard.adjudicate': { en: 'Expert decision', ru: 'Решение эксперта' },
     'dashboard.noDisputes': { en: 'No disputed items. 🎉', ru: 'Спорных элементов нет. 🎉' },
     'dashboard.noHighPriority': { en: 'No unresolved high-priority queries.', ru: 'Нет нерешённых высокоприоритетных запросов.' },
     'dashboard.gold.task': { en: 'Task', ru: 'Задача' },
@@ -1254,7 +1254,7 @@
     'dashboard.resolve': { en: 'Resolve', ru: 'Решить' },
     'dashboard.noAppeals': { en: 'No open appeals.', ru: 'Нет открытых апелляций.' },
     'dashboard.contributor': { en: 'contributor', ru: 'участник' },
-    'dashboard.review': { en: 'Review', ru: 'Проверить' },
+    'dashboard.review': { en: 'Check', ru: 'Проверить' },
     'dashboard.noPairsAwaitReview': { en: 'No translation pairs await review.', ru: 'Нет пар перевода, ожидающих проверки.' },
     'dashboard.resolved': { en: 'Resolved ✓', ru: 'Решено ✓' },
 
@@ -1384,7 +1384,79 @@
     'validate.option.very_useful': { en: 'very useful', ru: 'очень полезно' },
     'validate.option.reliable_with_caution': { en: 'reliable with caution', ru: 'надёжно с осторожностью' },
     'validate.option.partially_reliable': { en: 'partially reliable', ru: 'частично надёжно' },
-    'validate.option.unreliable_until_verified': { en: 'unreliable until verified', ru: 'ненадёжно до проверки' }
+    'validate.option.unreliable_until_verified': { en: 'unreliable until verified', ru: 'ненадёжно до проверки' },
+
+    /* ── Search landing / results (purpose-led states) ──────────── */
+    'search.landing.purpose': {
+      en: 'Search Lak and Russian words and sentences. Every result shows where it comes from and whether a person has checked it.',
+      ru: 'Ищите лакские и русские слова и предложения. У каждого результата видно, откуда он взят и проверял ли его человек.'
+    },
+    'search.landing.whatToDoTitle': { en: 'What you can do here', ru: 'Что здесь можно делать' },
+    'search.landing.whatToDoBody': {
+      en: 'Type a word to see how it is used and translated. If you speak Lak, you can help by checking whether translations are right. You can also browse the materials we have collected.',
+      ru: 'Наберите слово, чтобы увидеть, как оно используется и переводится. Если вы говорите по-лакски, вы можете помочь и проверить, верны ли переводы. Ещё можно посмотреть собранные нами материалы.'
+    },
+    'search.landing.searchAction': { en: 'Search words and sentences', ru: 'Искать слова и предложения' },
+    'search.landing.validateAction': { en: 'Check translations', ru: 'Проверить переводы' },
+    'search.landing.resourcesAction': { en: 'Browse the materials', ru: 'Посмотреть материалы' },
+    'search.landing.browseAll': { en: 'Show everything', ru: 'Показать всё' },
+    'search.results.translation': { en: 'Translation', ru: 'Перевод' },
+    'search.results.sourceDocument': { en: 'Source document', ru: 'Исходный документ' },
+    'search.results.recordId': { en: 'Record ID', ru: 'Номер записи' },
+    'search.results.translationMissing': { en: 'Translation not added yet', ru: 'Перевод пока не добавлен' },
+    'search.results.validateAction': { en: 'Check this translation', ru: 'Проверить этот перевод' },
+
+    /* ── Help button accessible labels ─────────────────────────── */
+    'help.button.aria': { en: 'What does this mean?', ru: 'Что это значит?' },
+    'help.button.title': { en: 'What does this mean?', ru: 'Что это значит?' },
+    'help.close.aria': { en: 'Close help', ru: 'Закрыть подсказку' },
+
+    /* ── Plain-language help texts (say what it means, why shown,
+     * and what to do) ──────────────────────────────────────────── */
+    'help.pcmlbe': {
+      en: 'PCMLBE is one of the collections of Lak texts inside this project. The letters stand for a research corpus of North-East Caucasian languages; here it gives us prose and poetry with grammar tags. It is shown so you know the text was imported in bulk and has not yet been checked by a person — treat it as reliable but unconfirmed, and feel free to flag anything that looks wrong.',
+      ru: 'PCMLBE — это одна из коллекций лакских текстов в проекте. Буквы обозначают исследовательский корпус языков Северо-Восточного Кавказа; здесь он даёт нам прозу и поэзию с пометками о грамматике. Метка показана, чтобы вы знали: текст загружен целыми файлами и пока не проверен человеком — считайте его надёжным, но неподтверждённым, и смело отмечайте всё, что выглядит неверно.'
+    },
+    'help.corpusRecord': {
+      en: 'A record is one item in the collection — a single sentence, phrase, or dictionary entry. Each record keeps its original text, its meaning, where it came from, and whether it has been checked. It is shown so you can look at, and if you speak Lak, check one small piece at a time.',
+      ru: 'Запись — это одна единица в коллекции: отдельное предложение, фраза или словарная статья. У каждой записи сохраняются исходный текст, значение, источник и отметка о проверке. Она показана, чтобы вы могли рассмотреть и, если вы говорите по-лакски, проверять по одному небольшому фрагменту.'
+    },
+    'help.source': {
+      en: 'The source tells you which book, dictionary, or collection this text came from. We show it so you can judge how much to trust the text and cite it correctly. If a translation looks unusual, checking the source often explains why.',
+      ru: 'Источник показывает, из какой книги, словаря или коллекции взят этот текст. Мы указываем его, чтобы вы могли оценить, насколько тексту можно доверять, и правильно на него сослаться. Если перевод выглядит необычно, источник часто объясняет причину.'
+    },
+    'help.lakVariety': {
+      en: 'Lak is spoken in several local forms. The Lak variety says which one this text belongs to — the standard written form, a village dialect, or an older historical form. We show it so a word is not judged wrong just because it belongs to a different variety. If the label looks incorrect, you can flag it.',
+      ru: 'На лакском говорят в нескольких местных формах. «Вариант лакского» показывает, к какому из них относится текст: к литературной письменной норме, сельскому диалекту или более старой исторической форме. Мы указываем его, чтобы слово не считали ошибочным лишь потому, что оно принадлежит другому варианту. Если пометка кажется неверной, вы можете её отметить.'
+    },
+    'help.reviewStatus': {
+      en: 'The review status says whether a person has checked this record. “Not checked yet” means it came straight from a source and no one has confirmed it. “Approved” means a reviewer confirmed it is correct. “Flagged” means someone found a problem. We show it so you know how much to trust the item — and where your help is most useful.',
+      ru: 'Статус проверки показывает, проверял ли запись человек. «Ещё не проверено» — она пришла прямо из источника, и никто её не подтвердил. «Утверждено» — проверяющий подтвердил, что всё верно. «Помечено» — кто-то нашёл проблему. Мы показываем его, чтобы вы понимали, насколько доверять записи и где ваша помощь нужнее всего.'
+    },
+    'help.expertValidation': {
+      en: 'An expert decision is the final word on a hard case from a verified Lak-language expert. When people disagree about a translation, the item is passed to an expert whose decision settles it. We show this so you know a difficult item has been resolved by someone with proven knowledge, not by a simple vote.',
+      ru: 'Решение эксперта — это последнее слово по трудному случаю от проверенного специалиста по лакскому языку. Когда мнения о переводе расходятся, запись передают эксперту, чьё решение всё решает. Мы показываем это, чтобы вы знали: сложную запись разрешил человек с подтверждёнными знаниями, а не простое голосование.'
+    },
+    'help.consensus': {
+      en: 'Agreement means several people checked the same item on their own and gave the same answer. When enough of them agree, the item is marked as agreed. This is a good sign, but it is not the same as an expert decision. We show it so you can see how settled an answer is.',
+      ru: 'Согласие означает, что несколько человек самостоятельно проверили одну и ту же запись и дали одинаковый ответ. Когда их набирается достаточно, запись помечается как согласованная. Это хороший знак, но это не то же самое, что решение эксперта. Мы показываем это, чтобы вы видели, насколько ответ устоялся.'
+    },
+    'help.sourceReliability': {
+      en: 'This asks how much a particular source can be trusted for this record. Some sources are careful and well edited; others are old scans or informal texts. We ask it so weaker sources are used with care. Choose the answer that matches how confident you are in the source here.',
+      ru: 'Здесь спрашивается, насколько можно доверять конкретному источнику для этой записи. Одни источники тщательно выверены, другие — это старые сканы или неформальные тексты. Мы спрашиваем, чтобы слабые источники использовались осторожно. Выберите ответ, соответствующий тому, насколько вы уверены в источнике.'
+    },
+    'help.rightsAccess': {
+      en: 'This says whether the material may be reused and whether you can open it. Some texts are free to use, some need permission, and some are only available in an archive. We show it so nothing is copied or shared without the right permission. When in doubt, treat the material as permission-needed.',
+      ru: 'Здесь указано, можно ли повторно использовать материал и можете ли вы его открыть. Одни тексты свободны в использовании, для других нужно разрешение, а некоторые есть только в архиве. Мы показываем это, чтобы ничего не копировали и не распространяли без нужного разрешения. Если сомневаетесь, считайте, что требуется разрешение.'
+    },
+    'help.translationLab': {
+      en: 'The translation workspace is where a computer model suggests a translation and you improve it. The suggestion is only a draft: you check it against real examples, correct it, and note where it comes from before saving. We provide it so translations are built carefully and always backed by real evidence, not guessed.',
+      ru: '«Работа с переводами» — это место, где компьютерная модель предлагает перевод, а вы его улучшаете. Предложение — лишь черновик: вы сверяете его с реальными примерами, исправляете и указываете источник перед сохранением. Мы даём этот инструмент, чтобы переводы создавались бережно и всегда опирались на реальные примеры, а не на догадки.'
+    },
+    'help.resourceObservatory': {
+      en: 'The resource guide is a catalogue of materials about the Lak language — books, dictionaries, recordings, and archives. For each one it shows what it is, who holds it, whether it may be used, and the next step to obtain it. We provide it so anyone can see what already exists and help track down more.',
+      ru: '«Каталог материалов» — это список материалов о лакском языке: книг, словарей, записей и архивов. Для каждого показано, что это, у кого хранится, можно ли использовать и каков следующий шаг для получения. Мы даём его, чтобы каждый видел, что уже существует, и помогал находить новое.'
+    }
   };
 
   /* ── State ────────────────────────────────────────────────── */

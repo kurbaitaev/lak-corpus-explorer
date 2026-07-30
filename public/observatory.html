@@ -28,7 +28,7 @@
   <header class="obs-hero">
     <div class="container">
       <div class="obs-kicker" data-i18n="obs.kicker">Public provenance register · 29 July 2026</div>
-      <h1 data-i18n="obs.h1">The Lak Resource Observatory</h1>
+      <h1><span data-i18n="obs.h1">Lak materials guide</span><span class="help-marker" data-help="help.resourceObservatory" data-help-fallback="This guide lists Lak dictionaries, books, recordings, and datasets, including materials that still need permission or checking."></span></h1>
       <p data-i18n-html="obs.intro">A living map of <strong>68 non-Bible resources</strong> around the Lak language: what exists, who holds it, what can be used, and the next careful step.</p>
       <div class="obs-stats" id="obs-stats" aria-label="Registry summary" data-i18n-aria="obs.statsLabel"></div>
       <div class="obs-method" data-i18n-html="obs.method"><strong>How to read this register.</strong> Evidence status describes what has been confirmed: a held or processed item is locally accounted for; verified means the source was directly checked; a verified, contact, institutional, or local lead still requires follow-up; catalog-only records and discovery portals establish existence or point onward; a confirmed gap records an evidenced absence. Public access means discoverable, not automatically reusable. Rights text is preserved from the source ledger, while “permission-sensitive” is an operational flag for acquisition work requiring explicit permission, agreement, consent, or careful copying/reproduction review—not a legal conclusion. Public viewability never implies redistribution or model-training permission. Local provenance references are deliberately not published as web links. Bible-derived materials are excluded from the registry, acquisition guidance, corpus, and model recommendations.</div>
@@ -40,7 +40,7 @@
         <div class="obs-controls">
           <div class="field-wrap"><label for="resource-search" data-i18n="obs.searchLabel">Search resources</label><input id="resource-search" type="search" placeholder="Title, creator, rights, action…" data-i18n-placeholder="obs.searchPlaceholder" autocomplete="off"></div>
           <div class="field-wrap"><label for="category-filter" data-i18n="obs.category">Category</label><div class="select-wrap"><select id="category-filter"><option value="" data-i18n="obs.category.all">All categories</option></select></div></div>
-          <div class="field-wrap"><label for="status-filter" data-i18n="obs.status">Evidence status</label><div class="select-wrap"><select id="status-filter"><option value="" data-i18n="obs.status.all">All statuses</option></select></div></div>
+           <div class="field-wrap"><label for="status-filter"><span data-i18n="obs.status">Review status</span><span class="help-marker" data-help="help.reviewStatus" data-help-fallback="This shows how far the material has been checked and what still needs to happen."></span></label><div class="select-wrap"><select id="status-filter"><option value="" data-i18n="obs.status.all">All statuses</option></select></div></div>
           <div class="field-wrap"><label for="priority-filter" data-i18n="obs.priority">Priority</label><div class="select-wrap"><select id="priority-filter"><option value="" data-i18n="obs.priority.all">All priorities</option><option>P0</option><option>P1</option><option>P2</option></select></div></div>
         </div>
         <div class="obs-viewbar">

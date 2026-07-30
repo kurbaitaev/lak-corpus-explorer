@@ -36,7 +36,7 @@
   <div id="lab-app" style="display: none;">
     <div class="lab-header">
       <div>
-        <h1 style="font-size: 26px; font-family: var(--font-serif); font-weight: normal; margin-bottom: 6px;" data-i18n="lab.h1">Translation Lab</h1>
+        <h1 style="font-size: 26px; font-family: var(--font-serif); font-weight: normal; margin-bottom: 6px;"><span data-i18n="lab.h1">Translation workspace</span><span class="help-marker" data-help="help.translationLab" data-help-fallback="Use this workspace to compare possible translations and save a careful human version."></span></h1>
         <p style="font-size: 14px; color: var(--text2);" data-i18n="lab.subtitle">Model-assisted linguistic workbench with rigorous evidence tracking.</p>
       </div>
       <div class="lab-header-actions">
@@ -101,7 +101,7 @@
             
             <div class="lab-context-grid">
               <div class="field-wrap">
-                <label for="lab-variety" data-i18n="lab.variety.label">Variety</label>
+                <label for="lab-variety"><span data-i18n="lab.variety.label">Lak variety</span><span class="help-marker" data-help="help.lakVariety" data-help-fallback="This shows which local or written form of Lak the translation uses."></span></label>
                 <div class="select-wrap">
                   <select id="lab-variety" class="lab-input">
                     <option value="standard" data-i18n="variety.standard">Standard</option>
@@ -133,14 +133,14 @@
                 </div>
               </div>
               <div class="field-wrap">
-                <label for="lab-provenance" data-i18n="lab.provenance.label">Provenance</label>
+                 <label for="lab-provenance"><span data-i18n="lab.provenance.label">Source</span><span class="help-marker" data-help="help.source" data-help-fallback="Say where this wording came from so another person can check it."></span></label>
                 <input type="text" id="lab-provenance" class="lab-input" placeholder="e.g. Fieldwork, Book title" data-i18n-placeholder="lab.provenance.placeholder">
               </div>
             </div>
 
             <div class="lab-context-grid" style="margin-top: 16px;">
               <div class="field-wrap">
-                <label for="lab-rights" data-i18n="lab.rights.label">Rights Status</label>
+                 <label for="lab-rights"><span data-i18n="lab.rights.label">Rights and access</span><span class="help-marker" data-help="help.rightsAccess" data-help-fallback="This says whether the material may be viewed, copied, or reused."></span></label>
                 <div class="select-wrap">
                   <select id="lab-rights" class="lab-input">
                     <option value="public_domain" data-i18n="lab.rights.publicDomain">Public Domain</option>

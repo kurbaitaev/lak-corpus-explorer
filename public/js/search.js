@@ -75,6 +75,7 @@ let currentRows     = [];
 let currentMatches  = [];
 let openReviewId  = null;
 let searchPending = false;
+let hasSearchIntent = false;
 
 // ── DOM refs ─────────────────────────────────────────────────
 const $q       = document.getElementById('q');
@@ -119,6 +120,8 @@ function renderStats() {
 async function search(page = 1) {
   if (searchPending) return;
   searchPending = true;
+  hasSearchIntent = true;
+  document.querySelectorAll('.results-only').forEach(el => el.hidden = false);
   currentPage = page;
 
   const q       = $q.value.trim();
@@ -132,7 +135,7 @@ async function search(page = 1) {
   if (source)  params.set('source', source);
   if (variety) params.set('variety', variety);
 
-  $tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
+  $tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
@@ -154,13 +157,8 @@ async function search(page = 1) {
     renderResults(currentRows, currentMatches);
     renderPagination();
 
-    // Fetch review badges for visible records
-    const ids = currentRows.map(r => r[5]).filter(Boolean);
-    if (ids.length) {
-      fetchBulkReviews(ids).then(revMap => updateBadges(currentRows, revMap));
-    }
   } catch (err) {
-    $tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+    $tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
       <div class="icon">⚠️</div><h3>${esc(t('search.error.title', 'Search error'))}</h3><p>${esc(err.message)}</p>
     </div></td></tr>`;
   } finally {
@@ -241,22 +239,29 @@ function renderResults(rows, matches = []) {
       ? `<span class="tag tag-text">${esc(t('search.type.text', 'Text'))}</span>`
       : `<span class="tag tag-lexicon">${esc(t('search.type.lexicon', 'Lexicon'))}</span>`;
 
-    const review  = reviewCache[recordId];
-    const badge   = qualityBadgeHtml(recordId, source, review);
-    const ocrWarn = (source === 'Uslar 1890' && !review)
-      ? `<span class="quality-badge q-ocr" style="margin-top:5px;">${esc(t('search.badge.ocrUnreviewed', 'OCR — unreviewed'))}</span>` : '';
-
     const sourceCell = url
       ? `<a href="${esc(url)}" class="source-link" target="_blank" rel="noreferrer">${esc(source)}</a>`
       : esc(source);
+    const isLexicon = String(type).toLowerCase() === 'lexicon';
+    const translation = isLexicon && meaning
+      ? meaning
+      : t('search.results.translationMissing', 'Translation not added yet');
+    const documentId = !isLexicon && meaning ? meaning : recordId;
+    const sourceHelp = source === 'PCMLBE'
+      ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Pangloss Collection metadata and archive source used for this record."></span>`
+      : '';
 
     return `<tr data-record="${esc(recordId)}">
-      <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
+      <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}</td>
       <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
-      <td class="td-meaning" data-label="${esc(t('search.col.meaningDocument', 'Meaning / document'))}">${esc(meaning)}</td>
-      <td data-label="${esc(t('search.col.source', 'Source'))}">${sourceCell}</td>
+      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${esc(translation)}</td>
+      <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}">
+        <span>${esc(documentId)}</span>
+        <span class="record-meta">${esc(t('search.results.recordId', 'Record ID'))}: ${esc(recordId)}</span>
+      </td>
+      <td data-label="${esc(t('search.col.source', 'Source'))}">${sourceCell}${sourceHelp}</td>
       <td data-label="${esc(t('search.col.variety', 'Variety'))}">${esc(varietyLabel(variety))}</td>
-      <td class="td-actions"><button class="btn btn-sm" data-id="${esc(recordId)}" onclick="toggleReview(this)">${esc(t('search.action.review', 'Review'))}</button></td>
+      <td class="td-actions"><a class="btn btn-sm btn-primary" href="/validate.html?record=${encodeURIComponent(recordId)}">${esc(t('search.results.validateAction', 'Check translation'))}</a></td>
     </tr>`;
   }).join('');
 }
@@ -379,17 +384,12 @@ $prev.onclick = $prev2.onclick = prevPage;
 $next.onclick = $next2.onclick = nextPage;
 
 // ── Search wiring ─────────────────────────────────────────────
-let debounceTimer;
-$q.addEventListener('input', () => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => search(1), 300);
-});
 [$kind, $source, $variety].forEach(el => el.addEventListener('change', () => search(1)));
 
 // ── Re-render on language change ──────────────────────────────
 function relocalize() {
   renderStats();
-  if (currentRows.length || currentExpanded.length) {
+    if (hasSearchIntent) {
     renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
     renderResults(currentRows, currentMatches);
     renderPagination();
@@ -405,5 +405,8 @@ function relocalize() {
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadStats();
-  search(1);
+  document.querySelectorAll('.results-only').forEach(el => el.hidden = true);
+  const form = document.getElementById('search-form');
+  form?.addEventListener('submit', e => { e.preventDefault(); search(1); });
+  document.getElementById('browse-all')?.addEventListener('click', () => { $q.value = ''; search(1); });
 });
