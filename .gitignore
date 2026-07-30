@@ -11,3 +11,5 @@ yarn-error.log*
 # Generated corpus data (rebuild with: python3 scripts/extract-corpus.py)
 data/corpus-data.json
 data/corpus-meta.json
+private/
+attached_assets/lak-corpus-v1.2-processed-only-*.zip
