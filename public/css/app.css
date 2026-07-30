@@ -338,6 +338,58 @@ a:hover { text-decoration: underline; }
 .nav-toggle:hover { background: var(--surface2); }
 .nav-toggle-icon { font-size: 14px; line-height: 1; }
 
+/* ── Language toggle (EN/RU segmented control) ─────────────── */
+.lang-toggle {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface2);
+  padding: 2px;
+  gap: 2px;
+}
+.lang-toggle-desktop {
+  margin-left: 16px;
+}
+.lang-btn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1;
+  color: var(--text2);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 12px;
+  min-height: 32px;
+  min-width: 40px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.lang-btn:hover { color: var(--text); background: var(--surface); }
+.lang-btn.active {
+  color: #fff;
+  background: var(--accent);
+}
+.lang-btn.active:hover { background: var(--accent-dk); color: #fff; }
+.lang-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Drawer copy is hidden until the mobile media query reveals it */
+.lang-toggle-drawer { display: none; }
+
+/* Russian navigation labels are substantially longer; keep the complete
+   desktop header visible without forcing a premature mobile drawer. */
+@media (min-width: 901px) {
+  html[lang="ru"] .nav-brand { margin-right: 12px; }
+  html[lang="ru"] .nav-link { padding-inline: 8px; font-size: 12.5px; }
+  html[lang="ru"] .lang-toggle-desktop { margin-left: 8px; }
+}
+
 /* Visible keyboard focus everywhere */
 a:focus-visible, button:focus-visible, input:focus-visible,
 select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
@@ -971,6 +1023,15 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .nav-inner { flex-wrap: wrap; height: auto; min-height: 56px; }
   .nav-brand { margin-right: auto; }
   .nav-toggle { display: inline-flex; }
+
+  /* The desktop language toggle collapses into the drawer on small screens */
+  .lang-toggle-desktop { display: none; }
+  .lang-toggle-drawer {
+    display: inline-flex;
+    align-self: flex-start;
+    margin: 10px 4px 4px;
+  }
+  .lang-toggle-drawer .lang-btn { min-height: 44px; min-width: 52px; font-size: 13px; }
 
   /* Drawer: hidden (zero height) unless the nav is open */
   .nav-links {

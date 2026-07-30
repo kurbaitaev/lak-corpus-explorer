@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How validation works — Lak Corpus Explorer</title>
+<title data-i18n="hiw.meta.title">How validation works — Lak Corpus Explorer</title>
 <meta name="description" content="How validation, expertise, consensus, points, rankings, privacy, and appeals work in the Lak Corpus Explorer.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,21 +11,21 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
 
 <main class="container" style="padding-top:32px; padding-bottom:64px; max-width:760px;" id="hiw">
-  <h1 style="font-size:26px; margin-bottom:10px;">How validation works</h1>
-  <p style="color:var(--text2); font-size:15px; margin-bottom:28px;">
+  <h1 style="font-size:26px; margin-bottom:10px;" data-i18n="hiw.h1">How validation works</h1>
+  <p style="color:var(--text2); font-size:15px; margin-bottom:28px;" data-i18n-html="hiw.intro">
     Lak is a living language with a small speaker community. Every validation here is an
     act of preservation: checking a translation, restoring a scanned word, confirming a
     sense. The system is designed so that <b>careful, knowledgeable work counts most</b> —
@@ -33,36 +33,36 @@
   </p>
 
   <section class="card hiw-section">
-    <h2>One small task at a time</h2>
-    <p>The validation workspace presents a single focused question — is this translation
+    <h2 data-i18n="hiw.s1.h2">One small task at a time</h2>
+    <p data-i18n-html="hiw.s1.p1">The validation workspace presents a single focused question — is this translation
     correct, does <i>барз</i> mean “moon” or “month” here, is this OCR text clean, which
     dialect is this form? You answer independently: <b>you never see other votes before
     submitting your own</b>. Only afterwards is the emerging community view shown. This
     keeps judgments honest and independent, which is what makes agreement meaningful.</p>
-    <p>You can attach a correction, an evidence note, and a source reference. When the
+    <p data-i18n="hiw.s1.p2">You can attach a correction, an evidence note, and a source reference. When the
     final outcome supports them, these earn extra recognition.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2>Roles and expertise</h2>
-    <p><b>Contributor</b> — everyone who registers. Contributors validate, flag, and suggest.</p>
-    <p><b>Trusted validator</b> — granted by an administrator or by invitation, after relevant
+    <h2 data-i18n="hiw.s2.h2">Roles and expertise</h2>
+    <p data-i18n-html="hiw.s2.p1"><b>Contributor</b> — everyone who registers. Contributors validate, flag, and suggest.</p>
+    <p data-i18n-html="hiw.s2.p2"><b>Trusted validator</b> — granted by an administrator or by invitation, after relevant
     expertise is recorded: linguistic training, native-speaker knowledge, community standing,
     or academic work. Trusted validators help resolve disputed items.</p>
-    <p><b>Verified expert</b> — the same, with a stronger documented basis. Only verified
+    <p data-i18n-html="hiw.s2.p3"><b>Verified expert</b> — the same, with a stronger documented basis. Only verified
     experts and administrators can mark an item <i>expert verified</i>.</p>
-    <p><b>Administrator</b> — stewards of the corpus: grant roles, create invitations,
+    <p data-i18n-html="hiw.s2.p4"><b>Administrator</b> — stewards of the corpus: grant roles, create invitations,
     invalidate abusive points, and resolve appeals.</p>
-    <p>Registering never makes anyone an expert by itself. Expert status always leaves a
+    <p data-i18n="hiw.s2.p5">Registering never makes anyone an expert by itself. Expert status always leaves a
     written record of its basis in the audit trail.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2>Consensus and verification — different things</h2>
-    <p>Items move through clear states: <span class="badge">pending</span> →
+    <h2 data-i18n="hiw.s3.h2">Consensus and verification — different things</h2>
+    <p data-i18n-html="hiw.s3.p1">Items move through clear states: <span class="badge">pending</span> →
     <span class="badge">community consensus</span> or <span class="badge">disputed</span> →
     <span class="badge">expert verified</span> or <span class="badge">rejected</span>.</p>
-    <p>When at least three independent contributors agree strongly (weighted by
+    <p data-i18n-html="hiw.s3.p2">When at least three independent contributors agree strongly (weighted by
     reliability), an item reaches <b>community consensus</b>. That is valuable — but it is
     <b>not</b> expert verification, and the interface always says so. When opinions diverge,
     the item becomes <b>disputed</b> and is routed to trusted validators and verified experts.
@@ -71,20 +71,20 @@
   </section>
 
   <section class="card hiw-section">
-    <h2>Points reward quality, not clicks</h2>
-    <p>A completed validation earns <b>provisional</b> points. They become <b>confirmed</b>
+    <h2 data-i18n="hiw.s4.h2">Points reward quality, not clicks</h2>
+    <p data-i18n-html="hiw.s4.p1">A completed validation earns <b>provisional</b> points. They become <b>confirmed</b>
     only when your answer later agrees with community consensus, a reference (gold-standard)
     answer, or expert adjudication. Extra points go to useful corrections, evidence-backed
     notes, resolving disputed items, and expert verification work. Spam, duplicates, and
     unsupported rapid-fire submissions earn nothing confirmed.</p>
-    <p>To keep things healthy there are rate limits, a daily cap, and diminishing returns
+    <p data-i18n="hiw.s4.p2">To keep things healthy there are rate limits, a daily cap, and diminishing returns
     after many validations in one day. Administrators can invalidate abusive points — the
     records stay in the audit trail; nothing is silently erased.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2>Reliability — tracked separately from points</h2>
-    <p>Points say how much you have contributed. <b>Reliability</b> says how often your
+    <h2 data-i18n="hiw.s5.h2">Reliability — tracked separately from points</h2>
+    <p data-i18n-html="hiw.s5.p1">Points say how much you have contributed. <b>Reliability</b> says how often your
     judgments hold up: agreement on hidden calibration tasks, agreement with later
     consensus, reversals, and expert-confirmed work. Reliability weights your future votes
     in consensus — carefully and within narrow bounds, so newcomers still matter. Your
@@ -93,14 +93,14 @@
   </section>
 
   <section class="card hiw-section">
-    <h2>Leaderboard, streaks, quests, achievements</h2>
-    <p>The public leaderboard ranks by <b>confirmed quality points</b> — never raw activity —
+    <h2 data-i18n="hiw.s6.h2">Leaderboard, streaks, quests, achievements</h2>
+    <p data-i18n-html="hiw.s6.p1">The public leaderboard ranks by <b>confirmed quality points</b> — never raw activity —
     and shows verified validations, reliability band, contribution streak, and expert badges.
     Research on gamification warns that leaderboards can discourage newcomers, so your
     personal view emphasizes <b>your</b> rank, percentile, and nearest neighbors rather than
     unreachable all-time totals. Listing is strictly opt-in, pseudonyms are welcome, and
     email addresses are never shown.</p>
-    <p>A daily streak requires at least one genuine, substantive contribution — rejected spam
+    <p data-i18n="hiw.s6.p2">A daily streak requires at least one genuine, substantive contribution — rejected spam
     never extends it. Small daily and weekly quests nudge toward diverse, high-value work
     (OCR restoration, dialect questions, evidence notes) instead of repeating the easiest
     task. Achievements mark real milestones: a first expert-confirmed correction, ten
@@ -109,26 +109,27 @@
   </section>
 
   <section class="card hiw-section">
-    <h2>Privacy</h2>
-    <p>Your email is visible only to you. Your profile is private unless you explicitly make
+    <h2 data-i18n="hiw.s7.h2">Privacy</h2>
+    <p data-i18n="hiw.s7.p1">Your email is visible only to you. Your profile is private unless you explicitly make
     it public, and the leaderboard lists you only if you opt in. Votes are attributed for
     auditability, but public surfaces show display names and quality bands only.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2>Appeals</h2>
-    <p>Disagree with a revoked point or an adjudication? Submit an appeal from your profile.
+    <h2 data-i18n="hiw.s8.h2">Appeals</h2>
+    <p data-i18n="hiw.s8.p1">Disagree with a revoked point or an adjudication? Submit an appeal from your profile.
     An administrator reviews it and writes a resolution. Appeals, votes, status changes, and
     adjudications all live in a permanent audit trail with timestamps and contributors.</p>
   </section>
 
-  <p style="color:var(--text2); font-size:14px; margin-top:24px;">
+  <p style="color:var(--text2); font-size:14px; margin-top:24px;" data-i18n="hiw.outro">
     Баркалла — thank you for helping keep Lak alive, accurate, and open to science. 💛
   </p>
 </main>
 
 <div id="toast-container"></div>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 </body>
 </html>

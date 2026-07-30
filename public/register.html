@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Create account — Lak Corpus Explorer</title>
+<title data-i18n="register.meta.title">Create account — Lak Corpus Explorer</title>
 <meta name="description" content="Create a free contributor account to help validate the Lak corpus.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,21 +11,21 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link active" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link active" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
 
 <main class="container" style="padding-top:36px; padding-bottom:56px; max-width:480px;">
-  <h1 style="font-size:24px; margin-bottom:8px;">Become a contributor</h1>
-  <p style="color:var(--text2); font-size:14px; margin-bottom:20px;">
+  <h1 style="font-size:24px; margin-bottom:8px;" data-i18n="register.h1">Become a contributor</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:20px;" data-i18n-html="register.intro">
     Accounts make validation attributable and auditable. Everyone starts as a
     <b>contributor</b> — trusted validator and verified expert status is granted by
     administrators after relevant expertise is recorded; it cannot be self-assigned.
@@ -34,36 +34,43 @@
   <div class="card">
     <form id="reg-form">
       <div class="field-wrap" style="margin-bottom:12px;">
-        <label for="r-name">Display name (a pseudonym is fine)</label>
-        <input id="r-name" type="text" maxlength="100" required placeholder="e.g. Aisha M." style="width:100%;">
+        <label for="r-name" data-i18n="register.name.label">Display name (a pseudonym is fine)</label>
+        <input id="r-name" type="text" maxlength="100" required placeholder="e.g. Aisha M." data-i18n-placeholder="register.name.placeholder" style="width:100%;">
       </div>
       <div class="field-wrap" style="margin-bottom:12px;">
-        <label for="r-email">Email (never shown publicly)</label>
+        <label for="r-email" data-i18n="register.email.label">Email (never shown publicly)</label>
         <input id="r-email" type="email" autocomplete="email" maxlength="200" required style="width:100%;">
       </div>
       <div class="field-wrap" style="margin-bottom:12px;">
-        <label for="r-pass">Password (at least 8 characters)</label>
+        <label for="r-pass" data-i18n="register.pass.label">Password (at least 8 characters)</label>
         <input id="r-pass" type="password" autocomplete="new-password" minlength="8" required style="width:100%;">
       </div>
       <div class="field-wrap" style="margin-bottom:16px;">
-        <label for="r-invite">Invitation code (optional — for invited validators/experts)</label>
-        <input id="r-invite" type="text" maxlength="100" placeholder="Leave empty if you don't have one" style="width:100%;">
+        <label for="r-invite" data-i18n="register.invite.label">Invitation code (optional — for invited validators/experts)</label>
+        <input id="r-invite" type="text" maxlength="100" placeholder="Leave empty if you don't have one" data-i18n-placeholder="register.invite.placeholder" style="width:100%;">
       </div>
-      <button class="btn btn-ok" type="submit" style="width:100%; min-height:46px;">Create account</button>
+      <button class="btn btn-ok" type="submit" style="width:100%; min-height:46px;" data-i18n="register.submit">Create account</button>
       <div id="reg-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
     </form>
   </div>
   <p style="color:var(--text3); font-size:13px; margin-top:14px;">
-    Already have an account? <a href="/login.html" style="color:var(--accent);">Log in</a> ·
-    <a href="/how-it-works.html" style="color:var(--accent);">How validation works</a>
+    <span data-i18n="register.haveAccount">Already have an account?</span> <a href="/login.html" style="color:var(--accent);" data-i18n="register.login">Log in</a> ·
+    <a href="/how-it-works.html" style="color:var(--accent);" data-i18n="register.howItWorks">How validation works</a>
   </p>
 </main>
 
 <div id="toast-container"></div>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const tr = (key, fallback) => {
+    const value = window.I18n?.t?.(key);
+    return value && value !== key ? value : fallback;
+  };
+  const registrationError = message =>
+    !message || message === 'Registration failed' ? tr('auth.registrationFailed', 'Registration failed') : message;
   document.getElementById('reg-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const errEl = document.getElementById('reg-error');
@@ -79,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Registration failed');
+      if (!res.ok) throw new Error(registrationError(data.error));
       location.href = '/validate.html';
     } catch (err) {
       errEl.textContent = err.message;

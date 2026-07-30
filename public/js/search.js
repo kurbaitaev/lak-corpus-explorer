@@ -1,10 +1,45 @@
 'use strict';
 
+// ── Localization helper ──────────────────────────────────────
+// Canonical dictionary lives in i18n.js; this only forwards calls and
+// falls back to the supplied English default when a key is missing.
+function t(key, def, vars) {
+  const I = window.I18n;
+  if (I && typeof I.t === 'function') {
+    const out = I.t(key, vars);
+    if (out != null && out !== key) return out;
+  }
+  return def;
+}
+function tp(key, count, def, vars) {
+  const I = window.I18n;
+  if (I && typeof I.plural === 'function') {
+    const out = I.plural(key, count, vars);
+    if (out != null && out !== key) return out;
+  }
+  return def;
+}
+// Localized display labels for review states. Canonical values stay 'approved'
+// / 'flagged' / 'unreviewed'; only the shown text is translated.
+function reviewStateLabel(state) {
+  if (state === 'approved')   return t('review.state.approved', 'Approved');
+  if (state === 'flagged')    return t('review.state.flagged', 'Flagged');
+  if (state === 'unreviewed') return t('review.state.unreviewed', 'Unreviewed');
+  return state;
+}
+
 // ── Utilities ────────────────────────────────────────────────
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
-const fmt = n => typeof n === 'number' ? n.toLocaleString() : String(n ?? '');
+const fmt = n => typeof n === 'number' ? n.toLocaleString(localeTag()) : String(n ?? '');
+function localeTag() {
+  const I = window.I18n;
+  if (I && typeof I.getLanguage === 'function') {
+    return I.getLanguage() === 'ru' ? 'ru-RU' : 'en-GB';
+  }
+  return 'en-GB';
+}
 
 function toast(msg, type = 'ok') {
   const c = document.getElementById('toast-container');
@@ -20,12 +55,12 @@ const reviewCache = {};
 
 function qualityBadgeHtml(recordId, source, reviewData) {
   if (reviewData) {
-    if (reviewData.state === 'approved')   return `<span class="quality-badge q-approved">Approved</span>`;
-    if (reviewData.state === 'flagged')    return `<span class="quality-badge q-flagged">Flagged</span>`;
-    if (reviewData.state === 'unreviewed') return `<span class="quality-badge q-unreviewed">Unreviewed</span>`;
+    if (reviewData.state === 'approved')   return `<span class="quality-badge q-approved">${esc(reviewStateLabel('approved'))}</span>`;
+    if (reviewData.state === 'flagged')    return `<span class="quality-badge q-flagged">${esc(reviewStateLabel('flagged'))}</span>`;
+    if (reviewData.state === 'unreviewed') return `<span class="quality-badge q-unreviewed">${esc(reviewStateLabel('unreviewed'))}</span>`;
   }
-  if (source === 'Uslar 1890') return `<span class="quality-badge q-ocr">OCR — unreviewed</span>`;
-  return `<span class="quality-badge q-unreviewed">Unreviewed</span>`;
+  if (source === 'Uslar 1890') return `<span class="quality-badge q-ocr">${esc(t('search.badge.ocrUnreviewed', 'OCR — unreviewed'))}</span>`;
+  return `<span class="quality-badge q-unreviewed">${esc(reviewStateLabel('unreviewed'))}</span>`;
 }
 
 // ── State ────────────────────────────────────────────────────
@@ -34,6 +69,10 @@ let currentTotal  = 0;
 let currentPages  = 1;
 let currentExpanded = [];
 let currentSenses   = [];
+let currentQuery    = '';
+let currentOcrSenses = [];
+let currentRows     = [];
+let currentMatches  = [];
 let openReviewId  = null;
 let searchPending = false;
 
@@ -53,21 +92,27 @@ const $prev2   = document.getElementById('prev-btn2');
 const $next2   = document.getElementById('next-btn2');
 
 // ── Populate stats from server ────────────────────────────────
+let lastStats = null;
 async function loadStats() {
   try {
     const res  = await fetch('/api/corpus/stats');
     const data = await res.json();
-    const s    = data.stats;
-    const row  = document.getElementById('stats-row');
-    row.innerHTML = [
-      ['Documents', s.documents],
-      ['Segments',  s.sentences],
-      ['Tokens',    fmt(s.tokens)],
-      ['Lexicon',   fmt(s.lexicon_rows)],
-    ].map(([l, v]) =>
-      `<div class="stat-chip"><span class="val">${v}</span><span class="lbl">${l}</span></div>`
-    ).join('');
+    lastStats  = data.stats;
+    renderStats();
   } catch { /* silent */ }
+}
+function renderStats() {
+  const s = lastStats;
+  if (!s) return;
+  const row = document.getElementById('stats-row');
+  row.innerHTML = [
+    [t('search.stats.documents', 'Documents'), s.documents],
+    [t('search.stats.segments', 'Segments'),   s.sentences],
+    [t('search.stats.tokens', 'Tokens'),       fmt(s.tokens)],
+    [t('search.stats.lexicon', 'Lexicon'),     fmt(s.lexicon_rows)],
+  ].map(([l, v]) =>
+    `<div class="stat-chip"><span class="val">${v}</span><span class="lbl">${esc(l)}</span></div>`
+  ).join('');
 }
 
 // ── Search (calls server API) ─────────────────────────────────
@@ -87,12 +132,12 @@ async function search(page = 1) {
   if (source)  params.set('source', source);
   if (variety) params.set('variety', variety);
 
-  $tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3);">Searching…</td></tr>`;
+  $tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
     const res  = await fetch(`/api/corpus/search?${params}`);
-    if (!res.ok) throw new Error('Search failed');
+    if (!res.ok) throw new Error(t('search.error.failed', 'Search failed'));
     const data = await res.json();
 
     currentTotal    = data.total;
@@ -100,19 +145,23 @@ async function search(page = 1) {
     currentPage     = data.page;
     currentExpanded = data.expanded || [];
     currentSenses   = data.senses   || [];
+    currentQuery    = q;
+    currentOcrSenses = data.ocrSenses || [];
+    currentRows     = data.rows || [];
+    currentMatches  = data.matches || [];
 
-    renderConceptCard(q, currentExpanded, currentSenses, data.ocrSenses || []);
-    renderResults(data.rows, data.matches || []);
+    renderConceptCard(q, currentExpanded, currentSenses, currentOcrSenses);
+    renderResults(currentRows, currentMatches);
     renderPagination();
 
     // Fetch review badges for visible records
-    const ids = data.rows.map(r => r[5]).filter(Boolean);
+    const ids = currentRows.map(r => r[5]).filter(Boolean);
     if (ids.length) {
-      fetchBulkReviews(ids).then(revMap => updateBadges(data.rows, revMap));
+      fetchBulkReviews(ids).then(revMap => updateBadges(currentRows, revMap));
     }
   } catch (err) {
     $tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
-      <div class="icon">⚠️</div><h3>Search error</h3><p>${esc(err.message)}</p>
+      <div class="icon">⚠️</div><h3>${esc(t('search.error.title', 'Search error'))}</h3><p>${esc(err.message)}</p>
     </div></td></tr>`;
   } finally {
     searchPending = false;
@@ -127,27 +176,29 @@ function renderConceptCard(q, expanded, senses, ocrSenses = []) {
   }
   $concept.innerHTML = `
     <div>
-      <div class="concept-label">Russian query</div>
+      <div class="concept-label">${esc(t('search.concept.russianQuery', 'Russian query'))}</div>
       <div class="concept-val">${esc(q)}</div>
     </div>
     <div class="concept-arrow">→</div>
     <div>
-      <div class="concept-label">Lak translation</div>
+      <div class="concept-label">${esc(t('search.concept.lakTranslation', 'Lak translation'))}</div>
       <div class="concept-val" lang="lbe">${expanded.map(esc).join(' · ')}</div>
-      ${senses.length ? `<div class="concept-senses">Dictionary senses: ${senses.map(esc).join(', ')}</div>` : ''}
+      ${senses.length ? `<div class="concept-senses">${esc(t('search.concept.dictionarySenses', 'Dictionary senses:'))} ${senses.map(esc).join(', ')}</div>` : ''}
     </div>
     ${ocrSenses.length ? `
     <div class="concept-ocr">
-      <span class="quality-badge q-ocr">OCR — unverified</span>
-      <span>Historical senses from Uslar 1890 (unreviewed OCR): ${ocrSenses.map(esc).join(', ')}</span>
+      <span class="quality-badge q-ocr">${esc(t('search.badge.ocrUnverified', 'OCR — unverified'))}</span>
+      <span>${esc(t('search.concept.historicalSenses', 'Historical senses from Uslar 1890 (unreviewed OCR):'))} ${ocrSenses.map(esc).join(', ')}</span>
     </div>` : ''}`;
   $concept.classList.add('visible');
 }
 
 function renderPagination() {
-  const prefix = currentExpanded.length && $kind.value !== 'lexicon' ? 'Corpus occurrences · ' : '';
-  $count.innerHTML = `${prefix}<b>${currentTotal.toLocaleString()}</b> records`;
-  const text = `Page ${currentPage} of ${currentPages}`;
+  const prefix = currentExpanded.length && $kind.value !== 'lexicon' ? t('search.count.corpusPrefix', 'Corpus occurrences · ') : '';
+  $count.innerHTML = tp('search.count.records', currentTotal,
+    `${prefix}<b>${currentTotal.toLocaleString(localeTag())}</b> records`,
+    { prefix, count: `<b>${currentTotal.toLocaleString(localeTag())}</b>` });
+  const text = t('search.page.of', `Page ${currentPage} of ${currentPages}`, { page: currentPage, pages: currentPages });
   $page.textContent = $page2.textContent = text;
   [$prev,$prev2].forEach(b => b.disabled = currentPage <= 1);
   [$next,$next2].forEach(b => b.disabled = currentPage >= currentPages);
@@ -166,11 +217,20 @@ function highlightSpans(text, spans) {
   return out + esc(s.slice(last));
 }
 
+// Localized display for the corpus variety label. The stored value is kept as
+// data; only the shown text is localized when a dictionary key exists.
+function varietyLabel(variety) {
+  if (!variety) return '—';
+  const key = 'variety.' + String(variety).toLowerCase();
+  const cap = variety.charAt(0).toUpperCase() + variety.slice(1);
+  return t(key, cap);
+}
+
 function renderResults(rows, matches = []) {
   if (!rows.length) {
     $tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
-      <div class="icon">🔍</div><h3>No records match</h3>
-      <p>Try a different query, or clear the filters above.</p>
+      <div class="icon">🔍</div><h3>${esc(t('search.empty.title', 'No records match'))}</h3>
+      <p>${esc(t('search.empty.body', 'Try a different query, or clear the filters above.'))}</p>
     </div></td></tr>`;
     return;
   }
@@ -178,27 +238,25 @@ function renderResults(rows, matches = []) {
   $tbody.innerHTML = rows.map((r, i) => {
     const [type, lak, meaning, source, variety, recordId, url] = r;
     const typeTag = type === 'text'
-      ? `<span class="tag tag-text">Text</span>`
-      : `<span class="tag tag-lexicon">Lexicon</span>`;
+      ? `<span class="tag tag-text">${esc(t('search.type.text', 'Text'))}</span>`
+      : `<span class="tag tag-lexicon">${esc(t('search.type.lexicon', 'Lexicon'))}</span>`;
 
     const review  = reviewCache[recordId];
     const badge   = qualityBadgeHtml(recordId, source, review);
     const ocrWarn = (source === 'Uslar 1890' && !review)
-      ? `<span class="quality-badge q-ocr" style="margin-top:5px;">OCR — unreviewed</span>` : '';
+      ? `<span class="quality-badge q-ocr" style="margin-top:5px;">${esc(t('search.badge.ocrUnreviewed', 'OCR — unreviewed'))}</span>` : '';
 
     const sourceCell = url
       ? `<a href="${esc(url)}" class="source-link" target="_blank" rel="noreferrer">${esc(source)}</a>`
       : esc(source);
 
-    const varietyLabel = variety ? variety.charAt(0).toUpperCase() + variety.slice(1) : '—';
-
     return `<tr data-record="${esc(recordId)}">
-      <td class="td-type" data-label="Type / quality">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
-      <td class="td-lak" data-label="Lak"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
-      <td class="td-meaning" data-label="Meaning / document">${esc(meaning)}</td>
-      <td data-label="Source">${sourceCell}</td>
-      <td data-label="Variety">${varietyLabel}</td>
-      <td class="td-actions"><button class="btn btn-sm" data-id="${esc(recordId)}" onclick="toggleReview(this)">Review</button></td>
+      <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}${badge}${ocrWarn}<div class="record-meta">${esc(recordId)}</div></td>
+      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
+      <td class="td-meaning" data-label="${esc(t('search.col.meaningDocument', 'Meaning / document'))}">${esc(meaning)}</td>
+      <td data-label="${esc(t('search.col.source', 'Source'))}">${sourceCell}</td>
+      <td data-label="${esc(t('search.col.variety', 'Variety'))}">${esc(varietyLabel(variety))}</td>
+      <td class="td-actions"><button class="btn btn-sm" data-id="${esc(recordId)}" onclick="toggleReview(this)">${esc(t('search.action.review', 'Review'))}</button></td>
     </tr>`;
   }).join('');
 }
@@ -229,8 +287,7 @@ function updateBadges(rows, revMap) {
     newBadge.className = review.state === 'approved' ? 'quality-badge q-approved'
                        : review.state === 'flagged'  ? 'quality-badge q-flagged'
                        : 'quality-badge q-unreviewed';
-    newBadge.textContent = review.state === 'approved' ? 'Approved'
-                         : review.state === 'flagged'  ? 'Flagged' : 'Unreviewed';
+    newBadge.textContent = reviewStateLabel(review.state);
     dataRow.querySelector('.tag')?.insertAdjacentElement('afterend', newBadge);
   }
 }
@@ -250,32 +307,32 @@ window.toggleReview = function(btn) {
   panelRow.innerHTML = `
     <td colspan="6">
       <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;">
-        Review — <span style="font-family:var(--font-mono);font-weight:400;">${esc(recordId)}</span>
+        ${esc(t('search.review.heading', 'Review'))} — <span style="font-family:var(--font-mono);font-weight:400;">${esc(recordId)}</span>
       </div>
       <div class="review-panel">
         <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;">Correction (optional)</label>
-          <textarea id="rv-correction" rows="3" placeholder="Corrected Lak text or translation…">${esc(review.correction || '')}</textarea>
+          <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;">${esc(t('search.review.correctionLabel', 'Correction (optional)'))}</label>
+          <textarea id="rv-correction" rows="3" placeholder="${esc(t('search.review.correctionPlaceholder', 'Corrected Lak text or translation…'))}">${esc(review.correction || '')}</textarea>
         </div>
         <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;">Note (optional)</label>
-          <textarea id="rv-note" rows="3" placeholder="Describe the issue or your finding…">${esc(review.note || '')}</textarea>
+          <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;">${esc(t('search.review.noteLabel', 'Note (optional)'))}</label>
+          <textarea id="rv-note" rows="3" placeholder="${esc(t('search.review.notePlaceholder', 'Describe the issue or your finding…'))}">${esc(review.note || '')}</textarea>
         </div>
       </div>
       <div>
-        <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;margin-top:8px;">${window.REVIEWER ? 'Reviewing as' : 'Your name (optional)'}</label>
+        <label style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;margin-top:8px;">${esc(window.REVIEWER ? t('search.review.reviewingAs', 'Reviewing as') : t('search.review.yourNameOptional', 'Your name (optional)'))}</label>
         ${window.REVIEWER
-          ? `<input type="text" id="rv-name" value="${esc(window.REVIEWER)}" readonly style="width:260px;background:var(--bg2,#f4f4f4);" title="Attributed to your reviewer login"> <span class="quality-badge q-approved" style="font-size:10.5px;">✓ logged in</span>`
-          : `<input type="text" id="rv-name" placeholder="Reviewer name or anonymous" value="${esc(review.reviewer_name || '')}" style="width:260px;">`}
+          ? `<input type="text" id="rv-name" value="${esc(window.REVIEWER)}" readonly style="width:260px;background:var(--bg2,#f4f4f4);" title="${esc(t('search.review.attributedTooltip', 'Attributed to your reviewer login'))}"> <span class="quality-badge q-approved" style="font-size:10.5px;">${esc(t('search.review.loggedIn', '✓ logged in'))}</span>`
+          : `<input type="text" id="rv-name" placeholder="${esc(t('search.review.namePlaceholder', 'Reviewer name or anonymous'))}" value="${esc(review.reviewer_name || '')}" style="width:260px;">`}
       </div>
       <div class="review-actions">
         ${window.REVIEWER
-          ? `<button class="btn btn-ok" onclick="submitReview('${esc(recordId)}','approved')">✓ Approve</button>`
-          : `<span class="review-login-hint">You can flag problems or leave suggestions. <a href="/login.html">Log in as a reviewer</a> to approve records.</span>`}
-        <button class="btn btn-warn" onclick="submitReview('${esc(recordId)}','flagged')">⚑ Flag</button>
-        <button class="btn" onclick="submitReview('${esc(recordId)}','unreviewed')">↺ Mark unreviewed</button>
-        <button class="btn" onclick="document.querySelector('.review-row')?.remove();openReviewId=null;">Cancel</button>
-        ${review.state ? `<span style="font-size:12px;color:var(--text3);">Current: <b>${review.state}</b> · ${new Date(review.updated_at).toLocaleDateString()}</span>` : ''}
+          ? `<button class="btn btn-ok" onclick="submitReview('${esc(recordId)}','approved')">${esc(t('search.review.approve', '✓ Approve'))}</button>`
+          : `<span class="review-login-hint">${t('search.review.loginHint', 'You can flag problems or leave suggestions. <a href="/login.html">Log in as a reviewer</a> to approve records.')}</span>`}
+        <button class="btn btn-warn" onclick="submitReview('${esc(recordId)}','flagged')">${esc(t('search.review.flag', '⚑ Flag'))}</button>
+        <button class="btn" onclick="submitReview('${esc(recordId)}','unreviewed')">${esc(t('search.review.markUnreviewed', '↺ Mark unreviewed'))}</button>
+        <button class="btn" onclick="document.querySelector('.review-row')?.remove();openReviewId=null;">${esc(t('search.review.cancel', 'Cancel'))}</button>
+        ${review.state ? `<span style="font-size:12px;color:var(--text3);">${esc(t('search.review.current', 'Current:'))} <b>${esc(reviewStateLabel(review.state))}</b> · ${new Date(review.updated_at).toLocaleDateString(localeTag())}</span>` : ''}
       </div>
     </td>`;
   row.insertAdjacentElement('afterend', panelRow);
@@ -292,7 +349,7 @@ window.submitReview = async function(recordId, state) {
     });
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}));
-      throw new Error(errBody.error || `Server error (${res.status})`);
+      throw new Error(errBody.error || t('search.review.serverError', `Server error (${res.status})`, { status: res.status }));
     }
     const data = await res.json();
     reviewCache[recordId] = data.review;
@@ -306,12 +363,12 @@ window.submitReview = async function(recordId, state) {
       const nb = document.createElement('span');
       nb.className = state === 'approved' ? 'quality-badge q-approved'
                    : state === 'flagged'  ? 'quality-badge q-flagged' : 'quality-badge q-unreviewed';
-      nb.textContent = state === 'approved' ? 'Approved' : state === 'flagged' ? 'Flagged' : 'Unreviewed';
+      nb.textContent = reviewStateLabel(state);
       dataRow.querySelector('.tag')?.insertAdjacentElement('afterend', nb);
     }
-    toast(`Review saved: ${state}`, 'ok');
+    toast(t('search.review.saved', `Review saved: ${reviewStateLabel(state)}`, { state: reviewStateLabel(state) }), 'ok');
   } catch (err) {
-    toast(err.message || 'Failed to save review. Please try again.', 'err');
+    toast(err.message || t('search.review.saveFailed', 'Failed to save review. Please try again.'), 'err');
   }
 };
 
@@ -328,6 +385,22 @@ $q.addEventListener('input', () => {
   debounceTimer = setTimeout(() => search(1), 300);
 });
 [$kind, $source, $variety].forEach(el => el.addEventListener('change', () => search(1)));
+
+// ── Re-render on language change ──────────────────────────────
+function relocalize() {
+  renderStats();
+  if (currentRows.length || currentExpanded.length) {
+    renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
+    renderResults(currentRows, currentMatches);
+    renderPagination();
+    const ids = currentRows.map(r => r[5]).filter(Boolean);
+    if (ids.length) updateBadges(currentRows, reviewCache);
+  }
+}
+(function () {
+  if (window.I18n && typeof window.I18n.onChange === 'function') window.I18n.onChange(relocalize);
+  else window.addEventListener('i18n:change', relocalize);
+})();
 
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

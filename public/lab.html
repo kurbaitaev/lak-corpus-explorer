@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Translation Lab — Lak Corpus Explorer</title>
+<title data-i18n="lab.meta.title">Translation Lab — Lak Corpus Explorer</title>
 <meta name="description" content="Linguistic workbench for rigorous translation and evidence tracking.">
 <link rel="stylesheet" href="/css/app.css?v=3">
 </head>
@@ -11,15 +11,15 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link active" href="/lab.html">Lab</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link active" href="/lab.html" data-i18n="nav.lab">Lab</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
@@ -27,8 +27,8 @@
 <main class="container lab-container" style="padding-top:32px; padding-bottom:56px;">
   <div id="lab-auth-state" class="card" style="display: none; margin-bottom:20px;">
     <p style="color: var(--text2); font-size: 14px;">
-      You can inspect evidence without an account. <a href="/login.html?return=/lab.html">Log in or register</a>
-      to save, review, or validate a translation pair.
+      <span data-i18n="lab.authState.p">You can inspect evidence without an account.</span> <a href="/login.html?return=/lab.html" data-i18n="lab.authState.link">Log in or register</a>
+      <span data-i18n="lab.authState.tail">to save, review, or validate a translation pair.</span>
     </p>
   </div>
 
@@ -36,12 +36,12 @@
   <div id="lab-app" style="display: none;">
     <div class="lab-header">
       <div>
-        <h1 style="font-size: 26px; font-family: var(--font-serif); font-weight: normal; margin-bottom: 6px;">Translation Lab</h1>
-        <p style="font-size: 14px; color: var(--text2);">Model-assisted linguistic workbench with rigorous evidence tracking.</p>
+        <h1 style="font-size: 26px; font-family: var(--font-serif); font-weight: normal; margin-bottom: 6px;" data-i18n="lab.h1">Translation Lab</h1>
+        <p style="font-size: 14px; color: var(--text2);" data-i18n="lab.subtitle">Model-assisted linguistic workbench with rigorous evidence tracking.</p>
       </div>
       <div class="lab-header-actions">
-        <button id="btn-view-workbench" class="btn btn-primary">Workbench</button>
-        <button id="btn-view-history" class="btn">My Pairs</button>
+        <button id="btn-view-workbench" class="btn btn-primary" data-i18n="lab.workbench">Workbench</button>
+        <button id="btn-view-history" class="btn" data-i18n="lab.myPairs">My Pairs</button>
       </div>
     </div>
 
@@ -51,20 +51,20 @@
         <form id="propose-form">
           <div class="lab-propose-grid">
             <div class="field-wrap">
-                <label for="lab-source-text">Source text</label>
-              <textarea id="lab-source-text" class="lab-input" rows="4" placeholder="Enter Russian or Lak text..." required></textarea>
+                <label for="lab-source-text" data-i18n="lab.sourceText.label">Source text</label>
+              <textarea id="lab-source-text" class="lab-input" rows="4" placeholder="Enter Russian or Lak text..." data-i18n-placeholder="lab.sourceText.placeholder" required></textarea>
             </div>
             <div class="lab-propose-controls">
               <div class="field-wrap" style="margin-bottom: 12px;">
-                <label for="lab-direction">Direction</label>
+                <label for="lab-direction" data-i18n="lab.direction.label">Direction</label>
                 <div class="select-wrap">
                   <select id="lab-direction" class="lab-input">
-                    <option value="ru2lak">Russian → Lak</option>
-                    <option value="lak2ru">Lak → Russian</option>
+                    <option value="ru2lak" data-i18n="lab.direction.ru2lak">Russian → Lak</option>
+                    <option value="lak2ru" data-i18n="lab.direction.lak2ru">Lak → Russian</option>
                   </select>
                 </div>
               </div>
-               <button type="submit" class="btn btn-primary" id="btn-propose" style="width: 100%; min-height: 44px; margin-top: auto;">Retrieve evidence</button>
+               <button type="submit" class="btn btn-primary" id="btn-propose" style="width: 100%; min-height: 44px; margin-top: auto;" data-i18n="lab.retrieveEvidence">Retrieve evidence</button>
               <div id="provider-info" style="font-size: 11.5px; color: var(--text3); text-align: center; margin-top: 10px;"></div>
             </div>
           </div>
@@ -73,13 +73,13 @@
 
       <div id="lab-propose-loading" style="display:none; text-align: center; padding: 48px; color: var(--text2);">
         <div class="spinner" style="margin: 0 auto 16px;"></div>
-         <p style="font-size: 14px;">Retrieving dictionary senses and corpus evidence…</p>
+         <p style="font-size: 14px;" data-i18n="lab.loading">Retrieving dictionary senses and corpus evidence…</p>
       </div>
 
       <div id="lab-proposal-area" style="display: none;">
         <div class="lab-banner" id="lab-model-banner">
           <span class="lab-banner-icon">⚠</span>
-          <span><strong>Model proposal — not verified.</strong> Review, correct, and provide evidence before saving.</span>
+          <span data-i18n-html="lab.banner"><strong>Model proposal — not verified.</strong> Review, correct, and provide evidence before saving.</span>
         </div>
 
         <div class="lab-meta-row" id="lab-proposal-meta"></div>
@@ -87,83 +87,83 @@
         <form id="save-pair-form">
           <div class="lab-targets-grid">
             <div class="field-wrap">
-               <label for="lab-literal-target">Literal target (word-for-word)</label>
+               <label for="lab-literal-target" data-i18n="lab.literalTarget.label">Literal target (word-for-word)</label>
                <textarea id="lab-literal-target" class="lab-input" rows="6"></textarea>
             </div>
             <div class="field-wrap">
-               <label for="lab-natural-target">Natural target (fluent)</label>
+               <label for="lab-natural-target" data-i18n="lab.naturalTarget.label">Natural target (fluent)</label>
                <textarea id="lab-natural-target" class="lab-input" rows="6"></textarea>
             </div>
           </div>
 
           <div class="card" style="margin-top: 20px; padding: 20px;">
-            <h3 class="lab-section-title">Linguistic Context & Evidence</h3>
+            <h3 class="lab-section-title" data-i18n="lab.context.h3">Linguistic Context & Evidence</h3>
             
             <div class="lab-context-grid">
               <div class="field-wrap">
-                <label for="lab-variety">Variety</label>
+                <label for="lab-variety" data-i18n="lab.variety.label">Variety</label>
                 <div class="select-wrap">
                   <select id="lab-variety" class="lab-input">
-                    <option value="standard">Standard</option>
-                    <option value="arakul">Arakul</option>
-                    <option value="balkhar">Balkhar</option>
-                    <option value="shali">Shali</option>
-                    <option value="historical">Historical</option>
-                    <option value="unspecified">Unspecified</option>
+                    <option value="standard" data-i18n="variety.standard">Standard</option>
+                    <option value="arakul" data-i18n="variety.arakul">Arakul</option>
+                    <option value="balkhar" data-i18n="variety.balkhar">Balkhar</option>
+                    <option value="shali" data-i18n="variety.shali">Shali</option>
+                    <option value="historical" data-i18n="variety.historical">Historical</option>
+                    <option value="unspecified" data-i18n="variety.unspecified">Unspecified</option>
                   </select>
                 </div>
               </div>
               <div class="field-wrap">
-                <label for="lab-orthography">Orthography</label>
+                <label for="lab-orthography" data-i18n="lab.orthography.label">Orthography</label>
                 <div class="select-wrap">
                   <select id="lab-orthography" class="lab-input">
-                    <option value="cyrillic">Cyrillic</option>
-                    <option value="latin">Latin</option>
-                    <option value="arabic">Arabic</option>
+                    <option value="cyrillic" data-i18n="lab.orthography.cyrillic">Cyrillic</option>
+                    <option value="latin" data-i18n="lab.orthography.latin">Latin</option>
+                    <option value="arabic" data-i18n="lab.orthography.arabic">Arabic</option>
                   </select>
                 </div>
               </div>
               <div class="field-wrap">
-                <label for="lab-source-type">Source Type</label>
+                <label for="lab-source-type" data-i18n="lab.sourceType.label">Source Type</label>
                 <div class="select-wrap">
                   <select id="lab-source-type" class="lab-input">
-                    <option value="human">Human</option>
-                    <option value="human_from_evidence">Human from retrieved evidence</option>
+                    <option value="human" data-i18n="lab.sourceType.human">Human</option>
+                    <option value="human_from_evidence" data-i18n="lab.sourceType.humanEvidence">Human from retrieved evidence</option>
                   </select>
                 </div>
               </div>
               <div class="field-wrap">
-                <label for="lab-provenance">Provenance</label>
-                <input type="text" id="lab-provenance" class="lab-input" placeholder="e.g. Fieldwork, Book title">
+                <label for="lab-provenance" data-i18n="lab.provenance.label">Provenance</label>
+                <input type="text" id="lab-provenance" class="lab-input" placeholder="e.g. Fieldwork, Book title" data-i18n-placeholder="lab.provenance.placeholder">
               </div>
             </div>
 
             <div class="lab-context-grid" style="margin-top: 16px;">
               <div class="field-wrap">
-                <label for="lab-rights">Rights Status</label>
+                <label for="lab-rights" data-i18n="lab.rights.label">Rights Status</label>
                 <div class="select-wrap">
                   <select id="lab-rights" class="lab-input">
-                    <option value="public_domain">Public Domain</option>
-                    <option value="cc_by">CC-BY</option>
-                    <option value="restricted">Copyrighted / restricted</option>
-                    <option value="unknown">Unknown</option>
+                    <option value="public_domain" data-i18n="lab.rights.publicDomain">Public Domain</option>
+                    <option value="cc_by" data-i18n="lab.rights.ccBy">CC-BY</option>
+                    <option value="restricted" data-i18n="lab.rights.restricted">Copyrighted / restricted</option>
+                    <option value="unknown" data-i18n="lab.rights.unknown">Unknown</option>
                   </select>
                 </div>
               </div>
               <div class="field-wrap">
-                <label for="lab-access">Access Status</label>
+                <label for="lab-access" data-i18n="lab.access.label">Access Status</label>
                 <div class="select-wrap">
                   <select id="lab-access" class="lab-input">
-                    <option value="public">Public</option>
-                    <option value="restricted">Restricted</option>
-                    <option value="permission_pending">Permission pending</option>
-                    <option value="private">Private</option>
+                    <option value="public" data-i18n="lab.access.public">Public</option>
+                    <option value="restricted" data-i18n="lab.access.restricted">Restricted</option>
+                    <option value="permission_pending" data-i18n="lab.access.permissionPending">Permission pending</option>
+                    <option value="private" data-i18n="lab.access.private">Private</option>
                   </select>
                 </div>
               </div>
               <div class="field-wrap lab-col-span-2">
-                <label for="lab-evidence-ids">Evidence IDs (comma separated)</label>
-                <input type="text" id="lab-evidence-ids" class="lab-input" placeholder="e.g. 102, 405">
+                <label for="lab-evidence-ids" data-i18n="lab.evidenceIds.label">Evidence IDs (comma separated)</label>
+                <input type="text" id="lab-evidence-ids" class="lab-input" placeholder="e.g. 102, 405" data-i18n-placeholder="lab.evidenceIds.placeholder">
               </div>
             </div>
 
@@ -174,13 +174,13 @@
               <div class="lab-flags-grid">
                 <label class="check-row" style="margin-bottom: 0;">
                   <input type="checkbox" id="lab-abstained">
-                  <span>Abstain / Uncertain</span>
+                  <span data-i18n="lab.abstain">Abstain / Uncertain</span>
                 </label>
                 <div class="field-wrap lab-error-cat-wrap">
-                  <label for="lab-error-cat">Error Category (if correcting model)</label>
+                  <label for="lab-error-cat" data-i18n="lab.errorCat.label">Error Category (if correcting model)</label>
                   <div class="select-wrap">
                     <select id="lab-error-cat" class="lab-input">
-                      <option value="">None</option>
+                      <option value="" data-i18n="lab.errorCat.none">None</option>
                       <option value="no_reliable_target">No reliable target</option>
                       <option value="ambiguous_source">Ambiguous source</option>
                       <option value="dialectal_gap">Dialectal gap</option>
@@ -196,8 +196,8 @@
           </div>
 
           <div class="lab-save-bar">
-            <button type="button" class="btn" id="btn-clear-propose">Clear Workbench</button>
-            <button type="submit" class="btn btn-primary" id="btn-save-pair">Save translation pair</button>
+            <button type="button" class="btn" id="btn-clear-propose" data-i18n="lab.clearWorkbench">Clear Workbench</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-pair" data-i18n="lab.savePair">Save translation pair</button>
           </div>
         </form>
       </div>
@@ -210,20 +210,20 @@
           <table class="lab-history-table">
             <thead>
               <tr>
-                <th>Direction</th>
-                <th>Source</th>
-                <th>Literal Target</th>
-                <th>Natural Target</th>
-                <th>Status</th>
+                <th data-i18n="lab.history.col.direction">Direction</th>
+                <th data-i18n="lab.history.col.source">Source</th>
+                <th data-i18n="lab.history.col.literal">Literal Target</th>
+                <th data-i18n="lab.history.col.natural">Natural Target</th>
+                <th data-i18n="lab.history.col.status">Status</th>
               </tr>
             </thead>
             <tbody id="lab-history-tbody"></tbody>
           </table>
         </div>
-        <div id="lab-history-loading" style="padding: 40px; text-align: center; color: var(--text3);">Loading...</div>
+        <div id="lab-history-loading" style="padding: 40px; text-align: center; color: var(--text3);" data-i18n="lab.history.loading">Loading...</div>
         <div id="lab-history-empty" style="display:none; padding: 48px; text-align: center; color: var(--text3);">
           <div style="font-size: 32px; margin-bottom: 12px; color: var(--text3);">—</div>
-          <p>No translated pairs saved yet.</p>
+          <p data-i18n="lab.history.empty">No translated pairs saved yet.</p>
         </div>
       </div>
     </div>
@@ -232,7 +232,8 @@
 </main>
 <div id="toast-container"></div>
 
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script src="/js/lab.js?v=1"></script>
 </body>

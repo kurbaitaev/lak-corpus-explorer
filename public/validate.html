@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Validate — Lak Corpus Explorer</title>
+<title data-i18n="validate.meta.title">Validate — Lak Corpus Explorer</title>
 <meta name="description" content="Help validate Lak translations one small task at a time. Every careful answer preserves the Lak language.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,14 +11,14 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link active" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link active" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
@@ -26,16 +26,16 @@
 <main class="container" style="padding-top:28px; padding-bottom:56px; max-width:720px;">
 
   <div id="need-login" style="display:none;" class="card">
-    <h1 style="font-size:22px; margin-bottom:10px;">Join the validation effort</h1>
-    <p style="color:var(--text2); font-size:14px; margin-bottom:16px;">
+    <h1 style="font-size:22px; margin-bottom:10px;" data-i18n="validate.needLogin.h1">Join the validation effort</h1>
+    <p style="color:var(--text2); font-size:14px; margin-bottom:16px;" data-i18n="validate.needLogin.p">
       Validation is done by registered contributors so that every judgment can be
       attributed, audited, and weighted by reliability. Accounts are free; searching
       the corpus never requires an account.
     </p>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn btn-ok" href="/register.html">Create a contributor account</a>
-      <a class="btn" href="/login.html">Log in</a>
-      <a class="btn" href="/how-it-works.html">How validation works</a>
+      <a class="btn btn-ok" href="/register.html" data-i18n="validate.createAccount">Create a contributor account</a>
+      <a class="btn" href="/login.html" data-i18n="validate.login">Log in</a>
+      <a class="btn" href="/how-it-works.html" data-i18n="validate.howItWorks">How validation works</a>
     </div>
   </div>
 
@@ -51,41 +51,41 @@
       <div id="task-prompt" style="margin-bottom:14px;"></div>
 
       <form id="vote-form">
-        <div id="options" role="radiogroup" aria-label="Your assessment"></div>
+        <div id="options" role="radiogroup" aria-label="Your assessment" data-i18n-aria="validate.optionsLabel"></div>
 
         <details style="margin-top:16px;">
-          <summary style="cursor:pointer; color:var(--accent); font-size:13px;">Add a correction or evidence (optional, earns extra points when confirmed)</summary>
+          <summary style="cursor:pointer; color:var(--accent); font-size:13px;" data-i18n="validate.details.summary">Add a correction or evidence (optional, earns extra points when confirmed)</summary>
           <div class="field-wrap" style="margin-top:10px;">
-            <label for="f-correction">Proposed correction</label>
-            <input id="f-correction" type="text" maxlength="500" placeholder="The corrected Lak text, sense, or spelling">
+            <label for="f-correction" data-i18n="validate.correction.label">Proposed correction</label>
+            <input id="f-correction" type="text" maxlength="500" placeholder="The corrected Lak text, sense, or spelling" data-i18n-placeholder="validate.correction.placeholder">
           </div>
           <div class="field-wrap">
-            <label for="f-evidence">Evidence note</label>
-            <textarea id="f-evidence" rows="2" maxlength="1000" placeholder="Why is this your answer? Context, dialect knowledge, comparison…"></textarea>
+            <label for="f-evidence" data-i18n="validate.evidence.label">Evidence note</label>
+            <textarea id="f-evidence" rows="2" maxlength="1000" placeholder="Why is this your answer? Context, dialect knowledge, comparison…" data-i18n-placeholder="validate.evidence.placeholder"></textarea>
           </div>
           <div class="field-wrap">
-            <label for="f-source">Source reference</label>
-            <input id="f-source" type="text" maxlength="300" placeholder="e.g. Uslar 1890, p. 42; PCMLBE 2007; native-speaker knowledge">
+            <label for="f-source" data-i18n="validate.source.label">Source reference</label>
+            <input id="f-source" type="text" maxlength="300" placeholder="e.g. Uslar 1890, p. 42; PCMLBE 2007; native-speaker knowledge" data-i18n-placeholder="validate.source.placeholder">
           </div>
         </details>
 
         <button class="btn btn-ok" type="submit" id="submit-btn" disabled
-                style="width:100%; margin-top:18px; min-height:48px; font-size:15px;">Submit assessment</button>
+                style="width:100%; margin-top:18px; min-height:48px; font-size:15px;" data-i18n="validate.submit">Submit assessment</button>
       </form>
     </div>
 
     <div class="card" id="result-card" style="display:none;" aria-live="polite">
-      <h2 style="font-size:17px; margin-bottom:8px;" id="result-title">Community view</h2>
+      <h2 style="font-size:17px; margin-bottom:8px;" id="result-title" data-i18n="validate.result.title">Community view</h2>
       <p style="color:var(--text2); font-size:13px; margin-bottom:14px;" id="result-sub"></p>
       <div id="dist-bars"></div>
       <div id="points-line" style="margin-top:14px; font-size:14px;"></div>
       <div id="achv-line" style="margin-top:8px; font-size:14px; color:var(--ok);"></div>
-      <button class="btn btn-ok" id="next-btn" style="width:100%; margin-top:18px; min-height:48px;">Next task</button>
+      <button class="btn btn-ok" id="next-btn" style="width:100%; margin-top:18px; min-height:48px;" data-i18n="validate.next">Next task</button>
     </div>
 
     <div class="card" id="empty-card" style="display:none;">
-      <h2 style="font-size:17px; margin-bottom:8px;">All caught up</h2>
-      <p style="color:var(--text2); font-size:14px;">
+      <h2 style="font-size:17px; margin-bottom:8px;" data-i18n="validate.empty.h2">All caught up</h2>
+      <p style="color:var(--text2); font-size:14px;" data-i18n="validate.empty.p">
         There are no open tasks for you right now. New material is added regularly —
         thank you for helping preserve Lak.
       </p>
@@ -94,7 +94,8 @@
 </main>
 
 <div id="toast-container"></div>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script src="/js/validate.js?v=2"></script>
 </body>

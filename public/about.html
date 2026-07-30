@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>About & Research — Lak Corpus Explorer</title>
+<title data-i18n="about.meta.title">About & Research — Lak Corpus Explorer</title>
 <meta name="description" content="Methodology, sources, quality ladder, statistics, and collaboration invitation for the Lak language research corpus.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,22 +11,22 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link active" href="/about.html">About & Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link active" href="/about.html" data-i18n="nav.about">About & Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
 
 <div class="about-hero">
   <div class="container">
-    <h1>About the Lak Corpus</h1>
-    <p>A publicly accessible, source-aware research corpus of the Lak language (лакку маз),
+    <h1 data-i18n="about.h1">About the Lak Corpus</h1>
+    <p data-i18n="about.hero.p">A publicly accessible, source-aware research corpus of the Lak language (лакку маз),
     built for linguists, Lak speakers, and computational researchers. Every record is
     traceable to its original source and carries an explicit quality state.</p>
   </div>
@@ -40,72 +40,72 @@
       <div>
 
         <div class="about-section">
-          <h2>Corpus statistics</h2>
+          <h2 data-i18n="about.stats.h2">Corpus statistics</h2>
           <div class="stat-grid" id="about-stats" style="margin-bottom:16px;">
-            <div class="stat-item"><div class="n">—</div><div class="d">Documents</div></div>
-            <div class="stat-item"><div class="n">—</div><div class="d">Segments</div></div>
-            <div class="stat-item"><div class="n">—</div><div class="d">Tokens</div></div>
-            <div class="stat-item"><div class="n">—</div><div class="d">Lexicon entries</div></div>
+            <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.documents">Documents</div></div>
+            <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.segments">Segments</div></div>
+            <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.tokens">Tokens</div></div>
+            <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.lexicon">Lexicon entries</div></div>
           </div>
-          <p>Tokens are counted as space-delimited, punctuation-stripped word forms.
+          <p data-i18n="about.stats.p1">Tokens are counted as space-delimited, punctuation-stripped word forms.
           The lexicon includes all forms recorded across standard, Arakul, Balkhar,
           Shali, and historical varieties plus Uslar 1890 OCR material.</p>
-          <p><strong>Corpus version:</strong> v1.0 — research preview,
+          <p data-i18n-html="about.stats.p2"><strong>Corpus version:</strong> v1.0 — research preview,
           released 29 July 2026. Counts above are live from the running corpus.</p>
         </div>
 
         <div class="about-section">
-          <h2>Sources</h2>
+          <h2 data-i18n="about.sources.h2">Sources</h2>
           <table class="source-table">
             <thead>
               <tr>
-                <th>Source</th>
-                <th>Type</th>
-                <th>Variety / period</th>
-                <th>Quality</th>
-                <th>Notes</th>
+                <th data-i18n="about.sources.col.source">Source</th>
+                <th data-i18n="about.sources.col.type">Type</th>
+                <th data-i18n="about.sources.col.variety">Variety / period</th>
+                <th data-i18n="about.sources.col.quality">Quality</th>
+                <th data-i18n="about.sources.col.notes">Notes</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td data-label="Source"><strong>PCMLBE</strong></td>
-                <td data-label="Type">Annotated text corpus</td>
-                <td data-label="Variety / period">Unspecified / mixed</td>
-                <td data-label="Quality"><span class="quality-badge q-unreviewed">Source import — unreviewed</span></td>
-                <td data-label="Notes">Parallel Corpus of Mountain Languages of the North-East Caucasus;
+                <td data-label="Type" data-i18n="about.sources.pcmlbe.type">Annotated text corpus</td>
+                <td data-label="Variety / period" data-i18n="about.sources.pcmlbe.variety">Unspecified / mixed</td>
+                <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></td>
+                <td data-label="Notes" data-i18n="about.sources.pcmlbe.notes">Parallel Corpus of Mountain Languages of the North-East Caucasus;
                     41 source files; primary prose and poetry texts. Imported in bulk;
                     individual records have not been human-checked.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Lak Wikipedia</strong></td>
-                <td data-label="Type">Encyclopedic text</td>
-                <td data-label="Variety / period">Standard</td>
-                <td data-label="Quality"><span class="quality-badge q-unreviewed">Unreviewed</span></td>
-                <td data-label="Notes">1,068 Wikipedia articles, 3,606 sentences. Community-written;
+                <td data-label="Type" data-i18n="about.sources.wiki.type">Encyclopedic text</td>
+                <td data-label="Variety / period" data-i18n="variety.standard">Standard</td>
+                <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.badge.unreviewed">Unreviewed</span></td>
+                <td data-label="Notes" data-i18n="about.sources.wiki.notes">1,068 Wikipedia articles, 3,606 sentences. Community-written;
                     orthographic consistency varies.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Digiev phrasebook</strong></td>
-                <td data-label="Type">Parallel phrasebook</td>
-                <td data-label="Variety / period">Standard (colloquial)</td>
-                <td data-label="Quality"><span class="quality-badge q-unreviewed">Unreviewed</span></td>
-                <td data-label="Notes">5,383 Russian–Lak phrase pairs. Practical travel and everyday vocabulary.</td>
+                <td data-label="Type" data-i18n="about.sources.digiev.type">Parallel phrasebook</td>
+                <td data-label="Variety / period" data-i18n="about.sources.digiev.variety">Standard (colloquial)</td>
+                <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.badge.unreviewed">Unreviewed</span></td>
+                <td data-label="Notes" data-i18n="about.sources.digiev.notes">5,383 Russian–Lak phrase pairs. Practical travel and everyday vocabulary.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>IDS</strong></td>
-                <td data-label="Type">Lexicon</td>
-                <td data-label="Variety / period">Standard + dialects</td>
-                <td data-label="Quality"><span class="quality-badge q-unreviewed">Source import — unreviewed</span></td>
-                <td data-label="Notes">Intercontinental Dictionary Series; four files; comparative Caucasian
+                <td data-label="Type" data-i18n="about.sources.ids.type">Lexicon</td>
+                <td data-label="Variety / period" data-i18n="about.sources.ids.variety">Standard + dialects</td>
+                <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></td>
+                <td data-label="Notes" data-i18n="about.sources.ids.notes">Intercontinental Dictionary Series; four files; comparative Caucasian
                     vocabulary organised by semantic field. Imported in bulk;
                     individual records have not been human-checked.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Uslar 1890</strong></td>
-                <td data-label="Type">Historical grammar / lexicon</td>
-                <td data-label="Variety / period">Historical (19th c.)</td>
-                <td data-label="Quality"><span class="quality-badge q-ocr">OCR — unreviewed</span></td>
-                <td data-label="Notes">Peter von Uslar's 1890 grammar of Lak, digitised via OCR.
+                <td data-label="Type" data-i18n="about.sources.uslar.type">Historical grammar / lexicon</td>
+                <td data-label="Variety / period" data-i18n="about.sources.uslar.variety">Historical (19th c.)</td>
+                <td data-label="Quality"><span class="quality-badge q-ocr" data-i18n="about.ladder.ocr.badge">OCR — unreviewed</span></td>
+                <td data-label="Notes" data-i18n-html="about.sources.uslar.notes">Peter von Uslar's 1890 grammar of Lak, digitised via OCR.
                     Archaic orthography, possible scan errors. <strong>Not silently modernised.</strong>
                     All entries are preserved exactly as extracted and marked explicitly
                     as OCR-sourced. Coverage is partial: roughly 1,469 records (≈6% of the
@@ -118,16 +118,16 @@
         </div>
 
         <div class="about-section">
-          <h2>Methodology</h2>
+          <h2 data-i18n="about.method.h2">Methodology</h2>
 
-          <p><strong>Translation-first search.</strong> When a Russian query term appears in the
+          <p data-i18n-html="about.method.p1"><strong>Translation-first search.</strong> When a Russian query term appears in the
           alias dictionary (built from the Digiev phrasebook and IDS lexicon), the
           system expands it to all known Lak equivalents and searches corpus text for
           those forms. This surfaces concordance examples even when the user doesn't
           know the Lak spelling. Direct substring search runs as a fallback for
           terms not in the alias dictionary.</p>
 
-          <p><strong>Script normalisation.</strong> All queries and corpus text are
+          <p data-i18n-html="about.method.p2"><strong>Script normalisation.</strong> All queries and corpus text are
           normalised with Unicode NFKC before matching. Cyrillic е and ё are treated
           as equivalent. Multiple codepoint representations of the Lak palochka
           (Ӏ U+04C0, Latin I, Ukrainian І U+0406, and modifier letter vertical line
@@ -135,11 +135,11 @@
           ensures that OCR artefacts and encoding inconsistencies in the source data
           do not produce false negatives.</p>
 
-          <p><strong>Quality states.</strong> Each record carries an explicit quality
+          <p data-i18n-html="about.method.p3"><strong>Quality states.</strong> Each record carries an explicit quality
           label. The ladder below explains what each state means and what work
           remains.</p>
 
-          <p><strong>No silent modernisation.</strong> The Uslar 1890 OCR material is
+          <p data-i18n-html="about.method.p4"><strong>No silent modernisation.</strong> The Uslar 1890 OCR material is
           preserved verbatim. We do not apply spelling normalisation, diacritic
           correction, or other post-processing that would alter the historical
           linguistic record. Errors visible in the data are genuine scan artefacts
@@ -147,79 +147,79 @@
         </div>
 
         <div class="about-section">
-          <h2>Quality ladder</h2>
+          <h2 data-i18n="about.ladder.h2">Quality ladder</h2>
           <div class="quality-ladder">
             <div class="ql-row">
-              <div class="ql-badge"><span class="quality-badge q-approved">Approved</span></div>
+              <div class="ql-badge"><span class="quality-badge q-approved" data-i18n="about.ladder.approved.badge">Approved</span></div>
               <div class="ql-desc">
-                <strong>Human-verified</strong>
-                Lak text, translation, and metadata have been checked by a reviewer.
-                Corrections and notes are recorded. This is the target state for all records.
+                <strong data-i18n="about.ladder.approved.title">Human-verified</strong>
+                <span data-i18n="about.ladder.approved.desc">Lak text, translation, and metadata have been checked by a reviewer.
+                Corrections and notes are recorded. This is the target state for all records.</span>
               </div>
             </div>
             <div class="ql-row">
-              <div class="ql-badge"><span class="quality-badge q-flagged">Flagged</span></div>
+              <div class="ql-badge"><span class="quality-badge q-flagged" data-i18n="about.ladder.flagged.badge">Flagged</span></div>
               <div class="ql-desc">
-                <strong>Needs attention</strong>
-                A reviewer found a problem — OCR error, wrong variety label, missing
+                <strong data-i18n="about.ladder.flagged.title">Needs attention</strong>
+                <span data-i18n="about.ladder.flagged.desc">A reviewer found a problem — OCR error, wrong variety label, missing
                 translation, or suspected corrupt text — and left a note. Awaiting
-                correction or specialist input.
+                correction or specialist input.</span>
               </div>
             </div>
             <div class="ql-row">
-              <div class="ql-badge"><span class="quality-badge q-ocr">OCR — unreviewed</span></div>
+              <div class="ql-badge"><span class="quality-badge q-ocr" data-i18n="about.ladder.ocr.badge">OCR — unreviewed</span></div>
               <div class="ql-desc">
-                <strong>Uslar 1890 OCR source</strong>
-                Extracted from a scanned 19th-century document. Text is presented
+                <strong data-i18n="about.ladder.ocr.title">Uslar 1890 OCR source</strong>
+                <span data-i18n="about.ladder.ocr.desc">Extracted from a scanned 19th-century document. Text is presented
                 exactly as recognised; no modernisation applied. Expect scan
                 artefacts and archaic forms. In search results, OCR-sourced material
                 appears only in a clearly separated unverified section — never mixed
-                into the primary translation answer.
+                into the primary translation answer.</span>
               </div>
             </div>
             <div class="ql-row">
-              <div class="ql-badge"><span class="quality-badge q-unreviewed">Source import — unreviewed</span></div>
+              <div class="ql-badge"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></div>
               <div class="ql-desc">
-                <strong>Bulk-imported, not individually checked</strong>
-                The default state for records imported from published sources
+                <strong data-i18n="about.ladder.unreviewed.title">Bulk-imported, not individually checked</strong>
+                <span data-i18n="about.ladder.unreviewed.desc">The default state for records imported from published sources
                 (PCMLBE, IDS, Lak Wikipedia, Digiev phrasebook). The sources are
                 reputable, but no record carries human verification until a
-                logged-in reviewer approves it.
+                logged-in reviewer approves it.</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="about-section">
-          <h2>Dialect varieties</h2>
+          <h2 data-i18n="about.varieties.h2">Dialect varieties</h2>
           <ul>
-            <li><strong>Standard</strong> — the literary and administrative standard form of Lak,
+            <li data-i18n-html="about.varieties.standard"><strong>Standard</strong> — the literary and administrative standard form of Lak,
             based on the Kumukh dialect. Used in education, publishing, and official contexts.</li>
-            <li><strong>Arakul</strong> — dialect spoken in the village of Arakul (Аракул) in
+            <li data-i18n-html="about.varieties.arakul"><strong>Arakul</strong> — dialect spoken in the village of Arakul (Аракул) in
             the Lak district of Dagestan.</li>
-            <li><strong>Balkhar</strong> — dialect of the pottery village of Balkhar (Балхъар),
+            <li data-i18n-html="about.varieties.balkhar"><strong>Balkhar</strong> — dialect of the pottery village of Balkhar (Балхъар),
             known for its distinct phonology.</li>
-            <li><strong>Shali</strong> — dialect of the Shali (Шали) region.</li>
-            <li><strong>Historical</strong> — forms attested in 19th-century sources that may
+            <li data-i18n-html="about.varieties.shali"><strong>Shali</strong> — dialect of the Shali (Шали) region.</li>
+            <li data-i18n-html="about.varieties.historical"><strong>Historical</strong> — forms attested in 19th-century sources that may
             differ from the modern standard.</li>
-            <li><strong>Unspecified</strong> — variety not recorded in the source metadata.</li>
+            <li data-i18n-html="about.varieties.unspecified"><strong>Unspecified</strong> — variety not recorded in the source metadata.</li>
           </ul>
         </div>
 
         <div class="about-section">
-          <h2>Invitation for collaboration</h2>
-          <p>This corpus is designed to grow through expert contribution. We are actively seeking:</p>
+          <h2 data-i18n="about.collab.h2">Invitation for collaboration</h2>
+          <p data-i18n="about.collab.p1">This corpus is designed to grow through expert contribution. We are actively seeking:</p>
           <ul>
-            <li>Native Lak speakers who can verify translations, correct OCR errors,
+            <li data-i18n="about.collab.li1">Native Lak speakers who can verify translations, correct OCR errors,
             and flag dialectal misattributions.</li>
-            <li>Field linguists with access to unpublished wordlists, texts, or recordings
+            <li data-i18n="about.collab.li2">Field linguists with access to unpublished wordlists, texts, or recordings
             that can be incorporated with proper attribution.</li>
-            <li>Universities and research institutions interested in formal collaboration
+            <li data-i18n="about.collab.li3">Universities and research institutions interested in formal collaboration
             agreements for corpus expansion and annotation.</li>
-            <li>Computational linguists developing NLP resources for low-resource
+            <li data-i18n="about.collab.li4">Computational linguists developing NLP resources for low-resource
             Caucasian languages who wish to co-develop evaluation benchmarks.</li>
           </ul>
-          <p>The review system on this site allows immediate contribution: any visitor can
+          <p data-i18n-html="about.collab.p2">The review system on this site allows immediate contribution: any visitor can
           flag problems and submit corrections or notes as suggestions. Canonical
           <strong>Approved</strong> states can only be created by logged-in trusted
           reviewers, so every approved record carries verified attribution.
@@ -232,39 +232,39 @@
       <div>
 
         <div class="sidebar-card">
-          <h3>Quick statistics</h3>
+          <h3 data-i18n="about.sidebar.quickStats">Quick statistics</h3>
           <div class="stat-grid" id="sidebar-stats">
-            <div class="stat-item"><div class="n" id="s-docs">—</div><div class="d">Documents</div></div>
-            <div class="stat-item"><div class="n" id="s-segs">—</div><div class="d">Segments</div></div>
-            <div class="stat-item"><div class="n" id="s-tok">—</div><div class="d">Tokens</div></div>
-            <div class="stat-item"><div class="n" id="s-lex">—</div><div class="d">Lexicon</div></div>
-            <div class="stat-item"><div class="n" id="s-wiki">—</div><div class="d">Wiki docs</div></div>
-            <div class="stat-item"><div class="n" id="s-phrase">—</div><div class="d">Phrasebook pairs</div></div>
+            <div class="stat-item"><div class="n" id="s-docs">—</div><div class="d" data-i18n="about.stats.documents">Documents</div></div>
+            <div class="stat-item"><div class="n" id="s-segs">—</div><div class="d" data-i18n="about.stats.segments">Segments</div></div>
+            <div class="stat-item"><div class="n" id="s-tok">—</div><div class="d" data-i18n="about.stats.tokens">Tokens</div></div>
+            <div class="stat-item"><div class="n" id="s-lex">—</div><div class="d" data-i18n="about.sidebar.lexicon">Lexicon</div></div>
+            <div class="stat-item"><div class="n" id="s-wiki">—</div><div class="d" data-i18n="about.sidebar.wikiDocs">Wiki docs</div></div>
+            <div class="stat-item"><div class="n" id="s-phrase">—</div><div class="d" data-i18n="about.sidebar.phrasePairs">Phrasebook pairs</div></div>
           </div>
         </div>
 
         <div class="sidebar-card">
-          <h3>Lexicon by variety</h3>
+          <h3 data-i18n="about.sidebar.lexByVariety">Lexicon by variety</h3>
           <table class="source-table" id="lex-by-variety">
-            <thead><tr><th>Variety</th><th>Entries</th></tr></thead>
+            <thead><tr><th data-i18n="about.sidebar.col.variety">Variety</th><th data-i18n="about.sidebar.col.entries">Entries</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
 
         <div class="sidebar-card">
-          <h3>Language information</h3>
-          <p>Lak (лакку маз, ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian
+          <h3 data-i18n="about.sidebar.langInfo">Language information</h3>
+          <p data-i18n-html="about.sidebar.langInfo.p1">Lak (лакку маз, ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian
           language spoken primarily in the Lak district of Dagestan, Russia.
           It belongs to the Lak–Dargwa branch and has approximately 150,000 speakers.</p>
-          <p>The language uses a Cyrillic script with the palochka (Ӏ) for ejective
+          <p data-i18n-html="about.sidebar.langInfo.p2">The language uses a Cyrillic script with the palochka (Ӏ) for ejective
           consonants — a letterform unique to Caucasian languages.</p>
         </div>
 
         <div class="sidebar-card">
-          <h3>Resources</h3>
+          <h3 data-i18n="about.sidebar.resources">Resources</h3>
           <p>
-            <a href="/" target="_self">← Search the corpus</a><br>
-            <a href="/queue.html">Review queue & export</a><br>
+            <a href="/" target="_self" data-i18n="about.sidebar.searchCorpus">← Search the corpus</a><br>
+            <a href="/queue.html" data-i18n="about.sidebar.queueExport">Review queue & export</a><br>
             <a href="https://cls.ru.nl/staff/ekomen/lbe/" target="_blank" rel="noreferrer">PCMLBE project</a><br>
             <a href="https://lbe.wikipedia.org/" target="_blank" rel="noreferrer">Lak Wikipedia</a>
           </p>
@@ -275,9 +275,12 @@
   </div>
 </div>
 
+<script src="/js/i18n.js?v=1"></script>
 <script>
-fetch('/api/corpus/stats').then(r => r.json()).then(({ stats: s }) => {
-  const fmt = n => typeof n === 'number' ? n.toLocaleString() : String(n ?? '');
+let aboutStats = null;
+function renderAboutStats(s) {
+  const lang = window.I18n?.getLanguage?.() || 'en';
+  const fmt = n => typeof n === 'number' ? n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') : String(n ?? '');
   document.getElementById('s-docs').textContent   = fmt(s.documents);
   document.getElementById('s-segs').textContent   = fmt(s.sentences);
   document.getElementById('s-tok').textContent    = fmt(s.tokens);
@@ -287,13 +290,21 @@ fetch('/api/corpus/stats').then(r => r.json()).then(({ stats: s }) => {
 
   const lbd = s.lexicon_by_dialect || {};
   const tbody = document.querySelector('#lex-by-variety tbody');
+  tbody.replaceChildren();
   const varieties = ['standard','arakul','balkhar','shali','historical'];
-  const labels = { standard:'Standard', arakul:'Arakul', balkhar:'Balkhar', shali:'Shali', historical:'Historical (Uslar)' };
+  const tr = (k, fb) => (window.I18n && window.I18n.t ? (window.I18n.t(k) !== k ? window.I18n.t(k) : fb) : fb);
+  const labels = {
+    standard: tr('variety.standard','Standard'),
+    arakul: tr('variety.arakul','Arakul'),
+    balkhar: tr('variety.balkhar','Balkhar'),
+    shali: tr('variety.shali','Shali'),
+    historical: tr('about.varietyHistoricalUslar','Historical (Uslar)'),
+  };
   for (const v of varieties) {
     if (lbd[v] != null) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td data-label="Variety">${labels[v]}</td><td data-label="Entries">${fmt(lbd[v])}</td>`;
-      tbody.appendChild(tr);
+      const row = document.createElement('tr');
+      row.innerHTML = `<td data-label="${tr('about.sidebar.col.variety','Variety')}">${labels[v]}</td><td data-label="${tr('about.sidebar.col.entries','Entries')}">${fmt(lbd[v])}</td>`;
+      tbody.appendChild(row);
     }
   }
 
@@ -304,8 +315,15 @@ fetch('/api/corpus/stats').then(r => r.json()).then(({ stats: s }) => {
       items[i].querySelector('.n').textContent = fmt(v);
     });
   }
+}
+fetch('/api/corpus/stats').then(r => r.json()).then(({ stats }) => {
+  aboutStats = stats;
+  renderAboutStats(stats);
 }).catch(() => {});
+window.I18n?.onChange?.(() => {
+  if (aboutStats) renderAboutStats(aboutStats);
+});
 </script>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/nav.js?v=3"></script>
 </body>
 </html>

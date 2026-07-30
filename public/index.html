@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lak Corpus Explorer</title>
+<title data-i18n="index.title">Lak Corpus Explorer</title>
 <meta name="description" content="Searchable, source-aware research corpus of the Lak language with translation-first Russian-to-Lak search, lexicon, and quality tracking.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,14 +11,14 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link active" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About & Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link active" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About & Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
@@ -27,8 +27,8 @@
   <div class="container">
     <div class="search-header-inner">
       <div class="search-title">
-        <h1>Lak Language Corpus</h1>
-        <p>Source-aware · translation-first Russian→Lak search · quality-tracked</p>
+        <h1 data-i18n="index.h1">Lak Language Corpus</h1>
+        <p data-i18n="index.subtitle">Source-aware · translation-first Russian→Lak search · quality-tracked</p>
       </div>
       <div id="stats-row" class="stats-row"></div>
     </div>
@@ -39,24 +39,24 @@
   <div class="container">
     <div class="controls-grid">
       <div class="field-wrap">
-        <label for="q">Search (Russian or Lak)</label>
-        <input id="q" type="search" placeholder="e.g. луна, земля, спасибо, с днем рождения…" autocomplete="off" spellcheck="false">
+        <label for="q" data-i18n="index.searchLabel">Search (Russian or Lak)</label>
+        <input id="q" type="search" data-i18n-placeholder="index.searchPlaceholder" placeholder="e.g. луна, земля, спасибо, с днем рождения…" autocomplete="off" spellcheck="false">
       </div>
       <div class="field-wrap">
-        <label for="kind">Record type</label>
+        <label for="kind" data-i18n="index.recordType">Record type</label>
         <div class="select-wrap">
           <select id="kind">
-            <option value="">Texts + lexicon</option>
-            <option value="text">Texts only</option>
-            <option value="lexicon">Lexicon only</option>
+            <option value="" data-i18n="index.type.both">Texts + lexicon</option>
+            <option value="text" data-i18n="index.type.text">Texts only</option>
+            <option value="lexicon" data-i18n="index.type.lexicon">Lexicon only</option>
           </select>
         </div>
       </div>
       <div class="field-wrap">
-        <label for="source">Source</label>
+        <label for="source" data-i18n="index.source">Source</label>
         <div class="select-wrap">
           <select id="source">
-            <option value="">All sources</option>
+            <option value="" data-i18n="index.source.all">All sources</option>
             <option>PCMLBE</option>
             <option>Lak Wikipedia</option>
             <option>Digiev phrasebook</option>
@@ -66,16 +66,16 @@
         </div>
       </div>
       <div class="field-wrap">
-        <label for="variety">Variety</label>
+        <label for="variety" data-i18n="index.variety">Variety</label>
         <div class="select-wrap">
           <select id="variety">
-            <option value="">All varieties</option>
-            <option value="standard">Standard</option>
-            <option value="arakul">Arakul</option>
-            <option value="balkhar">Balkhar</option>
-            <option value="shali">Shali</option>
-            <option value="historical">Historical</option>
-            <option value="unspecified">Unspecified</option>
+            <option value="" data-i18n="index.variety.all">All varieties</option>
+            <option value="standard" data-i18n="variety.standard">Standard</option>
+            <option value="arakul" data-i18n="variety.arakul">Arakul</option>
+            <option value="balkhar" data-i18n="variety.balkhar">Balkhar</option>
+            <option value="shali" data-i18n="variety.shali">Shali</option>
+            <option value="historical" data-i18n="variety.historical">Historical</option>
+            <option value="unspecified" data-i18n="variety.unspecified">Unspecified</option>
           </select>
         </div>
       </div>
@@ -89,9 +89,9 @@
   <div class="status-bar">
     <span id="count-label" style="color:var(--text2); font-size:13.5px;"></span>
     <div class="pager">
-      <button class="btn" id="prev-btn" disabled>← Previous</button>
+      <button class="btn" id="prev-btn" disabled data-i18n="index.prev">← Previous</button>
       <span id="page-label" style="font-size:13.5px; color:var(--text2);"></span>
-      <button class="btn" id="next-btn" disabled>Next →</button>
+      <button class="btn" id="next-btn" disabled data-i18n="index.next">Next →</button>
     </div>
   </div>
 
@@ -99,12 +99,12 @@
     <table>
       <thead>
         <tr>
-          <th class="td-type">Type / Quality</th>
-          <th class="td-lak">Lak text / form</th>
-          <th class="td-meaning">Meaning / document</th>
-          <th>Source</th>
-          <th>Variety</th>
-          <th class="td-actions">Review</th>
+          <th class="td-type" data-i18n="index.col.type">Type / Quality</th>
+          <th class="td-lak" data-i18n="index.col.lak">Lak text / form</th>
+          <th class="td-meaning" data-i18n="index.col.meaning">Meaning / document</th>
+          <th data-i18n="index.col.source">Source</th>
+          <th data-i18n="index.col.variety">Variety</th>
+          <th class="td-actions" data-i18n="index.col.review">Review</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -114,16 +114,17 @@
   <div class="status-bar" style="margin-top:12px;">
     <span></span>
     <div class="pager">
-      <button class="btn" id="prev-btn2" disabled>← Previous</button>
+      <button class="btn" id="prev-btn2" disabled data-i18n="index.prev">← Previous</button>
       <span id="page-label2" style="font-size:13.5px; color:var(--text2);"></span>
-      <button class="btn" id="next-btn2" disabled>Next →</button>
+      <button class="btn" id="next-btn2" disabled data-i18n="index.next">Next →</button>
     </div>
   </div>
 </div>
 
 <div id="toast-container"></div>
 
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script src="/js/search.js?v=4"></script>
 </body>

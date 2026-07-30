@@ -5,6 +5,18 @@
 window.REVIEWER = null;
 window.ACCOUNT = null;
 
+// Safe localization wrapper. The canonical dictionary lives in i18n.js; this
+// only forwards calls and falls back to the supplied English default when
+// I18n (or a specific key) is unavailable, so pages never break.
+function t(key, def, vars) {
+  const I = window.I18n;
+  if (I && typeof I.t === 'function') {
+    const out = I.t(key, vars);
+    if (out != null && out !== key) return out;
+  }
+  return def;
+}
+
 window.fetchIdentity = async function() {
   try {
     const res = await fetch('/api/auth/me');
@@ -32,15 +44,25 @@ function updateAuthLink() {
   const link = document.getElementById('auth-link');
   if (!link) return;
   if (window.ACCOUNT) {
-    link.textContent = window.ACCOUNT.display_name || 'My profile';
+    link.textContent = window.ACCOUNT.display_name || t('auth.myProfile', 'My profile');
     link.href = '/profile.html';
-    link.title = 'Your contributor profile';
+    link.title = t('auth.profileTooltip', 'Your contributor profile');
   } else if (window.REVIEWER) {
-    link.textContent = `Reviewer: ${window.REVIEWER}`;
+    link.textContent = t('auth.reviewerName', `Reviewer: ${window.REVIEWER}`, { name: window.REVIEWER });
     link.href = '/login.html';
-    link.title = 'Manage reviewer session';
+    link.title = t('auth.reviewerTooltip', 'Manage reviewer session');
   } else {
-    link.textContent = 'Log in / Sign up';
+    link.textContent = t('auth.logInSignUp', 'Log in / Sign up');
     link.href = '/login.html';
   }
 }
+
+// Re-render the auth link when the language changes.
+(function () {
+  function relocalize() { updateAuthLink(); }
+  if (window.I18n && typeof window.I18n.onChange === 'function') {
+    window.I18n.onChange(relocalize);
+  } else {
+    window.addEventListener('i18n:change', relocalize);
+  }
+})();

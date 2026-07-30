@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Log in — Lak Corpus Explorer</title>
+<title data-i18n="login.meta.title">Log in — Lak Corpus Explorer</title>
 <meta name="description" content="Log in with a contributor account or as a trusted reviewer.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,58 +11,58 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link active" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link active" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
 
 <div class="container" style="padding-top:40px; padding-bottom:48px; max-width:480px;">
-  <h1 style="margin-bottom:8px;">Log in</h1>
-  <p style="color:var(--text2); font-size:14px; margin-bottom:24px;">
+  <h1 style="margin-bottom:8px;" data-i18n="login.h1">Log in</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:24px;" data-i18n="login.intro">
     Searching and reading the corpus is fully open — no login needed. Accounts are for
     validation, reviews, and stewardship.
   </p>
 
   <div id="account-card" class="card" style="margin-bottom:20px;">
-    <h2 style="font-size:16px; margin-bottom:12px;">Contributor account</h2>
+    <h2 style="font-size:16px; margin-bottom:12px;" data-i18n="login.account.h2">Contributor account</h2>
     <form id="account-form">
       <div class="field-wrap" style="margin-bottom:12px;">
-        <label for="a-email">Email</label>
+        <label for="a-email" data-i18n="login.email">Email</label>
         <input id="a-email" type="email" autocomplete="email" required style="width:100%;">
       </div>
       <div class="field-wrap" style="margin-bottom:14px;">
-        <label for="a-pass">Password</label>
+        <label for="a-pass" data-i18n="login.password">Password</label>
         <input id="a-pass" type="password" autocomplete="current-password" required style="width:100%;">
       </div>
-      <button class="btn btn-ok" type="submit" style="width:100%; min-height:44px;">Log in</button>
+      <button class="btn btn-ok" type="submit" style="width:100%; min-height:44px;" data-i18n="login.submit">Log in</button>
       <div id="account-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
     </form>
     <p style="font-size:13px; color:var(--text3); margin-top:12px;">
-      No account yet? <a href="/register.html" style="color:var(--accent);">Create one — it's free</a>.
+      <span data-i18n="login.noAccount">No account yet?</span> <a href="/register.html" style="color:var(--accent);" data-i18n="login.createOne">Create one — it's free</a>.
     </p>
   </div>
 
   <div id="login-card" class="card">
-    <h2 style="font-size:16px; margin-bottom:12px;">Trusted reviewer passphrase</h2>
+    <h2 style="font-size:16px; margin-bottom:12px;" data-i18n="login.reviewer.h2">Trusted reviewer passphrase</h2>
     <form id="login-form">
       <div class="field-wrap" style="margin-bottom:12px;">
-        <label for="login-name">Your name</label>
+        <label for="login-name" data-i18n="login.yourName">Your name</label>
         <input id="login-name" type="text" autocomplete="username" maxlength="100" required
-               placeholder="e.g. M. Abdullaev" style="width:100%;">
+               placeholder="e.g. M. Abdullaev" data-i18n-placeholder="login.yourName.placeholder" style="width:100%;">
       </div>
       <div class="field-wrap" style="margin-bottom:16px;">
-        <label for="login-pass">Reviewer passphrase</label>
+        <label for="login-pass" data-i18n="login.reviewerPass">Reviewer passphrase</label>
         <input id="login-pass" type="password" autocomplete="current-password" required
-               placeholder="Shared reviewer passphrase" style="width:100%;">
+               placeholder="Shared reviewer passphrase" data-i18n-placeholder="login.reviewerPass.placeholder" style="width:100%;">
       </div>
-      <button class="btn" type="submit" style="width:100%;">Log in as reviewer</button>
+      <button class="btn" type="submit" style="width:100%;" data-i18n="login.reviewerSubmit">Log in as reviewer</button>
       <div id="login-error" style="color:#c0392b; font-size:13px; margin-top:10px; display:none;"></div>
     </form>
   </div>
@@ -70,28 +70,41 @@
   <div id="logged-in-card" style="display:none;" class="card">
     <p style="font-size:14px; margin-bottom:16px;" id="logged-in-text"></p>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn btn-ok" href="/validate.html">Go to validation</a>
-      <a class="btn" href="/">Go to search</a>
-      <button class="btn" id="logout-btn">Log out</button>
+      <a class="btn btn-ok" href="/validate.html" data-i18n="login.goValidation">Go to validation</a>
+      <a class="btn" href="/" data-i18n="login.goSearch">Go to search</a>
+      <button class="btn" id="logout-btn" data-i18n="login.logout">Log out</button>
     </div>
   </div>
 </div>
 
 <div id="toast-container"></div>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+  const tr = (key, fallback, vars) => {
+    const value = window.I18n?.t?.(key, vars);
+    return value && value !== key ? value : fallback;
+  };
+  const loginError = message =>
+    !message || message === 'Login failed' ? tr('auth.loginFailed', 'Login failed') : message;
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const { reviewer, account } = await window.fetchIdentity();
   if (reviewer || account) {
     document.getElementById('login-card').style.display = 'none';
     document.getElementById('account-card').style.display = 'none';
     const card = document.getElementById('logged-in-card');
     card.style.display = '';
+    const role = account
+      ? tr('role.' + account.role, account.role.replace(/_/g, ' '))
+      : '';
     document.getElementById('logged-in-text').innerHTML = account
-      ? `You are logged in as contributor <b>${account.display_name}</b> (${account.role.replace(/_/g, ' ')}).` +
-        (reviewer ? ` You also hold a reviewer session as <b>${reviewer}</b>.` : '')
-      : `You are logged in as reviewer <b>${reviewer}</b>. Your reviews will be attributed and marked as verified.`;
+      ? tr('auth.loggedInContributor', `You are logged in as contributor <b>${esc(account.display_name)}</b> (${esc(role)}).`, {
+          name: esc(account.display_name), role: esc(role)
+        }) + (reviewer ? tr('auth.alsoReviewer', ` You also hold a reviewer session as <b>${esc(reviewer)}</b>.`, { name: esc(reviewer) }) : '')
+      : tr('auth.loggedInReviewer', `You are logged in as reviewer <b>${esc(reviewer)}</b>. Your reviews will be attributed and marked as verified.`, { name: esc(reviewer) });
   }
 
   document.getElementById('account-form').addEventListener('submit', async (e) => {
@@ -107,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      if (!res.ok) throw new Error(loginError(data.error));
       location.href = '/validate.html';
     } catch (err) {
       errEl.textContent = err.message;
@@ -128,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      if (!res.ok) throw new Error(loginError(data.error));
       location.href = '/';
     } catch (err) {
       errEl.textContent = err.message;

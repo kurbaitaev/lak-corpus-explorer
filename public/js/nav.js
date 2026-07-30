@@ -1,55 +1,134 @@
-/* Shared mobile navigation.
+/* Shared mobile navigation + EN/RU language toggle.
  *
- * Injects a "Menu" toggle into the shared header and wires the drawer:
+ * Navigation drawer:
  *   - links hidden by default (aria-expanded="false"), zero height when closed
  *   - solid in-flow drawer while open (pushes content down, never overlays)
  *   - toggle button doubles as the close control
  *   - Escape / outside-click / link click close the drawer
  *   - focus moves to the first link on open and back to the toggle on close
  *   - closes on navigation; page scrolling is never locked
+ *
+ * Language toggle:
+ *   - an accessible EN/RU segmented control injected into the shared nav
+ *   - present on both desktop and mobile (mobile copy lives inside the drawer)
+ *   - keyboard operable (native buttons + arrow keys) and touch-friendly
+ *   - high-contrast active state; reflects and updates window.I18n
  */
 (function () {
   'use strict';
 
+  var I18n = window.I18n;
+
+  function tr(key, fallback) {
+    if (I18n && typeof I18n.t === 'function') {
+      var v = I18n.t(key);
+      if (v && v !== key) return v;
+    }
+    return fallback;
+  }
+
+  function buildToggle(placement) {
+    // placement: 'desktop' | 'mobile' — only affects class hooks.
+    var group = document.createElement('div');
+    group.className = 'lang-toggle lang-toggle-' + placement;
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', tr('lang.label', 'Language'));
+
+    var current = (I18n && I18n.getLanguage) ? I18n.getLanguage() : 'en';
+
+    [['en', 'lang.en.short', 'lang.switchTo.en', 'English'],
+     ['ru', 'lang.ru.short', 'lang.switchTo.ru', 'Russian']].forEach(function (spec) {
+      var lang = spec[0];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lang-btn';
+      btn.dataset.lang = lang;
+      btn.textContent = tr(spec[1], lang.toUpperCase());
+      btn.setAttribute('aria-label', tr(spec[2], 'Switch to ' + spec[3]));
+      var active = current === lang;
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      if (active) btn.classList.add('active');
+
+      btn.addEventListener('click', function () {
+        if (I18n && I18n.setLanguage) I18n.setLanguage(lang);
+      });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          var sibling = e.key === 'ArrowRight'
+            ? btn.nextElementSibling : btn.previousElementSibling;
+          if (sibling) { sibling.focus(); sibling.click(); }
+        }
+      });
+      group.appendChild(btn);
+    });
+
+    return group;
+  }
+
+  function syncToggles() {
+    var current = (I18n && I18n.getLanguage) ? I18n.getLanguage() : 'en';
+    document.querySelectorAll('.lang-toggle .lang-btn').forEach(function (btn) {
+      var active = btn.dataset.lang === current;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    document.querySelectorAll('.lang-toggle').forEach(function (g) {
+      g.setAttribute('aria-label', tr('lang.label', 'Language'));
+    });
+  }
+
   function initNav() {
-    const nav = document.querySelector('.nav');
+    var nav = document.querySelector('.nav');
     if (!nav) return;
-    const inner = nav.querySelector('.nav-inner');
-    const links = nav.querySelector('.nav-links');
+    var inner = nav.querySelector('.nav-inner');
+    var links = nav.querySelector('.nav-links');
     if (!inner || !links) return;
 
     // Keep newer public sections present on every legacy page without requiring
     // duplicated navigation fragments to stay in sync.
     if (!links.querySelector('a[href="/observatory.html"]')) {
-      const observatory = document.createElement('a');
+      var observatory = document.createElement('a');
       observatory.className = 'nav-link';
       observatory.href = '/observatory.html';
-      observatory.textContent = 'Observatory';
-      const validate = links.querySelector('a[href="/validate.html"]');
+      observatory.setAttribute('data-i18n', 'nav.observatory');
+      observatory.textContent = tr('nav.observatory', 'Observatory');
+      var validate = links.querySelector('a[href="/validate.html"]');
       links.insertBefore(observatory, validate || links.firstChild);
     }
 
     if (!links.querySelector('a[href="/lab.html"]')) {
-      const lab = document.createElement('a');
+      var lab = document.createElement('a');
       lab.className = 'nav-link';
       lab.href = '/lab.html';
-      lab.textContent = 'Translation Lab';
-      const validate = links.querySelector('a[href="/validate.html"]');
-      links.insertBefore(lab, validate || links.firstChild);
+      lab.setAttribute('data-i18n', 'nav.lab');
+      lab.textContent = tr('nav.lab', 'Translation Lab');
+      var validate2 = links.querySelector('a[href="/validate.html"]');
+      links.insertBefore(lab, validate2 || links.firstChild);
     }
 
     if (!links.id) links.id = 'nav-links';
 
-    const btn = document.createElement('button');
+    var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'nav-toggle';
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-controls', links.id);
-    btn.setAttribute('aria-label', 'Open menu');
-    btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">☰</span> Menu';
+    btn.setAttribute('aria-label', tr('nav.openMenu', 'Open menu'));
+    btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">☰</span> ' +
+      '<span class="nav-toggle-label">' + tr('nav.menu', 'Menu') + '</span>';
 
     nav.classList.add('nav-collapsible');
-    inner.insertBefore(btn, links);
+
+    // Desktop language toggle sits at the end of the nav bar; the mobile one
+    // lives inside the collapsible drawer so it is reachable on small screens.
+    var desktopToggle = buildToggle('desktop');
+    inner.appendChild(btn);
+    inner.appendChild(desktopToggle);
+
+    var mobileToggle = buildToggle('mobile');
+    mobileToggle.classList.add('lang-toggle-drawer');
+    links.appendChild(mobileToggle);
 
     function onKeydown(e) {
       if (e.key === 'Escape') {
@@ -65,11 +144,12 @@
     function openMenu() {
       nav.classList.add('open');
       btn.setAttribute('aria-expanded', 'true');
-      btn.setAttribute('aria-label', 'Close menu');
-      btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">✕</span> Close';
+      btn.setAttribute('aria-label', tr('nav.closeMenu', 'Close menu'));
+      btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">✕</span> ' +
+        '<span class="nav-toggle-label">' + tr('nav.close', 'Close') + '</span>';
       document.addEventListener('keydown', onKeydown);
       document.addEventListener('click', onDocClick, true);
-      const first = links.querySelector('.nav-link');
+      var first = links.querySelector('.nav-link');
       if (first) first.focus();
     }
 
@@ -77,8 +157,9 @@
       if (!nav.classList.contains('open')) return;
       nav.classList.remove('open');
       btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Open menu');
-      btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">☰</span> Menu';
+      btn.setAttribute('aria-label', tr('nav.openMenu', 'Open menu'));
+      btn.innerHTML = '<span class="nav-toggle-icon" aria-hidden="true">☰</span> ' +
+        '<span class="nav-toggle-label">' + tr('nav.menu', 'Menu') + '</span>';
       document.removeEventListener('keydown', onKeydown);
       document.removeEventListener('click', onDocClick, true);
       if (returnFocus) btn.focus();
@@ -90,8 +171,23 @@
     });
 
     links.addEventListener('click', function (e) {
+      // Language buttons inside the drawer must not close/navigate.
+      if (e.target.closest('.lang-toggle')) return;
       if (e.target.closest('a')) closeMenu(false);
     });
+
+    // Keep toggle labels and the menu button text in sync on language change.
+    if (I18n && I18n.onChange) {
+      I18n.onChange(function () {
+        syncToggles();
+        var open = nav.classList.contains('open');
+        var labelEl = btn.querySelector('.nav-toggle-label');
+        if (labelEl) labelEl.textContent = open ? tr('nav.close', 'Close') : tr('nav.menu', 'Menu');
+        btn.setAttribute('aria-label', open ? tr('nav.closeMenu', 'Close menu') : tr('nav.openMenu', 'Open menu'));
+      });
+    }
+
+    syncToggles();
   }
 
   if (document.readyState === 'loading') {

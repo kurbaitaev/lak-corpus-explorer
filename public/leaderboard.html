@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Leaderboard — Lak Corpus Explorer</title>
+<title data-i18n="lb.meta.title">Leaderboard — Lak Corpus Explorer</title>
 <meta name="description" content="Contributors ranked by confirmed quality — verified validations, reliability, and streaks, not raw clicks.">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -11,21 +11,21 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="nav-brand" href="/">Lak Corpus <span>Explorer</span></a>
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Search</a>
-      <a class="nav-link" href="/validate.html">Validate</a>
-      <a class="nav-link active" href="/leaderboard.html">Leaderboard</a>
-      <a class="nav-link" href="/about.html">About &amp; Research</a>
-      <a class="nav-link" href="/queue.html">Review Queue</a>
-      <a class="nav-link" id="auth-link" href="/login.html">Log in</a>
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link active" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
     </div>
   </div>
 </nav>
 
 <main class="container" style="padding-top:28px; padding-bottom:56px; max-width:860px;">
-  <h1 style="font-size:24px; margin-bottom:6px;">Community leaderboard</h1>
-  <p style="color:var(--text2); font-size:14px; margin-bottom:18px;">
+  <h1 style="font-size:24px; margin-bottom:6px;" data-i18n="lb.h1">Community leaderboard</h1>
+  <p style="color:var(--text2); font-size:14px; margin-bottom:18px;" data-i18n-html="lb.intro">
     Ranked by <b>confirmed quality points</b> — points that held up against consensus,
     reference answers, or expert review. Listing is opt-in and uses display names only.
     What matters most is a preserved language, not the ranking itself.
@@ -33,33 +33,34 @@
 
   <div id="me-panel" class="card" style="display:none; margin-bottom:20px;"></div>
 
-  <div class="lb-tabs" role="tablist" aria-label="Leaderboard period">
-    <button class="lb-tab" data-period="week" role="tab">This week</button>
-    <button class="lb-tab" data-period="month" role="tab">This month</button>
-    <button class="lb-tab active" data-period="all" role="tab" aria-selected="true">All time</button>
+  <div class="lb-tabs" role="tablist" aria-label="Leaderboard period" data-i18n-aria="lb.periodLabel">
+    <button class="lb-tab" data-period="week" role="tab" data-i18n="lb.week">This week</button>
+    <button class="lb-tab" data-period="month" role="tab" data-i18n="lb.month">This month</button>
+    <button class="lb-tab active" data-period="all" role="tab" aria-selected="true" data-i18n="lb.all">All time</button>
   </div>
 
   <div class="card" style="padding:0; overflow:hidden;">
     <table class="lb-table" id="lb-table">
       <thead>
         <tr>
-          <th>#</th><th>Contributor</th><th>Verified validations</th>
-          <th>Reliability</th><th>Streak</th><th>Confirmed points</th>
+          <th data-i18n="lb.col.rank">#</th><th data-i18n="lb.col.contributor">Contributor</th><th data-i18n="lb.col.verified">Verified validations</th>
+          <th data-i18n="lb.col.reliability">Reliability</th><th data-i18n="lb.col.streak">Streak</th><th data-i18n="lb.col.points">Confirmed points</th>
         </tr>
       </thead>
       <tbody id="lb-body">
-        <tr><td colspan="6" style="text-align:center; color:var(--text3); padding:24px;">Loading…</td></tr>
+        <tr><td colspan="6" style="text-align:center; color:var(--text3); padding:24px;" data-i18n="lb.loading">Loading…</td></tr>
       </tbody>
     </table>
   </div>
-  <p style="color:var(--text3); font-size:12px; margin-top:10px;">
+  <p style="color:var(--text3); font-size:12px; margin-top:10px;" data-i18n="lb.footer">
     Contributors appear here only if they opted in on their profile. Pseudonymous display
     names are welcome; email addresses and private fields are never shown.
   </p>
 </main>
 
 <div id="toast-container"></div>
-<script src="/js/nav.js?v=2"></script>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
 <script src="/js/auth.js?v=2"></script>
 <script src="/js/leaderboard.js?v=2"></script>
 </body>
