@@ -4,3 +4,4 @@
 - [Localization canonical values](localization-canonical-values.md) — localize display labels only; persisted/API/export values stay canonical and language-neutral.
 - [Private research layer](private-research-layer.md) — a quoted count is not data: verify the package, fail closed, corroborate duplicates, never merge.
 - [Local test ports](local-test-ports.md) — Node fetch refuses 5060/5061 (blocked ports); pick test server ports outside that list.
+- [Post-merge stale process](post-merge-stale-process.md) — "merge didn't land" is usually a pre-merge server process; restart first, and read real route paths before probing them.
