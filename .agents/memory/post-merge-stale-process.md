@@ -1,7 +1,25 @@
 ---
 name: Post-merge verification and stale server processes
-description: Why a merged task can look "not applied" in the preview, and what to check before concluding commits are missing.
+description: Why a merged task can look "not applied" in the preview, why a workflow hangs on startup, and what to check before blaming commits or slow boot.
 ---
+
+## Orphaned process holding the port
+
+A workflow stuck "starting for a long time" is usually not slow startup — check the
+log for `EADDRINUSE` on the app port first.
+
+**Why:** A previous restart can leave an orphaned server process alive. It keeps the
+port bound, so every new workflow start dies immediately on bind while the workflow
+sits retrying. The trap is that the orphan is still serving normal 200s, so the
+preview looks perfectly healthy and the instinct is to blame whatever data or feature
+was added most recently for "slowing down boot".
+
+**How to apply:** List processes with their start times, compare against the workflow
+start time, kill the orphan (SIGTERM, then SIGKILL if it survives), confirm the port
+is free, then restart. Before blaming boot-time work for slowness, measure it directly
+— requiring the module and timing the function is cheap and usually exonerates it.
+
+## Stale process after a merge
 
 When post-merge verification shows old behaviour (endpoints 404, a fixed search still
 returning the old result), check the age of the running server process **before**
