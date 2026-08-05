@@ -1,0 +1,57 @@
+Build and publish the next Lak Corpus Explorer release from the attached v1.3 processed-only package.
+
+This is an implementation task, not a research-only report. Work on Main, inspect the existing architecture before editing, preserve all current functionality, then validate and REPUBLISH after every release gate below passes. The user has explicitly authorized this release.
+
+SECURITY / RIGHTS — NON-NEGOTIABLE
+- Attached archive SHA-256 must equal 3152d173fb722c9295f13c7ca955d6b36910917a1b349ee9ca08a616e2fcfef9. Verify before extraction.
+- Inspect archive paths before extraction. It contains processed text/candidates/findings, not original source binaries.
+- Keep all v1.3 extracted text and candidate rows private_research, private_research_pending_permission, source_import_unreviewed, public_search_eligible=false, training_eligible=false.
+- Never expose private text through public HTML, APIs, search, exports, logs, static assets, error messages, or client bundles.
+- Public pages may show safe aggregate statistics, source titles/families, research methods, and review status, but no rights-pending passages.
+- Keep the ZIP, extracted private data, and generated private candidate/alignment files outside Git. Do not commit protected/private rows.
+- Existing public corpus must remain exactly 24,403 records unless a record is already public and rights-cleared. No automatic promotion.
+
+IMPLEMENTATION ORDER
+1. First fix the known search request race in public/js/search.js: latest request wins. A stale request must never overwrite or block a newer query/filter request. Do not alter ranking semantics. Add a deterministic regression test where A starts, B starts after query/filter change, A resolves last, and only B renders.
+2. Move the existing v1.2 private package and the new v1.3 private package into persistent access-controlled Replit App Storage/Object Storage (or the project’s supported equivalent). Add startup restore/verification, checksum and declared-count checks, idempotent import, fail-closed behavior, and a clear authenticated status endpoint. Maintain a local runtime cache only as disposable cache.
+3. Import and verify the v1.3 source inventory and candidate layers:
+   - 320 total files/routes
+   - 293 substantive rights-review items
+   - 290 usable private extractions
+   - 249,229 raw lexicon candidate lines
+   - 21,151 text blocks
+   - 7,658 grammar-example candidates
+   - 84 reference records
+   Preserve every file in the source registry. System/administrative/non-Lak files remain inventory/reference/control records and never pollute Lak language search.
+4. Build a PRIVATE authenticated “Alignment Lab” and “Source Intelligence” workspace. It must scan all public sources plus all private v1.2/v1.3 source metadata/candidates for possible translation, parallel-text, transliteration, edition, and duplicate relationships.
+   Candidate generation should use deterministic evidence first: normalized filenames/titles, folder families, duplicate/near-duplicate text, language/script classification, section headings, dates, names, numbers, punctuation/paragraph structure, length ratios, dictionary anchors, existing public dictionary/phrasebook pairs, and corpus overlap. Store method, evidence, confidence, source IDs, rights status, and review status. Model proposals are suggestions only and must never become validated translations automatically.
+   Explicitly seed the War family correctly:
+   - War-1.doc = Lak
+   - War-1a.doc = alternate near-duplicate Lak version
+   - War-2.doc = Russian parallel/translation candidate
+   Align section -> paragraph -> sentence; allow 1:1, 1:many, many:1, unmatched. Never show this text publicly until rights and human review are cleared.
+5. Build a reviewed translation-memory layer. Only expert-approved, rights-eligible pairs may be used as gold evidence. Dictionary entries, approved parallel pairs, and attested public corpus examples can propose translations. Monolingual examples may support usage but cannot prove a translation. Every public answer/result must show provenance, evidence type, review state, and an abstain/uncertain state.
+6. Make the PUBLIC app visibly smarter without exposing private content:
+   - Add a polished EN/RU “Research update / What changed” experience linked from the main navigation and homepage.
+   - Show safe aggregate v1.3 audit findings: 320 files audited, 293 substantive materials, 290 usable private extractions, and the candidate-layer counts above. Label them clearly as private research candidates, not additions to the public corpus.
+   - Explain the new parallel-source discovery and human-review workflow in plain language.
+   - Show safe source-family cards for the strongest alignment opportunities (Lak/Russian epics, Ttul Daghustan versions, Authier Cyrillic/Latin tales, Tolstoy versions, Lorca, Eleonora materials, War Russian/Lak pilot) using metadata only.
+   - Upgrade public search result cards to surface the best available PUBLIC evidence: direct dictionary translation, attested phrase pair, related public corpus examples, source chips, confidence/review labels, and “not enough evidence” when applicable.
+   - Keep Russian word-order-tolerant search behavior already verified: “где ты” and “ты где” same four Digiev records; unrelated two-token queries remain zero.
+   - Keep the current visual system but make the new intelligence obvious on desktop and 390x844 mobile.
+7. Add a model/evaluation-ready architecture but do not fine-tune. Create a private benchmark/export route isolated from retrieval, intended for 500–1,000 held-out expert pairs, and evaluation logging for retrieval-only vs model+retrieval. No benchmark item may leak into retrieval or public output.
+8. Update EN/RU i18n for every new label, empty/error/loading state, route, metadata chip, and explanation.
+
+VALIDATION / RELEASE GATES
+- Attached checksum exact; archive safe; no private binaries or private rows in Git.
+- v1.2 remains 12,478/12,478 staged private.
+- v1.3 exact counts above, idempotent on repeated import/restart.
+- Rebuild persistence verified by removing only disposable runtime cache and restoring from persistent private storage.
+- Existing source-import, ranking, regression, Observatory, Translation Lab, validation, and i18n suites pass.
+- New search race test and parallel-candidate tests pass repeatedly.
+- Public corpus still 24,403; Observatory public resources remain 68 unless only safe metadata cards are counted separately.
+- Automated probes confirm private markers/text cannot appear in public JSON, CSV, HTML, Lab, search, exports, source maps, client JS, or unauthenticated APIs.
+- All routes return expected status; private routes return 401 unauthenticated.
+- Browser QA in EN/RU on desktop and 390x844; no console errors.
+- Check production after republish at https://lak-corpus-explorer.replit.app and verify the new public Research Update plus smarter search evidence are actually live.
+- Finish with exact files changed, counts verified, tests/results, deployment ID/time, and any remaining limitation. Do not claim model learning or validated translations where only candidate matching exists.

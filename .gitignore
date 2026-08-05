@@ -12,4 +12,8 @@ yarn-error.log*
 data/corpus-data.json
 data/corpus-meta.json
 private/
+# Private research packages are runtime-only: they are uploaded, verified and
+# extracted into private/, and must never enter version control.
 attached_assets/lak-corpus-v1.2-processed-only-*.zip
+attached_assets/lak-corpus-*private*.zip
+attached_assets/lak-corpus-*findings*.zip
