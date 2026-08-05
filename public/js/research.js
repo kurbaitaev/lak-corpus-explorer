@@ -103,6 +103,10 @@
         t('research.public.addedNote', 'every candidate stays private')],
       [t('research.public.searchable', 'Private candidates searchable here'), num(corpus.public_candidates),
         t('research.public.searchableNote', 'excluded from search and exports')],
+      [t('research.public.parallel', 'Searchable Lak–English pairs'), num(corpus.parallel_records),
+        t('research.public.parallelNote', 'restored from the licensed PCMLBE source')],
+      [t('research.public.cyrillic', 'Pairs with Cyrillic Lak'), num(corpus.cyrillic_parallel_records),
+        t('research.public.cyrillicNote', 'shown beside the Latin transcription')],
     ];
 
     const stagedRows = staged
@@ -113,7 +117,7 @@
       : '';
 
     box.innerHTML =
-      '<div class="research-note"><h2>' + esc(t('research.public.h2', 'The public corpus did not change')) + '</h2>' +
+      '<div class="research-note"><h2>' + esc(t('research.public.h2', 'New licensed evidence is now searchable')) + '</h2>' +
       '<p>' + esc(t('research.public.body',
         'Everything counted above lives in the private research layer. It is not searchable on this site, not exported, and not used for training.')) + '</p>' +
       '<div class="obs-stats research-checks">' +
@@ -207,7 +211,7 @@
     const box = $('research-gate');
     if (!box) return;
     const steps = (state.summary && state.summary.families && state.summary.families[0]
-      && state.summary.families[0].blocking_steps) || ['rights_clearance', 'human_pairing_map', 'expert_review'];
+      && state.summary.families[0].blocking_steps) || ['human_pairing_map', 'expert_review'];
     box.innerHTML = steps.map(step =>
       '<li><strong>' + esc(label('blocking', step)) + '</strong> ' +
       esc(t('research.blockingBody.' + step, '')) + '</li>').join('');

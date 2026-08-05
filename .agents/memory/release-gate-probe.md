@@ -29,7 +29,6 @@ Curated source-family **titles** and the aggregate count keys are published on
 purpose. Raw source paths, candidate ids, extracted-text pointers and the
 package's own internal rights vocabulary never are. A probe that flags the
 first group is a false alarm and will get the gate ignored.
-
 ## A public projection must not echo private tokens
 
 When a private dataset gains a *public* projection, the temptation is to pass

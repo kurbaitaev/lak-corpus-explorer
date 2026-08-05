@@ -31,7 +31,7 @@
     <div class="container">
       <div class="obs-kicker" data-i18n="research.kicker">Research update · what changed</div>
       <h1><span data-i18n="research.h1">What changed in this research round</span><span class="help-marker" data-help="help.researchUpdate" data-help-fallback="This page reports what the latest source audit found. The materials themselves stay private until rights and review are settled."></span></h1>
-      <p data-i18n-html="research.intro">A new batch of source materials was audited, extracted and routed into a <strong>private research layer</strong>. Nothing on this page was added to the public corpus: these are counted candidates awaiting rights clearance and expert review.</p>
+      <p data-i18n-html="research.intro">A new batch of source materials was audited and routed for review. Permission to use the supplied research materials has been confirmed. The licensed PCMLBE source has also yielded <strong>25 searchable Lak–English pairs</strong>, including 21 with a Cyrillic Lak parallel.</p>
       <div class="obs-stats" id="research-stats" aria-label="Audited research aggregates" data-i18n-aria="research.statsLabel"></div>
       <div class="obs-method" data-i18n-html="research.method"><strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.</div>
     </div>
@@ -52,6 +52,17 @@
     </div>
   </section>
 
+  <section class="research-section" aria-label="Licensed PCMLBE finding">
+    <div class="container">
+      <div class="research-note">
+        <h2 data-i18n="research.pcmlbe.h2">A hidden parallel text is now usable</h2>
+        <p data-i18n-html="research.pcmlbe.body">The Zhirkov 1955 record inside PCMLBE contains 25 aligned Lak–English segments; 21 also preserve Lak in Cyrillic. The earlier website showed only the Latin transcription. All three available fields are now searchable and remain labelled as source-import evidence until expert review.</p>
+        <p data-i18n="research.permission.credit">Professor Victor Friedman confirmed permission to use the research materials supplied for this project. Source-level provenance and quality review remain attached to every derived result.</p>
+        <p><a href="http://hdl.handle.net/21.11114/COLL-0000-0021-959C-3" target="_blank" rel="noreferrer">PCMLBE persistent record</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a></p>
+      </div>
+    </div>
+  </section>
+
   <section class="research-section" aria-label="Discovery and review workflow" data-i18n-aria="research.workflowLabel">
     <div class="container">
       <h2 data-i18n="research.workflow.h2">How parallel sources are found — and what happens next</h2>
@@ -63,7 +74,7 @@
   <section class="research-section" aria-label="Source families" data-i18n-aria="research.familiesLabel">
     <div class="container">
       <h2 data-i18n="research.families.h2">Strongest alignment opportunities</h2>
-      <p class="research-lede" data-i18n-html="research.families.intro">These are the source families most likely to yield aligned Lak–Russian material once permission and review are settled. Each card shows <strong>metadata only</strong> — how many files the family holds, how the versions were spotted, and what still has to happen. No passage, title page or extracted line from these materials appears on any public page.</p>
+      <p class="research-lede" data-i18n-html="research.families.intro">Permission for the supplied materials is confirmed. These are the source families most likely to yield aligned Lak–Russian material after human pairing and expert review. Each card shows <strong>metadata only</strong> until those quality steps are complete.</p>
       <div id="research-families" aria-live="polite" aria-busy="true">
         <div class="obs-grid" aria-label="Loading" data-i18n-aria="research.loading"><div class="obs-skeleton"></div><div class="obs-skeleton"></div></div>
       </div>

@@ -293,8 +293,8 @@
     'research.kicker': { en: 'Research update · what changed', ru: 'Ход исследования · что изменилось' },
     'research.h1': { en: 'What changed in this research round', ru: 'Что изменилось в этом этапе исследования' },
     'research.intro': {
-      en: 'A new batch of source materials was audited, extracted and routed into a <strong>private research layer</strong>. Nothing on this page was added to the public corpus: these are counted candidates awaiting rights clearance and expert review.',
-      ru: 'Новая партия исходных материалов прошла проверку, извлечение и была направлена в <strong>закрытый исследовательский слой</strong>. Ничего с этой страницы не добавлено в публичный корпус: это подсчитанные кандидаты, ожидающие урегулирования прав и экспертной проверки.'
+      en: 'A new batch of source materials was audited and routed for review. Permission to use the supplied research materials has been confirmed. The licensed PCMLBE source has also yielded <strong>25 searchable Lak–English pairs</strong>, including 21 with a Cyrillic Lak parallel.',
+      ru: 'Новая партия исходных материалов прошла аудит и была направлена на проверку. Разрешение на использование переданных исследовательских материалов подтверждено. Лицензированный источник PCMLBE также дал <strong>25 доступных для поиска лакско-английских пар</strong>, из них 21 содержит лакскую строку кириллицей.'
     },
     'research.method': {
       en: '<strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.',
@@ -326,10 +326,10 @@
     'research.stat.textBlocks': { en: 'Text blocks', ru: 'Текстовых блоков' },
     'research.stat.grammarExamples': { en: 'Grammar-example candidates', ru: 'Кандидатов в грамматические примеры' },
     'research.stat.referenceRecords': { en: 'Reference records', ru: 'Справочных записей' },
-    'research.public.h2': { en: 'The public corpus did not change', ru: 'Публичный корпус не изменился' },
+    'research.public.h2': { en: 'New licensed evidence is now searchable', ru: 'Новые лицензированные данные теперь доступны для поиска' },
     'research.public.body': {
-      en: 'Everything counted above lives in the private research layer. It is not searchable on this site, not exported, and not used for training.',
-      ru: 'Всё, что подсчитано выше, находится в закрытом исследовательском слое. Это не ищется на сайте, не выгружается и не используется для обучения моделей.'
+      en: 'The large audited source batch remains in the review layer, while the clearly licensed PCMLBE parallel result is now searchable with its provenance and review status.',
+      ru: 'Большая проверенная партия источников остаётся в слое рецензирования, а однозначно лицензированный параллельный материал PCMLBE теперь доступен в поиске с указанием происхождения и статуса проверки.'
     },
     'research.public.corpusRecords': { en: 'Public corpus records', ru: 'Записей в публичном корпусе' },
     'research.public.corpusRecordsNote': { en: 'unchanged by this research round', ru: 'этот этап их не изменил' },
@@ -339,6 +339,19 @@
     'research.public.addedNote': { en: 'every candidate stays private', ru: 'все кандидаты остаются закрытыми' },
     'research.public.searchable': { en: 'Private candidates searchable here', ru: 'Закрытых кандидатов доступно для поиска' },
     'research.public.searchableNote': { en: 'excluded from search and exports', ru: 'исключены из поиска и выгрузок' },
+    'research.public.parallel': { en: 'Searchable Lak–English pairs', ru: 'Лакско-английских пар в поиске' },
+    'research.public.parallelNote': { en: 'restored from the licensed PCMLBE source', ru: 'восстановлены из лицензированного источника PCMLBE' },
+    'research.public.cyrillic': { en: 'Pairs with Cyrillic Lak', ru: 'Пар с лакским текстом кириллицей' },
+    'research.public.cyrillicNote': { en: 'shown beside the Latin transcription', ru: 'показаны рядом с латинской транскрипцией' },
+    'research.pcmlbe.h2': { en: 'A hidden parallel text is now usable', ru: 'Скрытый параллельный текст теперь можно использовать' },
+    'research.pcmlbe.body': {
+      en: 'The Zhirkov 1955 record inside PCMLBE contains 25 aligned Lak–English segments; 21 also preserve Lak in Cyrillic. The earlier website showed only the Latin transcription. All three available fields are now searchable and remain labelled as source-import evidence until expert review.',
+      ru: 'Запись Жиркова 1955 года внутри PCMLBE содержит 25 сопоставленных лакско-английских сегментов; в 21 также сохранён лакский текст кириллицей. Раньше сайт показывал только латинскую транскрипцию. Теперь поиск работает по всем трём доступным полям, а записи помечены как импортированные из источника до экспертной проверки.'
+    },
+    'research.permission.credit': {
+      en: 'Professor Victor Friedman confirmed permission to use the research materials supplied for this project. Source-level provenance and quality review remain attached to every derived result.',
+      ru: 'Профессор Виктор Фридман подтвердил разрешение использовать исследовательские материалы, переданные для этого проекта. Для каждого производного результата сохраняются происхождение источника и статус проверки качества.'
+    },
     'research.verify.verified': { en: 'Package verified', ru: 'Пакет проверен' },
     'research.verify.blocked': { en: 'Package blocked — nothing staged', ru: 'Пакет заблокирован — ничего не загружено' },
     'research.verify.preparing': { en: 'Verification in progress', ru: 'Идёт проверка' },
@@ -376,15 +389,15 @@
       en: 'A person decides which passages actually correspond. Proximity of filenames is not evidence of sentence equivalence, so no automatic alignment is trusted.',
       ru: 'Человек решает, какие отрывки действительно соответствуют друг другу. Похожие имена файлов не доказывают равенство предложений, поэтому автоматическому сопоставлению не доверяют.'
     },
-    'research.step.review.title': { en: 'Expert review and rights', ru: 'Экспертная проверка и права' },
+    'research.step.review.title': { en: 'Expert review', ru: 'Экспертная проверка' },
     'research.step.review.body': {
-      en: 'A pair becomes usable only after an expert approves it and the rights holder has cleared the source. Only then can it reach a public surface.',
-      ru: 'Пара становится пригодной только после утверждения экспертом и разрешения правообладателя. Лишь тогда она может попасть на публичные страницы.'
+      en: 'Permission is confirmed. A candidate pair becomes usable translation evidence only after an expert approves the actual alignment.',
+      ru: 'Разрешение подтверждено. Пара-кандидат становится пригодным переводческим материалом только после экспертного утверждения самого сопоставления.'
     },
     'research.families.h2': { en: 'Strongest alignment opportunities', ru: 'Наиболее перспективные группы для сопоставления' },
     'research.families.intro': {
-      en: 'These are the source families most likely to yield aligned Lak–Russian material once permission and review are settled. Each card shows <strong>metadata only</strong> — how many files the family holds, how the versions were spotted, and what still has to happen. No passage, title page or extracted line from these materials appears on any public page.',
-      ru: 'Это группы источников, которые скорее всего дадут сопоставленный лакско-русский материал, когда будут получены разрешения и пройдена проверка. Каждая карточка показывает <strong>только метаданные</strong>: сколько файлов в группе, как были замечены версии и что ещё предстоит сделать. Ни отрывок, ни титульный лист, ни извлечённая строка из этих материалов не публикуются.'
+      en: 'Permission for the supplied materials is confirmed. These are the source families most likely to yield aligned Lak–Russian material after human pairing and expert review. Each card shows <strong>metadata only</strong> until those quality steps are complete.',
+      ru: 'Разрешение на переданные материалы подтверждено. Эти группы источников с наибольшей вероятностью дадут сопоставленный лакско-русский материал после ручного сопоставления и экспертной проверки. До завершения этих этапов карточки показывают <strong>только метаданные</strong>.'
     },
     'research.families.empty.title': { en: 'No source families to show yet', ru: 'Пока нет групп источников' },
     'research.families.empty.body': { en: 'Families appear here once a package has been verified.', ru: 'Группы появятся здесь после проверки пакета.' },
@@ -408,6 +421,7 @@
     'research.route.private_text_segments': { en: 'Held as private text candidates', ru: 'Хранится как закрытые текстовые кандидаты' },
     'research.status.unreviewed_alignment_candidate': { en: 'Alignment candidate — unreviewed', ru: 'Кандидат на сопоставление — не проверено' },
     'research.rights.permission_pending': { en: 'Permission pending', ru: 'Разрешение ожидается' },
+    'research.rights.permission_granted': { en: 'Permission confirmed', ru: 'Разрешение подтверждено' },
     'research.access.private_research': { en: 'Private research', ru: 'Закрытое исследование' },
     'research.family.files': { en: '{count} files in this family', ru: '{count} файлов в этой группе' },
     'research.family.candidateFiles': { en: '{count} produced candidates', ru: '{count} дали кандидатов' },
@@ -472,8 +486,8 @@
     'about.sources.pcmlbe.type': { en: 'Annotated text corpus', ru: 'Аннотированный текстовый корпус' },
     'about.sources.pcmlbe.variety': { en: 'Unspecified / mixed', ru: 'Не указано / смешанное' },
     'about.sources.pcmlbe.notes': {
-      en: 'Parallel Corpus of Mountain Languages of the North-East Caucasus; 41 source files; primary prose and poetry texts. Imported in bulk; individual records have not been human-checked. Licensed CC BY-SA 4.0 — credit Erwin Komen, Radboud University; ShareAlike applies to reuse.',
-      ru: 'Параллельный корпус горских языков Северо-Восточного Кавказа; 41 файл; в основном проза и поэзия. Загружен целиком; отдельные записи не проверены человеком. Лицензия CC BY-SA 4.0 — указывайте Эрвина Комена, Радбаудский университет; при повторном использовании действует ShareAlike.'
+      en: 'Parsed Corpus of Modern Lak; 41 PSDX/XML files and 8,788 segments. Created by Dr Erwin R. Komen at Radboud University / SIL International and licensed CC BY-SA 4.0. Includes 25 Lak–English Zhirkov segments, 21 with Cyrillic parallels. Individual records remain unreviewed.',
+      ru: 'Размеченный корпус современного лакского языка: 41 файл PSDX/XML и 8 788 сегментов. Создан доктором Эрвином Р. Коменом в Университете Радбауд / SIL International и опубликован по лицензии CC BY-SA 4.0. Включает 25 лакско-английских сегментов Жиркова, из них 21 с параллельным текстом кириллицей. Отдельные записи пока не проверены.'
     },
     'about.sidebar.pcmlbeLink': { en: 'PCMLBE — Erwin Komen, Radboud University (CC BY-SA 4.0)', ru: 'PCMLBE — Эрвин Комен, Радбаудский университет (CC BY-SA 4.0)' },
     'about.sources.wiki.type': { en: 'Encyclopedic text', ru: 'Энциклопедический текст' },
@@ -1049,6 +1063,7 @@
     /* Why a record appeared: the field the query actually matched. */
     'search.match.lak': { en: 'Matched in the Lak text', ru: 'Совпадение в лакском тексте' },
     'search.match.translation': { en: 'Matched in the translation', ru: 'Совпадение в переводе' },
+    'search.match.lak_cyrillic': { en: 'Matched in the Cyrillic Lak text', ru: 'Совпадение в лакском тексте кириллицей' },
     'search.match.translationOrDocument': { en: 'Matched in the translation or document title', ru: 'Совпадение в переводе или названии документа' },
     'search.match.source': { en: 'Matched in the source name', ru: 'Совпадение в названии источника' },
     'search.match.variety': { en: 'Matched in the Lak variety', ru: 'Совпадение в варианте лакского' },
@@ -1723,12 +1738,12 @@
     /* ── Plain-language help texts (say what it means, why shown,
      * and what to do) ──────────────────────────────────────────── */
     'help.pcmlbe': {
-      en: 'PCMLBE — the Parsed Corpus of Modern Lak — is one of the collections of Lak texts inside this project: prose and poetry with grammar tags, built by Erwin Komen at Radboud University. It is shared under a CC BY-SA 4.0 license: you may reuse these examples if you credit “PCMLBE, Erwin Komen, Radboud University” and pass the same license on. The link on each row points to the original corpus record. The texts were imported in bulk and have not yet been checked by a person — treat them as reliable but unconfirmed, and flag anything that looks wrong.',
-      ru: 'PCMLBE — Parsed Corpus of Modern Lak — одна из коллекций лакских текстов в проекте: проза и поэзия с грамматической разметкой, созданная Эрвином Коменом в Радбаудском университете. Она распространяется по лицензии CC BY-SA 4.0: примеры можно использовать повторно, указывая «PCMLBE, Эрвин Комен, Радбаудский университет» и сохраняя ту же лицензию. Ссылка в каждой строке ведёт на исходное описание корпуса. Тексты загружены целыми файлами и пока не проверены человеком — считайте их надёжными, но неподтверждёнными, и отмечайте всё, что выглядит неверно.'
+      en: 'PCMLBE is the Parsed Corpus of Modern Lak created by Dr Erwin R. Komen at Radboud University / SIL International and licensed CC BY-SA 4.0. It contains preliminary PSDX segment and token annotation. Records are published source evidence, but each one remains unreviewed until a person approves it. You may reuse these examples if you credit “PCMLBE, Erwin R. Komen, Radboud University” and pass the same license on.',
+      ru: 'PCMLBE — размеченный корпус современного лакского языка, созданный доктором Эрвином Р. Коменом в Университете Радбауд / SIL International и опубликованный по лицензии CC BY-SA 4.0. Он содержит предварительную сегментную и токенную разметку PSDX. Это опубликованные данные источника, но каждая запись остаётся непроверенной до одобрения человеком. Примеры можно использовать повторно, указывая «PCMLBE, Эрвин Р. Комен, Радбаудский университет» и сохраняя ту же лицензию.'
     },
     'search.license.pcmlbeTitle': {
-      en: 'PCMLBE by Erwin Komen, Radboud University — CC BY-SA 4.0; reuse requires attribution and ShareAlike',
-      ru: 'PCMLBE — Эрвин Комен, Радбаудский университет — CC BY-SA 4.0; повторное использование требует указания авторства и ShareAlike'
+      en: 'PCMLBE by Erwin R. Komen, Radboud University / SIL International — CC BY-SA 4.0; reuse requires attribution and ShareAlike',
+      ru: 'PCMLBE — Эрвин Р. Комен, Радбаудский университет / SIL International — CC BY-SA 4.0; повторное использование требует указания авторства и ShareAlike'
     },
     'help.corpusRecord': {
       en: 'A record is one item in the collection — a single sentence, phrase, or dictionary entry. Each record keeps its original text, its meaning, where it came from, and whether it has been checked. It is shown so you can look at, and if you speak Lak, check one small piece at a time.',

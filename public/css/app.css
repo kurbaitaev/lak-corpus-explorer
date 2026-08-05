@@ -696,6 +696,18 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   line-height: 1.4;
   color: var(--text);
 }
+.lak-parallel {
+  display: block;
+  margin-top: 7px;
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.record-license {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+}
 
 .lak-text mark.hl {
   background: var(--accent-lt);

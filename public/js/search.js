@@ -391,7 +391,8 @@ function renderResults(rows, matches = [], explain = []) {
   }
 
   $tbody.innerHTML = rows.map((r, i) => {
-    const [type, lak, meaning, source, variety, recordId, url] = r;
+    const [type, lak, meaning, source, variety, recordId, url,
+      lakCyrillic, translationEn, license, persistentId] = r;
     const typeTag = type === 'text'
       ? `<span class="tag tag-text">${esc(t('search.type.text', 'Text'))}</span>`
       : `<span class="tag tag-lexicon">${esc(t('search.type.lexicon', 'Lexicon'))}</span>`;
@@ -400,12 +401,13 @@ function renderResults(rows, matches = [], explain = []) {
       ? `<a href="${esc(url)}" class="source-link" target="_blank" rel="noreferrer">${esc(source)}</a>`
       : esc(source);
     const isLexicon = String(type).toLowerCase() === 'lexicon';
-    const translation = isLexicon && meaning
+    const translation = translationEn || (isLexicon && meaning
       ? meaning
-      : t('search.results.translationMissing', 'Translation not added yet');
+      : null)
+      || t('search.results.translationMissing', 'Translation not added yet');
     const documentId = !isLexicon && meaning ? meaning : recordId;
     const sourceHelp = source === 'PCMLBE'
-      ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Pangloss Collection metadata and archive source used for this record."></span>` +
+      ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Parsed Corpus of Modern Lak, licensed CC BY-SA 4.0."></span>` +
         ` <a class="license-chip" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer" title="${esc(t('search.license.pcmlbeTitle', 'PCMLBE by Erwin Komen, Radboud University — CC BY-SA 4.0; reuse requires attribution and ShareAlike'))}">CC BY-SA 4.0</a>`
       : '';
 
@@ -413,16 +415,23 @@ function renderResults(rows, matches = [], explain = []) {
     const where = explain[i] || null;
     const whereChip = matchChipHtml(where, isLexicon);
     const translationHtml = where && where.field === 'translation' && where.spans && where.spans.length
-      ? highlightSpans(meaning, where.spans)
+      ? highlightSpans(translation, where.spans)
       : esc(translation);
-    const documentHtml = where && where.field === 'translation' && where.spans && where.spans.length && !isLexicon
+    const lakCyrillicHtml = lakCyrillic
+      ? `<span class="lak-parallel" lang="lbe-Cyrl">${where && where.field === 'lak_cyrillic' && where.spans && where.spans.length
+        ? highlightSpans(lakCyrillic, where.spans) : esc(lakCyrillic)}</span>`
+      : '';
+    const rightsHtml = license
+      ? `<span class="record-license"><a href="${esc(persistentId || url)}" target="_blank" rel="noreferrer">${esc(license)}</a></span>`
+      : '';
+    const documentHtml = !translationEn && where && where.field === 'translation' && where.spans && where.spans.length && !isLexicon
       ? highlightSpans(documentId, where.spans)
       : esc(documentId);
 
     return `<tr data-record="${esc(recordId)}">
       <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}</td>
-      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span>${whereChip}</td>
-      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${isLexicon ? translationHtml : esc(translation)}</td>
+      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe-Latn">${highlightSpans(lak, matches[i])}</span>${lakCyrillicHtml}${whereChip}</td>
+      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${translationHtml}${rightsHtml}</td>
       <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}">
         <span>${documentHtml}</span>
         <span class="record-meta">${esc(t('search.results.recordId', 'Record ID'))}: ${esc(recordId)}</span>
