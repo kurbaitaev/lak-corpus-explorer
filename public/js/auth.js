@@ -37,10 +37,19 @@ window.fetchIdentity = async function() {
 // only decides whether the nav link is shown, never what data is available.
 const TRUSTED_PLUS_ROLES = ['trusted_validator', 'verified_expert', 'administrator'];
 
+// The role the current visitor holds, or null when signed out. Pages use it
+// to decide whether calling an authorized route is worth attempting; the
+// server's gate is still the only thing that decides what data comes back.
+window.identityRole = function() {
+  if (window.ACCOUNT) return window.ACCOUNT.role;
+  return window.REVIEWER ? 'administrator' : null;
+};
+window.hasTrustedRole = function() {
+  return TRUSTED_PLUS_ROLES.includes(window.identityRole());
+};
+
 function updatePrivateLink() {
-  const role = window.ACCOUNT ? window.ACCOUNT.role
-    : (window.REVIEWER ? 'administrator' : null);
-  const allowed = TRUSTED_PLUS_ROLES.includes(role);
+  const allowed = window.hasTrustedRole();
   document.querySelectorAll('.nav-links a[href="/intelligence.html"]').forEach((link) => {
     link.hidden = !allowed;
   });

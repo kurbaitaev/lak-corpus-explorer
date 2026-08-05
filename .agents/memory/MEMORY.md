@@ -9,3 +9,7 @@
 - [No Object Storage bucket](object-storage-unavailable.md) — none available in this repl; private blobs go to Postgres behind a pluggable backend. Check before assuming.
 - [Desktop nav width budget](nav-width-budget.md) — the top nav is full at 1280px; a new entry needs a short *Russian* label (longest word wins), measured not guessed.
 - [Search in-flight races](search-ux-test-flake.md) — supersede in-flight searches, never drop the newer one; in browser tests a response landing is not yet a render.
+- [Release gate leak probe](release-gate-probe.md) — sample markers from the live packages, exempt echoed input, and never flag the curated public family titles.
+- [Publish diff drops prod tables](publish-schema-diff-drops.md) — code-created schema + a dev DB behind the code makes publish propose DROPs; converge dev via post-merge, never approve.
+- [Deployment image binaries](deployment-image-binaries.md) — workspace-only tools like `unzip` can be absent in production; do boot-path work in-process, and ENOENT has empty stderr.
+- [Console-clean auth gates](console-clean-auth-gates.md) — decide from `/api/auth/me` before calling a gated route, or every signed-out visitor logs a 401.

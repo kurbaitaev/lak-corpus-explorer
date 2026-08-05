@@ -14,7 +14,8 @@
     "compression": "^1.7.5",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "pg": "^8.13.3"
+    "pg": "^8.13.3",
+    "yauzl": "^2.10.0"
   },
   "devDependencies": {
     "playwright": "^1.62.0"

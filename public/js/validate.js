@@ -94,6 +94,15 @@ function bandLabel(band) {
 async function loadNext() {
   document.getElementById('result-card').style.display = 'none';
   document.getElementById('empty-card').style.display = 'none';
+  // Ask the public identity route first. A signed-out visitor gets the
+  // sign-in card without the browser logging a 401 for a request that was
+  // never going to be answered; the server-side gate is still the real one.
+  const identity = await window.fetchIdentity();
+  if (!identity.account) {
+    document.getElementById('workspace').style.display = 'none';
+    document.getElementById('need-login').style.display = '';
+    return;
+  }
   const res = await fetch('/api/validation/next');
   if (res.status === 401) {
     document.getElementById('workspace').style.display = 'none';
