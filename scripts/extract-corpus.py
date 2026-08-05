@@ -63,8 +63,20 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     with open(DATA_OUT, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+    # Rights that have been cleared for public sources, recorded next to the
+    # corpus itself so the download carries its own attribution. PCMLBE is
+    # confirmed CC BY-SA 4.0: reuse requires credit to Erwin Komen / Radboud
+    # University and ShareAlike redistribution.
+    licenses = {
+        'PCMLBE': {
+            'license': 'CC BY-SA 4.0',
+            'attribution': 'Erwin Komen, Radboud University',
+            'license_url': 'https://creativecommons.org/licenses/by-sa/4.0/',
+            'corpus_url': 'https://cls.ru.nl/staff/ekomen/lbe/',
+        },
+    }
     with open(META_OUT, 'w', encoding='utf-8') as f:
-        json.dump({'stats': stats, 'aliases': aliases}, f,
+        json.dump({'stats': stats, 'aliases': aliases, 'licenses': licenses}, f,
                   ensure_ascii=False, separators=(',', ':'))
 
     print(f'extract-corpus: wrote {len(data)} records to {DATA_OUT}')

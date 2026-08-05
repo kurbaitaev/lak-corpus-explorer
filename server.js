@@ -44,6 +44,20 @@ function loadCorpus() {
     }
   }
 
+  // The downloadable copy lives under public/data. Keep it byte-identical to
+  // the runtime copy so a regeneration can never drift the two apart.
+  try {
+    fs.mkdirSync(path.join(__dirname, 'public/data'), { recursive: true });
+    for (const name of ['corpus-data.json', 'corpus-meta.json']) {
+      const from = path.join(__dirname, 'data', name);
+      const to = path.join(__dirname, 'public/data', name);
+      const fresh = fs.readFileSync(from);
+      if (!fs.existsSync(to) || !fs.readFileSync(to).equals(fresh)) fs.writeFileSync(to, fresh);
+    }
+  } catch (err) {
+    console.error('Public corpus mirror failed (download copy may be stale):', err.message);
+  }
+
   try {
     CORPUS_DATA = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
     const meta  = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));

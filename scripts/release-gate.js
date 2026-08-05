@@ -252,6 +252,7 @@ const PUBLIC_APIS = [
   ['GET', '/api/source-library?q=%D0%BB%D0%B0%D0%BA&limit=200'],
   ['GET', '/api/source-library/facets'],
   ['GET', '/api/source-library/review-queue'],
+  ['GET', '/api/source-library/receipts'],
   ['GET', '/api/word-forms?limit=500&sort=sources'],
   ['GET', '/api/word-forms?limit=500&sort=occurrences'],
   ['GET', '/api/word-forms?q=%D1%85%D1%8A&limit=500'],
@@ -447,12 +448,16 @@ async function main() {
   const FORM_FIELDS = new Set([
     'form', 'occurrences', 'sources', 'script_profile', 'lak_marker', 'confidence',
   ]);
+  const RECEIPT_FIELDS = new Set([
+    'ref', 'receipt_kind', 'disposition', 'corpus_role', 'recommended_use', 'bytes',
+  ]);
   const withheld = require('../lib/public-projection').WITHHELD_MANIFEST_KEYS;
 
   const libAll = await get('/api/source-library?limit=500&page=1');
   const libAll2 = await get('/api/source-library?limit=500&page=2');
   const formsAll = await get('/api/word-forms?limit=500');
   const queue = await get('/api/source-library/review-queue');
+  const receiptsAll = await get('/api/source-library/receipts');
   const sampleRefs = (libAll.data?.items || []).slice(0, 12).map(r => r.ref);
   const details = [];
   for (const ref of sampleRefs) details.push(await get(`/api/source-library/${ref}`));
@@ -476,6 +481,14 @@ async function main() {
   check(`${(formsAll.data?.items || []).length} published word forms carry only declared fields`,
     strayFormFields.size === 0, [...strayFormFields]);
 
+  const strayReceiptFields = new Set();
+  for (const record of receiptsAll.data?.receipts || []) {
+    for (const key of Object.keys(record)) if (!RECEIPT_FIELDS.has(key)) strayReceiptFields.add(key);
+  }
+  check('exactly 27 published receipts, each carrying only declared fields',
+    strayReceiptFields.size === 0 && (receiptsAll.data?.receipts || []).length === 27,
+    { stray: [...strayReceiptFields], count: (receiptsAll.data?.receipts || []).length });
+
   // The withheld list and the published list must stay disjoint. If a future
   // change adds a withheld key to the projection, this fails before the field
   // name ever reaches a visitor.
@@ -485,10 +498,32 @@ async function main() {
 
   // Names of withheld fields must not appear in the response bodies either —
   // that would mean a nested object smuggled them past the top-level check.
-  const projectionText = [libAll.text, libAll2.text, formsAll.text, queue.text, ...details.map(d => d.text)].join('\n');
+  const projectionText = [libAll.text, libAll2.text, formsAll.text, queue.text, receiptsAll.text, ...details.map(d => d.text)].join('\n');
   const namedWithheld = withheld.filter(k => projectionText.includes(`"${k}"`));
   check('no withheld field name appears anywhere in a projection response',
     namedWithheld.length === 0, namedWithheld);
+
+  // ── PCMLBE licensing is consistent on every public surface ────
+  group('PCMLBE CC BY-SA 4.0 is displayed consistently');
+  const obsResources = await get('/api/observatory/resources');
+  const pcmlbeEntry = (obsResources.data?.resources || []).find(r => r.id === 'held-pcmlbe');
+  check('the Observatory entry carries CC BY-SA 4.0 and the Komen/Radboud credit',
+    !!pcmlbeEntry && pcmlbeEntry.rights === 'CC BY-SA 4.0' &&
+    /Komen/.test(pcmlbeEntry.creator || '') && /Radboud/.test(pcmlbeEntry.creator || ''),
+    pcmlbeEntry && { rights: pcmlbeEntry.rights, creator: pcmlbeEntry.creator });
+  const metaJson = await get('/data/corpus-meta.json');
+  const pcmlbeLicense = metaJson.data?.licenses?.PCMLBE;
+  check('the corpus metadata download carries the PCMLBE license and attribution',
+    !!pcmlbeLicense && pcmlbeLicense.license === 'CC BY-SA 4.0' &&
+    /Komen/.test(pcmlbeLicense.attribution || '') && /Radboud/.test(pcmlbeLicense.attribution || ''),
+    pcmlbeLicense);
+  const aboutPage = await get('/about.html');
+  check('the About page shows the PCMLBE license and credit',
+    /CC BY-SA 4\.0/.test(aboutPage.text) && /Radboud/.test(aboutPage.text));
+  const i18nFile = await get('/js/i18n.js');
+  check('the interface dictionary carries the CC BY-SA 4.0 rights label and the Komen/Radboud credit',
+    i18nFile.text.includes('obs.rights.cc_by_sa_4_0') &&
+    /Komen/.test(i18nFile.text) && /Radboud/.test(i18nFile.text));
 
   // ── 2. Route status matrix ───────────────────────────────────
   group('route status: public surfaces');

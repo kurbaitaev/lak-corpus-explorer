@@ -41,19 +41,19 @@
     {
       "id": "held-pcmlbe",
       "title": "Parsed Corpus of Modern Lak",
-      "creator": "PCMLBE project",
+      "creator": "Erwin Komen · Radboud University",
       "year": "Current",
       "category": "Annotated corpus",
       "language": "lbe",
       "access": "Online + local",
-      "rights": "Verify upstream terms",
+      "rights": "CC BY-SA 4.0",
       "status": "Held",
       "priority": "P0",
       "value": 5,
       "scale": "Morphologically parsed text",
       "url": "https://lingconlab.ru/lak_corpus/",
-      "action": "Preserve native annotation and source IDs; audit license.",
-      "notes": "Core grammatical-search resource; avoid flattening its annotations."
+      "action": "Preserve native annotation and source IDs; reuse under CC BY-SA 4.0 with attribution.",
+      "notes": "Core grammatical-search resource; avoid flattening its annotations. License confirmed: CC BY-SA 4.0 — credit Erwin Komen, Radboud University; ShareAlike applies to reuse."
     },
     {
       "id": "held-ids",

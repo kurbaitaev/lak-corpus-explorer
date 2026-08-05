@@ -310,6 +310,18 @@
     'research.stat.sourceRoutes': { en: 'Files audited', ru: 'Проверено файлов' },
     'research.stat.rightsReviews': { en: 'Substantive materials', ru: 'Содержательных материалов' },
     'research.stat.extractions': { en: 'Usable extractions', ru: 'Пригодных извлечений' },
+    'research.whatsnew.aria': { en: 'What is new', ru: 'Что нового' },
+    'research.whatsnew.h2': { en: 'What’s new: the Lak Materials collection, described in the open', ru: 'Новое: коллекция лакских материалов, описанная открыто' },
+    'research.whatsnew.credit': {
+      en: 'We thank <strong>Professor Victor Friedman</strong> for sharing his Lak research collection with the project. The files themselves stay private while their rights are unresolved; what is now public is the <strong>analysis and derived research metadata</strong> — what every source is, what language and script it uses, how well its text could be extracted, and how it can strengthen the corpus in the future.',
+      ru: 'Мы благодарим <strong>профессора Виктора Фридмана</strong> за то, что он поделился с проектом своей исследовательской коллекцией по лакскому языку. Сами файлы остаются закрытыми, пока не урегулированы права; открыты теперь <strong>анализ и производные исследовательские метаданные</strong> — что представляет собой каждый источник, на каком он языке и письме, насколько удалось извлечь текст и как он сможет усилить корпус в будущем.'
+    },
+    'research.whatsnew.public': {
+      en: 'All 320 audited items are accounted for: 293 substantive sources catalogued one by one, and 27 system metadata receipts. No scans, documents, audio, paths or unreviewed passages are published or downloadable. One already-public source has new clarity: the PCMLBE corpus is now confirmed under a <strong>CC BY-SA 4.0</strong> license, credited to Erwin Komen and Radboud University.',
+      ru: 'Учтены все 320 аудированных единиц: 293 содержательных источника описаны по одному, плюс 27 служебных файлов-квитанций. Сканы, документы, аудио, пути и непроверенные фрагменты не публикуются и не выдаются. По одному уже публичному источнику появилась ясность: корпус PCMLBE теперь подтверждён под лицензией <strong>CC BY-SA 4.0</strong> — Эрвин Комен, Радбаудский университет.'
+    },
+    'research.whatsnew.libraryLink': { en: 'Open the Source Library →', ru: 'Открыть библиотеку источников →' },
+    'research.whatsnew.formsLink': { en: 'Browse the Lak word-form index →', ru: 'Открыть указатель словоформ →' },
     'research.stat.lexiconLines': { en: 'Lexicon candidate lines', ru: 'Строк — кандидатов в словарь' },
     'research.stat.textBlocks': { en: 'Text blocks', ru: 'Текстовых блоков' },
     'research.stat.grammarExamples': { en: 'Grammar-example candidates', ru: 'Кандидатов в грамматические примеры' },
@@ -460,9 +472,10 @@
     'about.sources.pcmlbe.type': { en: 'Annotated text corpus', ru: 'Аннотированный текстовый корпус' },
     'about.sources.pcmlbe.variety': { en: 'Unspecified / mixed', ru: 'Не указано / смешанное' },
     'about.sources.pcmlbe.notes': {
-      en: 'Parallel Corpus of Mountain Languages of the North-East Caucasus; 41 source files; primary prose and poetry texts. Imported in bulk; individual records have not been human-checked.',
-      ru: 'Параллельный корпус горских языков Северо-Восточного Кавказа; 41 исходный файл; основные прозаические и поэтические тексты. Импортирован массово; отдельные записи не проверялись человеком.'
+      en: 'Parallel Corpus of Mountain Languages of the North-East Caucasus; 41 source files; primary prose and poetry texts. Imported in bulk; individual records have not been human-checked. Licensed CC BY-SA 4.0 — credit Erwin Komen, Radboud University; ShareAlike applies to reuse.',
+      ru: 'Параллельный корпус горских языков Северо-Восточного Кавказа; 41 файл; в основном проза и поэзия. Загружен целиком; отдельные записи не проверены человеком. Лицензия CC BY-SA 4.0 — указывайте Эрвина Комена, Радбаудский университет; при повторном использовании действует ShareAlike.'
     },
+    'about.sidebar.pcmlbeLink': { en: 'PCMLBE — Erwin Komen, Radboud University (CC BY-SA 4.0)', ru: 'PCMLBE — Эрвин Комен, Радбаудский университет (CC BY-SA 4.0)' },
     'about.sources.wiki.type': { en: 'Encyclopedic text', ru: 'Энциклопедический текст' },
     'about.sources.wiki.notes': {
       en: '1,068 Wikipedia articles, 3,606 sentences. Community-written; orthographic consistency varies.',
@@ -1185,6 +1198,7 @@
     'obs.rights.author_manuscript_verify': { en: 'Author manuscript / verify', ru: 'Авторская рукопись / требует проверки' },
     'obs.rights.cc_by_4_0': { en: 'CC BY 4.0', ru: 'CC BY 4.0' },
     'obs.rights.cc_by_4_0_metadata': { en: 'CC BY 4.0 metadata', ru: 'Метаданные CC BY 4.0' },
+    'obs.rights.cc_by_sa_4_0': { en: 'CC BY-SA 4.0', ru: 'CC BY-SA 4.0' },
     'obs.rights.cc_by_sa_gfdl': { en: 'CC BY-SA / GFDL', ru: 'CC BY-SA / GFDL' },
     'obs.rights.check_current_dataset_license': { en: 'Check current dataset license', ru: 'Проверить текущую лицензию набора данных' },
     'obs.rights.cite_verify_reuse': { en: 'Cite / verify reuse', ru: 'Цитировать / проверить возможность повторного использования' },
@@ -1238,8 +1252,9 @@
     'obs.resource.held_literary.action': { en: 'Identify editions and rights holders; expert-review clean samples.', ru: 'Определить издания и правообладателей; экспертно проверить очищенные выборки.' },
     'obs.resource.held_literary.notes': { en: 'Modern prose and poetry; provenance must be completed before publication or training.', ru: 'Современная проза и поэзия; происхождение должно быть установлено до публикации или обучения.' },
     'obs.resource.held_pcmlbe.scale': { en: 'Morphologically parsed text', ru: 'Морфологически разобранный текст' },
-    'obs.resource.held_pcmlbe.action': { en: 'Preserve native annotation and source IDs; audit license.', ru: 'Сохранить исходную аннотацию и идентификаторы источника; проверить лицензию.' },
-    'obs.resource.held_pcmlbe.notes': { en: 'Core grammatical-search resource; avoid flattening its annotations.', ru: 'Ключевой ресурс для грамматического поиска; не следует уплощать его аннотации.' },
+    'obs.resource.held_pcmlbe.creator': { en: 'Erwin Komen · Radboud University', ru: 'Эрвин Комен · Радбаудский университет' },
+    'obs.resource.held_pcmlbe.action': { en: 'Preserve native annotation and source IDs; reuse under CC BY-SA 4.0 with attribution.', ru: 'Сохранить исходную аннотацию и идентификаторы источника; использование по CC BY-SA 4.0 с указанием авторства.' },
+    'obs.resource.held_pcmlbe.notes': { en: 'Core grammatical-search resource; avoid flattening its annotations. License confirmed: CC BY-SA 4.0 — credit Erwin Komen, Radboud University; ShareAlike applies to reuse.', ru: 'Ключевой ресурс для грамматического поиска; не следует уплощать его аннотации. Лицензия подтверждена: CC BY-SA 4.0 — указывайте Эрвина Комена, Радбаудский университет; при повторном использовании действует ShareAlike.' },
     'obs.resource.held_ids.scale': { en: 'Standard Lak plus Arakul, Balkhar and Shali lists', ru: 'Литературный лакский плюс аракульский, балхарский и шалинский списки' },
     'obs.resource.held_ids.action': { en: 'Retain variety labels and citations in every exported entry.', ru: 'Сохранять пометки разновидностей и ссылки в каждой экспортируемой записи.' },
     'obs.resource.held_ids.notes': { en: 'Already imported; strongest clear-license lexical layer.', ru: 'Уже импортировано; наиболее надёжный лексический слой с ясной лицензией.' },
@@ -1708,8 +1723,12 @@
     /* ── Plain-language help texts (say what it means, why shown,
      * and what to do) ──────────────────────────────────────────── */
     'help.pcmlbe': {
-      en: 'PCMLBE is one of the collections of Lak texts inside this project. The letters stand for a research corpus of North-East Caucasian languages; here it gives us prose and poetry with grammar tags. It is shown so you know the text was imported in bulk and has not yet been checked by a person — treat it as reliable but unconfirmed, and feel free to flag anything that looks wrong.',
-      ru: 'PCMLBE — это одна из коллекций лакских текстов в проекте. Буквы обозначают исследовательский корпус языков Северо-Восточного Кавказа; здесь он даёт нам прозу и поэзию с пометками о грамматике. Метка показана, чтобы вы знали: текст загружен целыми файлами и пока не проверен человеком — считайте его надёжным, но неподтверждённым, и смело отмечайте всё, что выглядит неверно.'
+      en: 'PCMLBE — the Parsed Corpus of Modern Lak — is one of the collections of Lak texts inside this project: prose and poetry with grammar tags, built by Erwin Komen at Radboud University. It is shared under a CC BY-SA 4.0 license: you may reuse these examples if you credit “PCMLBE, Erwin Komen, Radboud University” and pass the same license on. The link on each row points to the original corpus record. The texts were imported in bulk and have not yet been checked by a person — treat them as reliable but unconfirmed, and flag anything that looks wrong.',
+      ru: 'PCMLBE — Parsed Corpus of Modern Lak — одна из коллекций лакских текстов в проекте: проза и поэзия с грамматической разметкой, созданная Эрвином Коменом в Радбаудском университете. Она распространяется по лицензии CC BY-SA 4.0: примеры можно использовать повторно, указывая «PCMLBE, Эрвин Комен, Радбаудский университет» и сохраняя ту же лицензию. Ссылка в каждой строке ведёт на исходное описание корпуса. Тексты загружены целыми файлами и пока не проверены человеком — считайте их надёжными, но неподтверждёнными, и отмечайте всё, что выглядит неверно.'
+    },
+    'search.license.pcmlbeTitle': {
+      en: 'PCMLBE by Erwin Komen, Radboud University — CC BY-SA 4.0; reuse requires attribution and ShareAlike',
+      ru: 'PCMLBE — Эрвин Комен, Радбаудский университет — CC BY-SA 4.0; повторное использование требует указания авторства и ShareAlike'
     },
     'help.corpusRecord': {
       en: 'A record is one item in the collection — a single sentence, phrase, or dictionary entry. Each record keeps its original text, its meaning, where it came from, and whether it has been checked. It is shown so you can look at, and if you speak Lak, check one small piece at a time.',
@@ -2120,6 +2139,64 @@
       ru: 'Все содержательные источники исследовательской подборки — открыто описаны. Видно, <strong>что представляет собой каждый источник</strong>, на каком он языке и письме, каков его правовой статус и что он даёт проекту, — при этом сам текст источника не публикуется.'
     },
     'lib.statsLabel': { en: 'Library summary', ru: 'Сводка по библиотеке' },
+    'lib.stat.items': { en: 'Audited items', ru: 'Аудировано единиц' },
+    'lib.stat.receipts': { en: 'Metadata receipts', ru: 'Служебных квитанций' },
+    'lib.corpusRoleLabel': { en: 'Corpus role', ru: 'Роль в корпусе' },
+    'lib.corpusRole.all': { en: 'Any role', ru: 'Любая роль' },
+    'lib.extractionQualityLabel': { en: 'Extraction quality', ru: 'Качество извлечения' },
+    'lib.extractionQuality.all': { en: 'Any quality', ru: 'Любое качество' },
+
+    'lib.coverage.aria': { en: 'Source-family coverage', ru: 'Охват по видам материала' },
+    'lib.coverage.h2': { en: 'Source-family coverage', ru: 'Охват по видам материала' },
+    'lib.coverage.intro': {
+      en: 'The audit counted <strong>320 items</strong> in this collection: <strong>293 substantive sources</strong> — every one catalogued below — and <strong>27 system metadata receipts</strong> (operating-system files with no content, listed at the foot of the page). Each family is shown with the role it can play once its rights are cleared.',
+      ru: 'Аудит насчитал в коллекции <strong>320 единиц</strong>: <strong>293 содержательных источника</strong> — все представлены ниже — и <strong>27 служебных файлов-квитанций</strong> (системные файлы без содержания, перечислены внизу страницы). Для каждого вида указана роль, которую он сможет сыграть после урегулирования прав.'
+    },
+
+    'lib.themes.aria': { en: 'How these sources strengthen the corpus', ru: 'Как эти источники усилят корпус' },
+    'lib.themes.h2': { en: 'How these sources will strengthen the corpus', ru: 'Как эти источники усилят корпус' },
+    'lib.themes.dictionaries.h3': { en: 'Dictionary reconciliation', ru: 'Сверка словарей' },
+    'lib.themes.dictionaries.body': {
+      en: 'Twenty-one dictionaries and lexicons — held privately — can be cross-checked against the Khaydakov, Dzhidalaev, Gadzhiyev and Digiev layers already in the corpus, so duplicate headwords become corroboration instead of silent repeats.',
+      ru: 'Двадцать один словарь и лексикон — хранятся закрыто — можно сверить со слоями Хайдакова, Джидалаева, Гаджиева и Дигиева, уже имеющимися в корпусе, чтобы повторные словарные статьи стали подтверждением, а не скрытым дублем.'
+    },
+    'lib.themes.ocr.h3': { en: 'OCR correction', ru: 'Исправление OCR' },
+    'lib.themes.ocr.body': {
+      en: 'Scanned documents with known extraction quality give reviewers a focused queue: the word-form index shows which spellings are widely attested and which appear only where OCR struggled.',
+      ru: 'Сканированные документы с известным качеством извлечения дают проверяющим чёткую очередь: указатель словоформ показывает, какие написания широко засвидетельствованы, а какие встречаются лишь там, где OCR ошибался.'
+    },
+    'lib.themes.morphology.h3': { en: 'Morphology research', ru: 'Исследование морфологии' },
+    'lib.themes.morphology.body': {
+      en: 'Fifty-eight grammar and linguistic-analysis sources can supply paradigms, rules and cited examples for lemma and morphology work — reviewed by experts before any of it becomes data.',
+      ru: 'Пятьдесят восемь источников по грамматике и лингвистическому анализу могут дать парадигмы, правила и цитируемые примеры для работы над леммами и морфологией — после экспертной проверки, прежде чем что-либо станет данными.'
+    },
+    'lib.themes.benchmark.h3': { en: 'Benchmark design', ru: 'Устройство бенчмарка' },
+    'lib.themes.benchmark.body': {
+      en: 'Elicitation questionnaires and graded educational material inform how a fair Lak benchmark should be built, while the held-out benchmark stays isolated from everything public.',
+      ru: 'Анкеты для элиситации и градуированные учебные материалы подсказывают, как построить честный бенчмарк лакского языка; отложенный бенчмарк при этом остаётся изолированным от всего публичного.'
+    },
+    'lib.themes.review.h3': { en: 'Expert review', ru: 'Экспертная проверка' },
+    'lib.themes.review.body': {
+      en: 'Sixty-six translation or parallel-text candidates give reviewers concrete pairs to accept or reject inside the Alignment Lab — where every relationship starts as a draft, never a conclusion.',
+      ru: 'Шестьдесят шесть кандидатов в переводы и параллельные тексты дают проверяющим конкретные пары для принятия или отклонения в Лаборатории выравнивания, где каждая связь начинается как черновик, а не как вывод.'
+    },
+    'lib.themes.alignment.h3': { en: 'Cautious alignment', ru: 'Осторожное выравнивание' },
+    'lib.themes.alignment.body': {
+      en: 'Lak–Russian and Lak–English parallel candidates are aligned provisionally, section by section, so future corpus growth can draw on them. A provisional pair is not a verified translation: nothing is published or trained on until a reviewer confirms it.',
+      ru: 'Лакско-русские и лакско-английские параллельные кандидаты выравниваются предварительно, раздел за разделом, чтобы будущий рост корпуса мог на них опираться. Предварительная пара — не проверенный перевод: ничто не публикуется и не используется для обучения, пока проверяющий её не подтвердит.'
+    },
+
+    'lib.receipts.aria': { en: 'System metadata receipts', ru: 'Служебные файлы-квитанции' },
+    'lib.receipts.h2': { en: 'System metadata receipts', ru: 'Служебные файлы-квитанции' },
+    'lib.receipts.intro': {
+      en: 'The collection also contained <strong>27 operating-system metadata files</strong> (folder index files created by macOS). They hold no text and no linguistic value; they are listed so the public account of what was received matches the audit exactly. Their filenames and folder locations are not published.',
+      ru: 'В коллекции также было <strong>27 служебных файлов операционной системы</strong> (индексы папок, созданные macOS). В них нет ни текста, ни лингвистической ценности; они перечислены, чтобы открытый отчёт о полученном в точности совпадал с аудитом. Их имена и расположение не публикуются.'
+    },
+    'lib.receipts.bytes': { en: '{n} bytes', ru: '{n} байт' },
+    'lib.receipts.empty': { en: 'No receipts are recorded yet.', ru: 'Квитанции пока не записаны.' },
+    'lib.receiptKind.macos_folder_metadata': { en: 'macOS folder metadata file', ru: 'Служебный файл macOS' },
+    'lib.disposition.no_extractable_text': { en: 'No extractable text', ru: 'Нет извлекаемого текста' },
+    'lib.disposition.provenance_witness_only': { en: 'Provenance witness only', ru: 'Только свидетельство получения' },
     'lib.method': {
       en: '<strong>What is published here, and what is not.</strong> This catalogue publishes description, never content: the kind of material, its language and script mix, its size, its rights state, and the role it plays in this project. It does not publish file paths, checksums, who supplied a source, descriptions of what a source says, or any of its text. Document titles are shown only where the file’s own metadata carries a real title; where it does not, the entry is named by its material type rather than by an invented name. A name in “attributed to” is the name recorded inside the file, which is not always the author. Dates are file dates, not publication dates.',
       ru: '<strong>Что здесь публикуется, а что нет.</strong> Каталог публикует описание, но никогда — содержание: вид материала, соотношение языков и письма, объём, правовой статус и роль в проекте. Не публикуются пути к файлам, контрольные суммы, сведения о том, кто передал источник, описания того, о чём источник, и никакой его текст. Название документа показывается только там, где оно действительно есть в метаданных файла; иначе запись называется по виду материала, а не выдуманным именем. Имя в поле «приписывается» — это имя, записанное внутри файла, и это не всегда автор. Даты — это даты файла, а не даты публикации.'

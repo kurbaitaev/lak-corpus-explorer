@@ -46,9 +46,11 @@
     ['lib-script', 'script_profile', 'scriptProfile'],
     ['lib-contribution', 'contribution', 'contribution'],
     ['lib-rights', 'rights_state', 'rightsState'],
+    ['lib-role', 'corpus_role', 'corpusRole'],
+    ['lib-quality', 'extraction_quality', 'extractionQuality'],
   ];
 
-  var state = { facets: null, page: 1, seq: 0, lastPayload: null, detailRef: null, detail: null };
+  var state = { facets: null, receipts: null, page: 1, seq: 0, lastPayload: null, detailRef: null, detail: null };
 
   function displayName(s) {
     if (s.title) return s.title;
@@ -257,6 +259,9 @@
   function renderStats(facetPayload, listPayload) {
     var host = document.getElementById('lib-stats');
     if (!facetPayload) return;
+    // Mid-rebuild the totals are partial; the catalogue's preparing notice
+    // says what is happening, so the counters stay empty rather than lying.
+    if (facetPayload.status === 'preparing') { host.innerHTML = ''; return; }
     var byRights = {};
     (facetPayload.facets.rights_state || []).forEach(function (o) { byRights[o.rights_state] = o.count; });
     var contributing = 0;
@@ -264,10 +269,56 @@
       if (o.contribution === 'word_forms') contributing = o.count;
     });
     host.innerHTML =
-      stat(t('lib.stat.sources', 'Sources catalogued'), num(facetPayload.total)) +
+      stat(t('lib.stat.items', 'Audited items'), num(facetPayload.items_total != null ? facetPayload.items_total : facetPayload.total)) +
+      stat(t('lib.stat.sources', 'Sources catalogued'), num(facetPayload.sources_total != null ? facetPayload.sources_total : facetPayload.total)) +
+      stat(t('lib.stat.receipts', 'Metadata receipts'), num(facetPayload.receipts_total || 0)) +
       stat(t('lib.stat.materialTypes', 'Kinds of material'), num((facetPayload.facets.material_type || []).length)) +
       stat(t('lib.stat.contributing', 'Feeding the word-form index'), num(contributing)) +
       stat(t('lib.stat.underReview', 'Awaiting a rights decision'), num(byRights.public_domain_candidate_review || 0));
+  }
+
+  // The twelve material families, each with the role it can play once its
+  // rights are cleared. Counts come from the facets endpoint; the per-family
+  // text reuses the same curated use sentence the detail pages show.
+  function renderCoverage(facetPayload) {
+    var host = document.getElementById('lib-coverage-content');
+    if (!host || !facetPayload) return;
+    if (facetPayload.status === 'preparing') { host.innerHTML = ''; return; }
+    host.innerHTML = (facetPayload.facets.material_type || []).map(function (o) {
+      return '<div class="lib-coverage-card"><b>' + num(o.count) + '</b>' +
+        '<h3>' + esc(label('materialType', o.material_type)) + '</h3>' +
+        '<p>' + esc(t('lib.use.' + o.material_type, '')) + '</p></div>';
+    }).join('');
+  }
+
+  // The system-metadata receipts: counted so the public record matches the
+  // audit, carrying canonical facets only — no filename, no folder layout.
+  function renderReceipts(payload) {
+    var host = document.getElementById('lib-receipts-content');
+    if (!host || !payload) return;
+    if (payload.status === 'preparing') {
+      host.innerHTML = '<p class="obs-private-intro">' +
+        esc(t('lib.preparing.title', 'The library is still being built')) + '</p>';
+      return;
+    }
+    if (!payload.receipts || !payload.receipts.length) {
+      host.innerHTML = '<p class="obs-private-intro">' +
+        esc(t('lib.receipts.empty', 'No receipts are recorded yet.')) + '</p>';
+      return;
+    }
+    host.innerHTML = '<ul class="lib-receipt-list">' + payload.receipts.map(function (r) {
+      return '<li><span class="obs-id">' + esc(r.ref) + '</span> ' +
+        esc(label('receiptKind', r.receipt_kind)) + ' · ' +
+        esc(label('disposition', r.disposition)) +
+        (r.bytes ? ' · ' + esc(tp('lib.receipts.bytes', '{n} bytes', { n: num(r.bytes) })) : '') +
+        '</li>';
+    }).join('') + '</ul>';
+  }
+
+  function loadReceipts() {
+    return fetch('/api/source-library/receipts').then(function (r) { return r.json(); })
+      .then(function (payload) { state.receipts = payload; renderReceipts(payload); })
+      .catch(function () { /* the receipts list is supplementary */ });
   }
 
   /* ── Data ────────────────────────────────────────────────── */
@@ -324,6 +375,7 @@
           });
         });
         renderStats(payload, state.lastPayload);
+        renderCoverage(payload);
       }).catch(function () { /* the list still works without counted filters */ });
   }
 
@@ -363,6 +415,7 @@
 
     load();
     loadFacets();
+    loadReceipts();
     fetch('/api/source-library/review-queue').then(function (r) { return r.json(); })
       .then(renderReview).catch(function () { /* the queue is supplementary */ });
 
@@ -391,7 +444,8 @@
       if (state.detail) { renderDetail(state.detail); return; }
       relocalizeFacetOptions();
       if (state.lastPayload) renderList(state.lastPayload);
-      if (state.facets) renderStats(state.facets, state.lastPayload);
+      if (state.facets) { renderStats(state.facets, state.lastPayload); renderCoverage(state.facets); }
+      if (state.receipts) renderReceipts(state.receipts);
     });
   }
 

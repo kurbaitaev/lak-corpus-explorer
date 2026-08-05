@@ -354,6 +354,73 @@ async function main() {
     assert.strictEqual(res.data.collections.forms.total, 0);
   });
 
+  // The audit counted 320 items: 293 substantive sources plus 27
+  // system-metadata receipts. The public catalogue has to account for every
+  // one of them exactly once — nothing missing, nothing invented, nothing
+  // counted twice.
+  group('the whole audited batch is represented exactly once');
+  const receiptsPayload = await api('/api/source-library/receipts');
+  const facetsPayload = await api('/api/source-library/facets');
+
+  await it('the facets report the full audit: 320 items = 293 sources + 27 receipts', async () => {
+    assert.strictEqual(facetsPayload.data.sources_total, 293, 'sources_total');
+    assert.strictEqual(facetsPayload.data.receipts_total, 27, 'receipts_total');
+    assert.strictEqual(facetsPayload.data.items_total, 320, 'items_total');
+  });
+
+  await it('27 receipts are listed, each carrying only safe canonical fields', async () => {
+    assert.strictEqual(receiptsPayload.data.receipts.length, 27, 'receipt count');
+    for (const r of receiptsPayload.data.receipts) {
+      assert.deepStrictEqual(Object.keys(r).sort(),
+        ['bytes', 'corpus_role', 'disposition', 'receipt_kind', 'recommended_use', 'ref'].sort(),
+        `receipt ${r.ref} carries an undeclared field`);
+      assert.match(r.ref, /^r\d{1,6}$/, `receipt ref ${r.ref} is not an opaque receipt ref`);
+      assert.strictEqual(r.receipt_kind, 'macos_folder_metadata');
+      assert.ok(['no_extractable_text', 'provenance_witness_only'].includes(r.disposition),
+        `unexpected disposition ${r.disposition}`);
+    }
+  });
+
+  // Runs against the staged audit itself, so this must stay before the
+  // concurrency group, which is the group that closes the shared pool.
+  const { pool: auditPool } = require('../lib/db');
+  await it('every audited item appears exactly once across sources and receipts', async () => {
+    const audited = await auditPool.query('SELECT source_sequence FROM v13_sources');
+    const sources = await auditPool.query('SELECT source_sequence FROM public_sources');
+    const receiptsDb = await auditPool.query('SELECT source_sequence FROM public_receipts');
+    const auditedSeqs = new Set(audited.rows.map(r => r.source_sequence));
+    assert.strictEqual(auditedSeqs.size, 320, 'the staged audit is not 320 items');
+    const srcSeqs = sources.rows.map(r => r.source_sequence);
+    const rcpSeqs = receiptsDb.rows.map(r => r.source_sequence);
+    assert.strictEqual(srcSeqs.length, 293, 'public_sources is not 293 rows');
+    assert.strictEqual(rcpSeqs.length, 27, 'public_receipts is not 27 rows');
+    assert.deepStrictEqual(srcSeqs.filter(s => rcpSeqs.includes(s)), [],
+      'an item is catalogued as both a source and a receipt');
+    const covered = new Set([...srcSeqs, ...rcpSeqs]);
+    assert.deepStrictEqual([...auditedSeqs].filter(s => !covered.has(s)), [],
+      'audited items are missing from the public catalogue');
+    assert.deepStrictEqual([...covered].filter(s => !auditedSeqs.has(s)), [],
+      'the catalogue holds items the audit does not know');
+  });
+
+  await it('the corpus-role filter returns only that role', async () => {
+    const r = await api('/api/source-library?corpus_role=private%20lexicon%20candidate&limit=100');
+    assert.ok(r.data.total > 0, 'no sources carry the lexicon role');
+    for (const item of r.data.items) assert.strictEqual(item.corpus_role, 'private lexicon candidate');
+  });
+
+  await it('the extraction-quality filter returns only that quality', async () => {
+    const r = await api('/api/source-library?extraction_quality=very_short&limit=100');
+    assert.ok(r.data.total > 0, 'no sources are very short');
+    for (const item of r.data.items) assert.strictEqual(item.extraction_quality, 'very_short');
+  });
+
+  await it('a filter value outside the vocabulary is ignored, not injected', async () => {
+    const r = await api("/api/source-library?corpus_role=x' OR 1=1 --&limit=5");
+    assert.strictEqual(r.data.status, 'ok');
+    assert.strictEqual(facetsPayload.data.sources_total, 293, 'the catalogue changed under a bogus filter');
+  });
+
   // The deployment is autoscale: several instances boot at once and every one
   // of them starts a derivation. The stage table makes that resumable, but
   // resumability is not exclusion — without a lock one instance could discard

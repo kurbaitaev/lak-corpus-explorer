@@ -405,7 +405,8 @@ function renderResults(rows, matches = [], explain = []) {
       : t('search.results.translationMissing', 'Translation not added yet');
     const documentId = !isLexicon && meaning ? meaning : recordId;
     const sourceHelp = source === 'PCMLBE'
-      ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Pangloss Collection metadata and archive source used for this record."></span>`
+      ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Pangloss Collection metadata and archive source used for this record."></span>` +
+        ` <a class="license-chip" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer" title="${esc(t('search.license.pcmlbeTitle', 'PCMLBE by Erwin Komen, Radboud University — CC BY-SA 4.0; reuse requires attribution and ShareAlike'))}">CC BY-SA 4.0</a>`
       : '';
 
     // Where the match happened, when the Lak text carries no highlight.

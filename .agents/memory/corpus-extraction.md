@@ -20,3 +20,16 @@ Boundary markers (raw bytes):
 **How to apply:** Use this in any future extraction/rebuild script. Implemented in `scripts/extract-corpus.py`.
 
 Also: ALIASES string values contain `;`, so never scan for the statement-terminating semicolon to find the object end — use `json.JSONDecoder().raw_decode` on the text starting at the ALIASES value.
+
+## Two corpus copies must agree
+
+The server loads corpus JSON from the root `data/`; `public/data/` is a
+separate downloadable copy. A regeneration once drifted them (a `licenses`
+block reached the server but not the download) and only a manual comparison
+caught it.
+
+**Why:** two consumers, two paths, and the extraction script writes only one.
+
+**How to apply:** boot now mirrors root → public automatically. If that
+mirror is ever removed, or the script's output paths change, re-check both
+consumers before trusting either copy.

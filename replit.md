@@ -6,7 +6,7 @@ A publicly accessible, source-aware research corpus of the Lak language (лак�
 
 - **Backend**: Node.js + Express (`server.js`, port 5000)
 - **Database**: Replit PostgreSQL — `reviews` table (record_id, state, correction, note, reviewer_name, timestamps)
-- **Corpus data**: `public/data/corpus-data.json` + `public/data/corpus-meta.json` — **generated files, gitignored**. Rebuilt from the canonical `index.html` (project root) with `python3 scripts/extract-corpus.py`. `server.js` auto-runs the script at startup if the files are missing, and aborts with a clear error if regeneration fails.
+- **Corpus data**: `data/corpus-data.json` + `data/corpus-meta.json` — **generated files, gitignored**. Rebuilt from the canonical `index.html` (project root) with `python3 scripts/extract-corpus.py`. `server.js` auto-runs the script at startup if the files are missing, and aborts with a clear error if regeneration fails. `public/data/` holds a static copy for download; keep the two in sync when regenerating. The meta file carries a `licenses` block: **PCMLBE is confirmed CC BY-SA 4.0** (credit Erwin Komen, Radboud University; ShareAlike applies), displayed consistently in the Observatory, About page, search results and research page — the release gate checks all four surfaces.
 - **Frontend**: Vanilla JS, multi-page (`public/index.html`, `public/about.html`, `public/queue.html`)
 
 ## How to run
@@ -62,9 +62,18 @@ never served:
 
 ## Public Source Library and derived Lak word-form index
 
-The v1.3 batch is restricted material, but *knowing what is in it* is not. Two public,
-anonymous surfaces (`/source-library.html`, `/word-forms.html`) publish description and
-aggregate derived data while the source text stays private:
+The v1.3 batch — the Lak Materials research collection shared by **Professor Victor
+Friedman**, credited publicly on the research page — is restricted material, but *knowing
+what is in it* is not. Two public, anonymous surfaces (`/source-library.html`,
+`/word-forms.html`) publish description and aggregate derived data while the source text
+stays private:
+
+- **The public record reconciles to the audit: 320 items.** 293 substantive sources are
+  catalogued one by one; the 27 system-metadata receipts (macOS folder files, no content)
+  are listed separately with canonical facets only, so the public account of what was
+  received matches the audited inventory exactly. `scripts/test-source-library.js` proves
+  the staged audit, `public_sources` and `public_receipts` cover the same 320 sequences
+  exactly once each.
 
 - **The catalogue describes, it never quotes.** All 293 substantive sources are published with
   their material type, language scope, script mix, size, file format, extraction status, rights

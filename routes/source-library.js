@@ -27,6 +27,8 @@ const FILTERS = {
   rights_state: 'rights_state',
   script_profile: 'script_profile',
   contribution: 'contribution',
+  corpus_role: 'corpus_role',
+  extraction_quality: 'extraction_quality',
   file_format: 'file_format',
   priority: 'priority',
 };
@@ -80,6 +82,17 @@ function toPublicForm(row) {
     script_profile: row.script_profile,
     lak_marker: !!row.lak_marker,
     confidence: row.confidence,
+  };
+}
+
+function toPublicReceipt(row) {
+  return {
+    ref: row.ref,
+    receipt_kind: row.receipt_kind,
+    disposition: row.disposition,
+    corpus_role: row.corpus_role,
+    recommended_use: row.recommended_use,
+    bytes: row.bytes === null ? null : Number(row.bytes),
   };
 }
 
@@ -174,6 +187,7 @@ module.exports = ({ pool, packageDir }) => {
   // them rather than offering choices that lead nowhere.
   router.get('/api/source-library/facets', async (req, res) => {
     try {
+      const status = await readiness();
       const facets = {};
       for (const column of Object.values(FILTERS)) {
         const rows = await pool.query(
@@ -187,9 +201,23 @@ module.exports = ({ pool, packageDir }) => {
           WHERE family_id IS NOT NULL GROUP BY 1 ORDER BY 2 DESC, 1`);
       facets.family_id = families.rows.map(r => ({ family_id: r.family_id, count: r.count }));
 
-      const total = await pool.query('SELECT count(*)::int AS n FROM public_sources');
+      const [sourcesTotal, receiptsTotal] = await Promise.all([
+        pool.query('SELECT count(*)::int AS n FROM public_sources'),
+        pool.query('SELECT count(*)::int AS n FROM public_receipts'),
+      ]);
+      // The whole audited batch, accounted for in the open: 293 substantive
+      // sources plus 27 system-metadata receipts is the 320 the audit counted.
+      // While a rebuild is in flight the totals are partial, so the payload
+      // says so — a preparing answer is honest, a half-rebuilt one is not.
       res.json(P.assertPublicSafe({
-        status: 'ok', total: total.rows[0].n, facets,
+        status: status.ready ? 'ok' : 'preparing',
+        stages_complete: status.stages_complete,
+        stages_total: status.stages_total,
+        total: sourcesTotal.rows[0].n,
+        sources_total: sourcesTotal.rows[0].n,
+        receipts_total: receiptsTotal.rows[0].n,
+        items_total: sourcesTotal.rows[0].n + receiptsTotal.rows[0].n,
+        facets,
       }, 'source-library-facets'));
     } catch (err) {
       console.error('Source library facets failed:', err.message);
@@ -213,6 +241,27 @@ module.exports = ({ pool, packageDir }) => {
       }, 'source-library-review-queue'));
     } catch (err) {
       console.error('Rights review queue failed:', err.message);
+      res.status(500).json({ error: 'Source library unavailable' });
+    }
+  });
+
+  // The system-metadata receipts. Registered before /:ref so "receipts" is
+  // never parsed as a source reference.
+  router.get('/api/source-library/receipts', async (req, res) => {
+    try {
+      const status = await readiness();
+      const rows = await pool.query(
+        `SELECT ref, receipt_kind, disposition, corpus_role, recommended_use, bytes
+           FROM public_receipts ORDER BY source_sequence`);
+      res.json(P.assertPublicSafe({
+        status: status.ready ? 'ok' : 'preparing',
+        stages_complete: status.stages_complete,
+        stages_total: status.stages_total,
+        total: rows.rowCount,
+        receipts: rows.rows.map(toPublicReceipt),
+      }, 'source-library-receipts'));
+    } catch (err) {
+      console.error('Receipts list failed:', err.message);
       res.status(500).json({ error: 'Source library unavailable' });
     }
   });

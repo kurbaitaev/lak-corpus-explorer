@@ -36,6 +36,14 @@
     </div>
   </header>
 
+  <section class="obs-main" aria-label="Source-family coverage" data-i18n-aria="lib.coverage.aria">
+    <div class="container">
+      <h2 data-i18n="lib.coverage.h2">Source-family coverage</h2>
+      <p class="obs-private-intro" data-i18n-html="lib.coverage.intro">The audit counted <strong>320 items</strong> in this collection: <strong>293 substantive sources</strong> — every one catalogued below — and <strong>27 system metadata receipts</strong> (operating-system files with no content, listed at the foot of the page). Each family is shown with the role it can play once its rights are cleared.</p>
+      <div id="lib-coverage-content" class="lib-coverage-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
   <section class="obs-main" aria-label="Source catalogue" data-i18n-aria="lib.catalogueLabel">
     <div class="container">
       <div id="lib-detail" hidden></div>
@@ -49,6 +57,8 @@
             <div class="field-wrap"><label for="lib-script" data-i18n="lib.scriptProfile">Script</label><div class="select-wrap"><select id="lib-script"><option value="" data-i18n="lib.scriptProfile.all">Any script</option></select></div></div>
             <div class="field-wrap"><label for="lib-contribution"><span data-i18n="lib.contribution">Contribution</span><span class="help-marker" data-help="help.contribution" data-help-fallback="How this source feeds the project: some contribute word forms to the public index, others are held as references only."></span></label><div class="select-wrap"><select id="lib-contribution"><option value="" data-i18n="lib.contribution.all">Any contribution</option></select></div></div>
             <div class="field-wrap"><label for="lib-rights" data-i18n="lib.rightsState">Rights state</label><div class="select-wrap"><select id="lib-rights"><option value="" data-i18n="lib.rightsState.all">Any rights state</option></select></div></div>
+            <div class="field-wrap"><label for="lib-role" data-i18n="lib.corpusRoleLabel">Corpus role</label><div class="select-wrap"><select id="lib-role"><option value="" data-i18n="lib.corpusRole.all">Any role</option></select></div></div>
+            <div class="field-wrap"><label for="lib-quality" data-i18n="lib.extractionQualityLabel">Extraction quality</label><div class="select-wrap"><select id="lib-quality"><option value="" data-i18n="lib.extractionQuality.all">Any quality</option></select></div></div>
           </div>
           <div class="obs-viewbar">
             <a class="obs-tab" href="/word-forms.html" data-i18n="lib.toWordForms">Open the Lak word-form index →</a>
@@ -64,11 +74,33 @@
     </div>
   </section>
 
+  <section class="obs-main" aria-label="How these sources strengthen the corpus" data-i18n-aria="lib.themes.aria">
+    <div class="container">
+      <h2 data-i18n="lib.themes.h2">How these sources will strengthen the corpus</h2>
+      <div class="lib-themes-grid">
+        <div class="lib-theme"><h3 data-i18n="lib.themes.dictionaries.h3">Dictionary reconciliation</h3><p data-i18n="lib.themes.dictionaries.body">Twenty-one dictionaries and lexicons — held privately — can be cross-checked against the Khaydakov, Dzhidalaev, Gadzhiyev and Digiev layers already in the corpus, so duplicate headwords become corroboration instead of silent repeats.</p></div>
+        <div class="lib-theme"><h3 data-i18n="lib.themes.ocr.h3">OCR correction</h3><p data-i18n="lib.themes.ocr.body">Scanned documents with known extraction quality give reviewers a focused queue: the word-form index shows which spellings are widely attested and which appear only where OCR struggled.</p></div>
+        <div class="lib-theme"><h3 data-i18n="lib.themes.morphology.h3">Morphology research</h3><p data-i18n="lib.themes.morphology.body">Fifty-eight grammar and linguistic-analysis sources can supply paradigms, rules and cited examples for lemma and morphology work — reviewed by experts before any of it becomes data.</p></div>
+        <div class="lib-theme"><h3 data-i18n="lib.themes.benchmark.h3">Benchmark design</h3><p data-i18n="lib.themes.benchmark.body">Elicitation questionnaires and graded educational material inform how a fair Lak benchmark should be built, while the held-out benchmark stays isolated from everything public.</p></div>
+        <div class="lib-theme"><h3 data-i18n="lib.themes.review.h3">Expert review</h3><p data-i18n="lib.themes.review.body">Sixty-six translation or parallel-text candidates give reviewers concrete pairs to accept or reject inside the Alignment Lab — where every relationship starts as a draft, never a conclusion.</p></div>
+        <div class="lib-theme"><h3 data-i18n="lib.themes.alignment.h3">Cautious alignment</h3><p data-i18n="lib.themes.alignment.body">Lak–Russian and Lak–English parallel candidates are aligned provisionally, section by section, so future corpus growth can draw on them. A provisional pair is not a verified translation: nothing is published or trained on until a reviewer confirms it.</p></div>
+      </div>
+    </div>
+  </section>
+
   <section class="obs-private" id="lib-review" aria-label="Rights review queue" data-i18n-aria="lib.review.sectionLabel">
     <div class="container">
       <h2 class="obs-private-title"><span data-i18n="lib.review.h2">Rights review queue</span><span class="help-marker" data-help="help.rightsReview" data-help-fallback="These sources look like they may already be out of copyright. Until someone confirms that, their text stays unpublished."></span></h2>
       <p class="obs-private-intro" data-i18n-html="lib.review.intro">A handful of sources in this batch look like they may already be in the public domain. <strong>Looking like it is not a clearance.</strong> They are listed here in the open so the question is visible and answerable — and their text stays unpublished until someone checks.</p>
       <div id="lib-review-content" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="obs-main" aria-label="System metadata receipts" data-i18n-aria="lib.receipts.aria">
+    <div class="container">
+      <h2 data-i18n="lib.receipts.h2">System metadata receipts</h2>
+      <p class="obs-private-intro" data-i18n-html="lib.receipts.intro">The collection also contained <strong>27 operating-system metadata files</strong> (folder index files created by macOS). They hold no text and no linguistic value; they are listed so the public account of what was received matches the audit exactly. Their filenames and folder locations are not published.</p>
+      <div id="lib-receipts-content" aria-live="polite"></div>
     </div>
   </section>
 </main>
