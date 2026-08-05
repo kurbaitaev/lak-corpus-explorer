@@ -412,11 +412,16 @@ function renderResults(rows, matches = [], explain = []) {
       : '';
 
     // Where the match happened, when the Lak text carries no highlight.
+    // Spans are measured against one exact field: 8 = English translation,
+    // 2 = lexicon meaning or (for text rows) the document title. Highlight
+    // that string and no other, or the offsets land on the wrong words.
     const where = explain[i] || null;
     const whereChip = matchChipHtml(where, isLexicon);
-    const translationHtml = where && where.field === 'translation' && where.spans && where.spans.length
-      ? highlightSpans(translation, where.spans)
-      : esc(translation);
+    const spans = where && where.spans && where.spans.length ? where.spans : null;
+    const whereIdx = where && typeof where.index === 'number' ? where.index : null;
+    const translationHit = spans && (whereIdx === 8 || (whereIdx === 2 && isLexicon) ||
+      (whereIdx === null && where.field === 'translation' && !!(translationEn || isLexicon)));
+    const translationHtml = translationHit ? highlightSpans(translation, spans) : esc(translation);
     const lakCyrillicHtml = lakCyrillic
       ? `<span class="lak-parallel" lang="lbe-Cyrl">${where && where.field === 'lak_cyrillic' && where.spans && where.spans.length
         ? highlightSpans(lakCyrillic, where.spans) : esc(lakCyrillic)}</span>`
@@ -424,9 +429,9 @@ function renderResults(rows, matches = [], explain = []) {
     const rightsHtml = license
       ? `<span class="record-license"><a href="${esc(persistentId || url)}" target="_blank" rel="noreferrer">${esc(license)}</a></span>`
       : '';
-    const documentHtml = !translationEn && where && where.field === 'translation' && where.spans && where.spans.length && !isLexicon
-      ? highlightSpans(documentId, where.spans)
-      : esc(documentId);
+    const documentHit = spans && ((whereIdx === 2 && !isLexicon) ||
+      (whereIdx === null && where.field === 'translation' && !translationEn && !isLexicon));
+    const documentHtml = documentHit ? highlightSpans(documentId, spans) : esc(documentId);
 
     return `<tr data-record="${esc(recordId)}">
       <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}</td>

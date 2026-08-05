@@ -70,6 +70,13 @@ function loadCorpus() {
     // [10] persistent collection identifier.
     if (fs.existsSync(pcmlbeParallelPath)) {
       const parallels = JSON.parse(fs.readFileSync(pcmlbeParallelPath, 'utf-8'));
+      // Fail closed on the overlay's own cardinality, not just on the match
+      // rate: a truncated or padded evidence file must stop the boot.
+      const cyrillicCount = parallels.filter(item => item.lak_cyrillic).length;
+      if (parallels.length !== 25 || cyrillicCount !== 21) {
+        throw new Error(
+          `PCMLBE parallel overlay holds ${parallels.length} records / ${cyrillicCount} Cyrillic, expected exactly 25 / 21`);
+      }
       const byId = new Map(parallels.map(item => [item.record_id, item]));
       let enriched = 0;
       CORPUS_DATA = CORPUS_DATA.map(row => {
@@ -83,7 +90,7 @@ function loadCorpus() {
         throw new Error(`PCMLBE parallel overlay matched ${enriched}/${parallels.length} records`);
       }
       CORPUS_STATS.pcmlbe_parallel_en = enriched;
-      CORPUS_STATS.pcmlbe_parallel_cyrillic = parallels.filter(item => item.lak_cyrillic).length;
+      CORPUS_STATS.pcmlbe_parallel_cyrillic = cyrillicCount;
     }
     console.log(`Corpus loaded: ${CORPUS_DATA.length} records`);
   } catch (err) {
@@ -553,7 +560,10 @@ function explainMatch(record, { currentQ, queryTokens, normForms, lakSpans }) {
     const spans = index === 2 || index === 7 || index === 8
       ? highlightSpansFor(record[index], { phrase: currentQ, queryTokens, aliasForms: [] })
       : [];
-    return { field: MATCH_FIELD_NAMES[index], spans };
+    // The raw index travels too: 2 and 8 share the chip name 'translation',
+    // but the client must highlight the exact string the spans were measured
+    // on — the document title (2) is not the English translation (8).
+    return { field: MATCH_FIELD_NAMES[index], spans, index };
   }
   // The alias expansion matched the Lak form itself, but not as a span we can
   // point at (a different spelling of the same concept).

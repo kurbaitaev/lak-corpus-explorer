@@ -489,7 +489,7 @@
       en: 'Parsed Corpus of Modern Lak; 41 PSDX/XML files and 8,788 segments. Created by Dr Erwin R. Komen at Radboud University / SIL International and licensed CC BY-SA 4.0. Includes 25 Lak–English Zhirkov segments, 21 with Cyrillic parallels. Individual records remain unreviewed.',
       ru: 'Размеченный корпус современного лакского языка: 41 файл PSDX/XML и 8 788 сегментов. Создан доктором Эрвином Р. Коменом в Университете Радбауд / SIL International и опубликован по лицензии CC BY-SA 4.0. Включает 25 лакско-английских сегментов Жиркова, из них 21 с параллельным текстом кириллицей. Отдельные записи пока не проверены.'
     },
-    'about.sidebar.pcmlbeLink': { en: 'PCMLBE — Erwin Komen, Radboud University (CC BY-SA 4.0)', ru: 'PCMLBE — Эрвин Комен, Радбаудский университет (CC BY-SA 4.0)' },
+    'about.sidebar.pcmlbeLink': { en: 'PCMLBE — Erwin R. Komen, Radboud University / SIL (CC BY-SA 4.0)', ru: 'PCMLBE — Эрвин Р. Комен, Радбаудский университет / SIL (CC BY-SA 4.0)' },
     'about.sources.wiki.type': { en: 'Encyclopedic text', ru: 'Энциклопедический текст' },
     'about.sources.wiki.notes': {
       en: '1,068 Wikipedia articles, 3,606 sentences. Community-written; orthographic consistency varies.',
@@ -1267,7 +1267,7 @@
     'obs.resource.held_literary.action': { en: 'Identify editions and rights holders; expert-review clean samples.', ru: 'Определить издания и правообладателей; экспертно проверить очищенные выборки.' },
     'obs.resource.held_literary.notes': { en: 'Modern prose and poetry; provenance must be completed before publication or training.', ru: 'Современная проза и поэзия; происхождение должно быть установлено до публикации или обучения.' },
     'obs.resource.held_pcmlbe.scale': { en: 'Morphologically parsed text', ru: 'Морфологически разобранный текст' },
-    'obs.resource.held_pcmlbe.creator': { en: 'Erwin Komen · Radboud University', ru: 'Эрвин Комен · Радбаудский университет' },
+    'obs.resource.held_pcmlbe.creator': { en: 'Dr Erwin R. Komen · Radboud University / SIL International', ru: 'Д-р Эрвин Р. Комен · Радбаудский университет / SIL International' },
     'obs.resource.held_pcmlbe.action': { en: 'Preserve native annotation and source IDs; reuse under CC BY-SA 4.0 with attribution.', ru: 'Сохранить исходную аннотацию и идентификаторы источника; использование по CC BY-SA 4.0 с указанием авторства.' },
     'obs.resource.held_pcmlbe.notes': { en: 'Core grammatical-search resource; avoid flattening its annotations. License confirmed: CC BY-SA 4.0 — credit Erwin Komen, Radboud University; ShareAlike applies to reuse.', ru: 'Ключевой ресурс для грамматического поиска; не следует уплощать его аннотации. Лицензия подтверждена: CC BY-SA 4.0 — указывайте Эрвина Комена, Радбаудский университет; при повторном использовании действует ShareAlike.' },
     'obs.resource.held_ids.scale': { en: 'Standard Lak plus Arakul, Balkhar and Shali lists', ru: 'Литературный лакский плюс аракульский, балхарский и шалинский списки' },

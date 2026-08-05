@@ -70,9 +70,10 @@ def main():
     licenses = {
         'PCMLBE': {
             'license': 'CC BY-SA 4.0',
-            'attribution': 'Erwin Komen, Radboud University',
+            'attribution': 'Dr Erwin R. Komen, Radboud University / SIL International',
             'license_url': 'https://creativecommons.org/licenses/by-sa/4.0/',
-            'corpus_url': 'https://cls.ru.nl/staff/ekomen/lbe/',
+            'corpus_url': 'https://cls.ru.nl/staff/ekomen/lbe/crp/',
+            'persistent_id': 'http://hdl.handle.net/21.11114/COLL-0000-0021-959C-3',
         },
     }
     with open(META_OUT, 'w', encoding='utf-8') as f:
