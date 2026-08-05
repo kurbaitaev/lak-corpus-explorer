@@ -9,6 +9,8 @@ const { loadObservatory } = require('./lib/observatory');
 const sourceImport = require('./lib/source-import');
 const researchUpdate = require('./lib/research-update');
 const v13 = require('./lib/source-import-v13');
+const publicDerivation = require('./lib/public-derivation');
+const sourceLibrary = require('./routes/source-library');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -238,8 +240,34 @@ migrate()
       `${summary.family_count} source families, ` +
       `counts ${summary.counts_match ? 'match the audit' : 'not confirmed against the audit'}`);
   })
+  .then(() => derivePublicLibrary())
   .then(() => runSourceIntelligenceScan())
   .catch(err => console.error('Private package preparation failed:', err.message));
+
+// ── Public Source Library derivation ─────────────────────────
+// Turns the staged private batch into the public catalogue and word-form
+// index. It runs in committed chunks for the same reason staging does: this
+// host suspends the process between requests, so a pass that cannot resume is
+// a pass that never finishes. A failure here leaves the library reporting
+// "still preparing" and never blocks the rest of the app.
+function derivePublicLibrary() {
+  const started = Date.now();
+  return publicDerivation.derivePublicLibrary(pool, {
+    packageDir: researchUpdate.packageDir(),
+  }).then(result => {
+    if (!result.ready) {
+      console.warn(`Public Source Library: not derived — ${result.reason}`);
+      return;
+    }
+    const line = result.stages
+      .map(s => `${s.stage} ${s.skipped ? 'cached' : s.produced}`)
+      .join(', ');
+    console.log(`Public Source Library: ${line} (${Date.now() - started} ms)` +
+      (result.discarded_stale ? ' — rebuilt after an input change' : ''));
+  }).catch(err => {
+    console.error('Public Source Library derivation failed:', err.message);
+  });
+}
 
 // The scan proposes source relationships from deterministic evidence only and
 // seeds the War family. It never marks anything validated, and a failure here
@@ -324,7 +352,8 @@ const PAGES = {};
 for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
                    'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html',
-                   'research.html', 'intelligence.html', 'alignment.html', 'rights.html']) {
+                   'research.html', 'intelligence.html', 'alignment.html', 'rights.html',
+                   'source-library.html', 'word-forms.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -350,6 +379,10 @@ const EVIDENCE_GATE = labMemory.createEvidenceGate({
 const PUBLIC_EVIDENCE = require('./lib/public-evidence').createPublicEvidence({
   corpusData: CORPUS_DATA, norm, tokenize, gate: EVIDENCE_GATE,
 });
+
+// Public Source Library and derived word-form index. Anonymous by design:
+// everything it serves has already passed the public projection allowlist.
+app.use(sourceLibrary({ pool, packageDir: () => researchUpdate.packageDir() }));
 
 // Expert-validation & gamification API
 app.use(require('./routes/validation')({ pool }));
@@ -489,7 +522,7 @@ function explainMatch(record, { currentQ, queryTokens, normForms, lakSpans }) {
 }
 
 // GET /api/corpus/search?q=&kind=&source=&variety=&page=&limit=
-app.get('/api/corpus/search', (req, res) => {
+app.get('/api/corpus/search', async (req, res) => {
   const {
     q       = '',
     kind    = '',
@@ -584,6 +617,23 @@ app.get('/api/corpus/search', (req, res) => {
     currentQ, queryTokens, normForms, lakSpans: matches[i],
   }));
 
+  // The same query, asked of the two public collections derived from the
+  // research batch. A visitor searching for a word should find the sources
+  // that hold it and the attested forms that start with it, not only the
+  // corpus rows — that is the whole point of publishing them.
+  //
+  // A failure here degrades to "no collections" rather than failing the
+  // search: the corpus results are the primary answer and must survive the
+  // library being unavailable.
+  let collections = { library: { total: 0, items: [] }, forms: { total: 0, items: [] } };
+  if (currentQ) {
+    try {
+      collections = await sourceLibrary.lookup(pool, q);
+    } catch (err) {
+      console.error('Search collections unavailable:', err.message);
+    }
+  }
+
   res.json({
     query: q,
     expanded,
@@ -596,6 +646,7 @@ app.get('/api/corpus/search', (req, res) => {
     page: safePageNum,
     limit: pageSize,
     rows,
+    collections,
   });
 });
 

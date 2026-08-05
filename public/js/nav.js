@@ -167,6 +167,16 @@
       links.insertBefore(observatory, validate || links.firstChild);
     }
 
+    if (!links.querySelector('a[href="/source-library.html"]')) {
+      var library = document.createElement('a');
+      library.className = 'nav-link';
+      library.href = '/source-library.html';
+      library.setAttribute('data-i18n', 'nav.sourceLibrary');
+      library.textContent = tr('nav.sourceLibrary', 'Sources');
+      var firstLink = links.querySelector('a[href="/observatory.html"]') || links.firstChild;
+      links.insertBefore(library, firstLink);
+    }
+
     if (!links.querySelector('a[href="/research.html"]')) {
       var research = document.createElement('a');
       research.className = 'nav-link';

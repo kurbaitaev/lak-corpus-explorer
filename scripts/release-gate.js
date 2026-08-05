@@ -206,7 +206,8 @@ async function buildMarkers() {
 // ── Surfaces ───────────────────────────────────────────────────
 const HTML_PAGES = ['/', '/index.html', '/about.html', '/queue.html', '/login.html', '/register.html',
   '/profile.html', '/validate.html', '/leaderboard.html', '/dashboard.html', '/how-it-works.html',
-  '/lab.html', '/observatory.html', '/research.html', '/intelligence.html', '/alignment.html', '/rights.html'];
+  '/lab.html', '/observatory.html', '/research.html', '/intelligence.html', '/alignment.html', '/rights.html',
+  '/source-library.html', '/word-forms.html'];
 
 function staticAssetPaths() {
   const out = [];
@@ -242,6 +243,18 @@ const PUBLIC_APIS = [
   ['GET', '/api/lab/export.jsonl'],
   ['GET', '/api/lab/export.tsv'],
   ['GET', '/api/lab/export.hf.json'],
+  // The public projection of the v1.3 batch: catalogue, facets, review queue,
+  // a single entry with its duplicate siblings, and the derived word forms.
+  // These are the newest and largest public surfaces built directly out of
+  // private material, so the leak probe reads them at full width.
+  ['GET', '/api/source-library?limit=200&page=1'],
+  ['GET', '/api/source-library?limit=200&page=2'],
+  ['GET', '/api/source-library?q=%D0%BB%D0%B0%D0%BA&limit=200'],
+  ['GET', '/api/source-library/facets'],
+  ['GET', '/api/source-library/review-queue'],
+  ['GET', '/api/word-forms?limit=500&sort=sources'],
+  ['GET', '/api/word-forms?limit=500&sort=occurrences'],
+  ['GET', '/api/word-forms?q=%D1%85%D1%8A&limit=500'],
 ];
 
 // Every route that must refuse an unauthenticated caller with 401.
@@ -416,6 +429,66 @@ async function main() {
     if (scan(res.text, markers).length) { bodyLeaks++; check(`${method} ${p} body is content-free`, false, res.text.slice(0, 200)); }
   }
   check(`all ${PRIVATE_ROUTES.length} private routes answer without private content`, bodyLeaks === 0, bodyLeaks);
+
+  // The Source Library is a projection of the private manifest, so "no marker
+  // found" is not enough on its own: a leak here would most likely arrive as a
+  // *new field* nobody probed for. So the shape is pinned. Every field name a
+  // public record may carry is listed below, and anything outside the list
+  // fails the gate even if its value looks harmless.
+  group('the public projection publishes only the fields it declares');
+  const SOURCE_FIELDS = new Set([
+    'ref', 'title', 'attributed_to', 'document_year', 'name_source', 'family_id', 'group_id',
+    'material_type', 'language_scope', 'corpus_role', 'recommended_use',
+    'extraction_status', 'extraction_quality', 'rights_state', 'priority',
+    'file_format', 'script_profile', 'contribution', 'urls', 'pages',
+    'word_count', 'text_chars', 'bytes', 'candidate_rows', 'word_form_count',
+    'is_duplicate', 'is_canonical_copy', 'consent_withheld', 'text_published',
+  ]);
+  const FORM_FIELDS = new Set([
+    'form', 'occurrences', 'sources', 'script_profile', 'lak_marker', 'confidence',
+  ]);
+  const withheld = require('../lib/public-projection').WITHHELD_MANIFEST_KEYS;
+
+  const libAll = await get('/api/source-library?limit=500&page=1');
+  const libAll2 = await get('/api/source-library?limit=500&page=2');
+  const formsAll = await get('/api/word-forms?limit=500');
+  const queue = await get('/api/source-library/review-queue');
+  const sampleRefs = (libAll.data?.items || []).slice(0, 12).map(r => r.ref);
+  const details = [];
+  for (const ref of sampleRefs) details.push(await get(`/api/source-library/${ref}`));
+
+  const sourceRecords = [
+    ...(libAll.data?.items || []), ...(libAll2.data?.items || []),
+    ...(queue.data?.items || []),
+    ...details.flatMap(d => [d.data?.source, ...(d.data?.related || [])].filter(Boolean)),
+  ];
+  const strayFields = new Set();
+  for (const record of sourceRecords) {
+    for (const key of Object.keys(record)) if (!SOURCE_FIELDS.has(key)) strayFields.add(key);
+  }
+  check(`${sourceRecords.length} published source records carry only declared fields`,
+    strayFields.size === 0, [...strayFields]);
+
+  const strayFormFields = new Set();
+  for (const record of formsAll.data?.items || []) {
+    for (const key of Object.keys(record)) if (!FORM_FIELDS.has(key)) strayFormFields.add(key);
+  }
+  check(`${(formsAll.data?.items || []).length} published word forms carry only declared fields`,
+    strayFormFields.size === 0, [...strayFormFields]);
+
+  // The withheld list and the published list must stay disjoint. If a future
+  // change adds a withheld key to the projection, this fails before the field
+  // name ever reaches a visitor.
+  const overlap = withheld.filter(k => SOURCE_FIELDS.has(k));
+  check(`no withheld manifest key is in the published field list (${withheld.length} withheld)`,
+    overlap.length === 0, overlap);
+
+  // Names of withheld fields must not appear in the response bodies either —
+  // that would mean a nested object smuggled them past the top-level check.
+  const projectionText = [libAll.text, libAll2.text, formsAll.text, queue.text, ...details.map(d => d.text)].join('\n');
+  const namedWithheld = withheld.filter(k => projectionText.includes(`"${k}"`));
+  check('no withheld field name appears anywhere in a projection response',
+    namedWithheld.length === 0, namedWithheld);
 
   // ── 2. Route status matrix ───────────────────────────────────
   group('route status: public surfaces');

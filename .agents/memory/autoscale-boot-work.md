@@ -48,3 +48,24 @@ Deployment logs that stop dead after a known boot line, with no error and no
 completion line, mean unfinished work rather than a crash. Confirm by comparing
 per-unit row counts between dev and production: a prefix of the work present
 and the largest/last unit missing is the signature.
+
+## Resumable is not the same as exclusive
+
+Autoscale runs **several instances at once**, and each one starts the same boot
+work. Progress rows make the job survive being killed; they do nothing about
+two instances interleaving. The dangerous combination is a job that (a) discards
+and rebuilds when it decides its inputs changed and (b) skips stages it finds
+marked complete: one instance can wipe the tables *after* another has recorded a
+stage as finished, leaving an empty result that reports itself ready.
+
+**Why:** the failure is invisible in dev, where only one process ever runs, and
+it produces no error — just a published surface that is correct-looking and
+empty.
+
+**How to apply:** wrap the *whole* cycle, discard included, in a Postgres
+**session** advisory lock taken on one dedicated connection. Session scope is
+the point: Postgres drops the lock when a suspended or killed instance's
+connection goes away, so a half-finished run cannot wedge the next boot. An
+instance that cannot take the lock should step aside and let the readiness check
+speak, not queue — the holder is doing identical work. Test it by running the
+locked body concurrently and asserting only one entered.

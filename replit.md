@@ -60,6 +60,44 @@ never served:
 - Archives, extracted text and generated candidate output are all gitignored.
 
 
+## Public Source Library and derived Lak word-form index
+
+The v1.3 batch is restricted material, but *knowing what is in it* is not. Two public,
+anonymous surfaces (`/source-library.html`, `/word-forms.html`) publish description and
+aggregate derived data while the source text stays private:
+
+- **The catalogue describes, it never quotes.** All 293 substantive sources are published with
+  their material type, language scope, script mix, size, file format, extraction status, rights
+  state, corpus role and recommended use — plus the original public URL where one is recorded.
+  `lib/public-projection.js` is the boundary: an allowlist of fields with a rule per field, a
+  recursive `assertPublicSafe` that every response passes through, and a withheld list that
+  never reaches a visitor (absolute and relative paths, checksums, extracted-text pointers, who
+  supplied a source, and prose describing what a source *says*).
+- **Names are earned, not invented.** A title is published only when the file's own metadata
+  carries something that survives `publishableTitle` (no tool banners, paths, extensions, hex
+  runs, mojibake, catalogue numbers); 40 of 64 do. Otherwise the entry is named by its material
+  type or by one of the seven curated source families, and says so. The PDF author slot holds
+  usernames as often as people, so it is published as *attributed to* only when it looks like a
+  real multi-word name, with an on-page caveat. Dates are file dates, labelled as such.
+- **Consent outranks completeness.** Fieldwork transcripts and elicitation questionnaires can
+  identify the people recorded, so they publish no name, title, date, link or family — and
+  contribute no word forms at all.
+- **The word-form index is protected by attestation, not by obscurity.** A normalised form is
+  published only when **at least two independent sources** attest it; a form found in a single
+  restricted document is a fact about that document. The index carries forms, counts, source
+  counts, script and a confidence label — no sentences, no context, no line references.
+  Bibliographic metadata (`private_reference_index`) is excluded from tokenisation, so author
+  surnames and title words are never published as if they were Lak vocabulary.
+- **Rights are visible while unresolved.** Three sources look like they may be out of copyright.
+  "Looks like" is not a clearance, so they sit in a public review queue with their text
+  unpublished.
+- **Derivation is resumable and additive.** `lib/public-derivation.js` runs four stages
+  (`sources`, `tallies`, `forms`, `finalize`) keyed by the manifest digest plus a derivation
+  version, committing progress as it goes so an autoscale instance that is suspended mid-run
+  continues instead of restarting. Changing the input or the version discards and rebuilds.
+- **Both surfaces are wired into search.** `/api/corpus/search` returns matching sources and
+  word forms alongside the corpus rows, so one query reaches everything the project holds.
+
 ## Private workspace: Source Intelligence, Alignment Lab, rights review
 
 Authenticated-only screens (`/intelligence.html`, `/alignment.html`, `/rights.html`) where the
@@ -128,6 +166,11 @@ Each `CORPUS_DATA` row: `[type, lak_text, meaning, source, variety, record_id, u
 | GET | `/api/stats/reviews` | Counts by state |
 | GET | `/api/export.json` | Download all reviews as JSON |
 | GET | `/api/export.csv` | Download all reviews as CSV |
+| GET | `/api/source-library` | Public source catalogue (faceted, paginated) |
+| GET | `/api/source-library/facets` | Counted filter options |
+| GET | `/api/source-library/review-queue` | Sources awaiting a rights decision |
+| GET | `/api/source-library/:ref` | One source with its duplicate siblings |
+| GET | `/api/word-forms` | Derived Lak word-form index (2+ sources per form) |
 
 ## User preferences
 

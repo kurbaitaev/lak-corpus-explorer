@@ -75,6 +75,9 @@ let currentRows     = [];
 let currentMatches  = [];
 // Where each row matched, when the Lak text itself shows no highlight.
 let currentExplain  = [];
+// Sources and word forms matching the same query, from the public Source
+// Library. Held so a language switch can re-render them without a refetch.
+let currentCollections = null;
 // Public evidence per record id, filled in after the rows render.
 const evidenceCache = {};
 let openReviewId  = null;
@@ -169,7 +172,10 @@ async function search(page = 1) {
     currentMatches  = data.matches || [];
     currentExplain  = data.explain || [];
 
+    currentCollections = data.collections || null;
+
     renderConceptCard(q, currentExpanded, currentSenses, currentOcrSenses);
+    renderCollections(currentQuery, currentCollections);
     renderResults(currentRows, currentMatches, currentExplain);
     renderPagination();
     loadEvidence(seq, currentRows, currentExpanded);
@@ -328,6 +334,51 @@ async function loadEvidence(seq, rows, expanded) {
   if (seq !== searchSeq) return;
   for (const id of ids) evidenceCache[id] = bundles ? (bundles[id] || null) : null;
   paintEvidence(rows);
+}
+
+// ── Source Library and word-form collections ──────────────────
+// The corpus table answers "where does this phrase appear in published text?".
+// These two panels answer the questions next to it: "which sources hold this?"
+// and "is this form actually attested?" — both from the public projection of
+// the research batch, so nothing restricted is exposed.
+function collectionSourceName(s) {
+  if (s.title) return s.title;
+  const material = t('lib.materialType.' + s.material_type, s.material_type.replace(/_/g, ' '));
+  return `${material} — ${s.ref}`;
+}
+
+function renderCollections(query, collections) {
+  const host = document.getElementById('search-collections');
+  if (!host) return;
+  if (!query || !collections) { host.innerHTML = ''; return; }
+
+  const panels = [];
+  const lib = collections.library || { total: 0, items: [] };
+  const forms = collections.forms || { total: 0, items: [] };
+
+  if (lib.items.length) {
+    panels.push(`<section class="search-collection">
+      <h3>${esc(t('search.collections.sources', `Sources matching “${query}”`, { q: query }))}</h3>
+      <ul>${lib.items.map(s => `<li>
+        <a href="/source-library.html?source=${encodeURIComponent(s.ref)}">${esc(collectionSourceName(s))}</a>
+        <span class="search-collection-meta">${esc(t('lib.languageScope.' + s.language_scope, s.language_scope))} · ${esc(t('lib.contribution.' + s.contribution, s.contribution.replace(/_/g, ' ')))}</span>
+      </li>`).join('')}</ul>
+      <a class="search-collection-more" href="/source-library.html?q=${encodeURIComponent(query)}">${esc(t('search.collections.allSources', `All ${lib.total} matching sources →`, { n: lib.total }))}</a>
+    </section>`);
+  }
+
+  if (forms.items.length) {
+    panels.push(`<section class="search-collection">
+      <h3>${esc(t('search.collections.forms', `Word forms starting with “${query}”`, { q: query }))}</h3>
+      <ul>${forms.items.map(f => `<li>
+        <a href="/word-forms.html?q=${encodeURIComponent(f.form)}" lang="lbe">${esc(f.form)}</a>
+        <span class="search-collection-meta">${esc(t('search.collections.formSummary', `${f.occurrences} occurrences · ${f.sources} sources`, { occurrences: f.occurrences, sources: f.sources }))}</span>
+      </li>`).join('')}</ul>
+      <a class="search-collection-more" href="/word-forms.html?q=${encodeURIComponent(query)}">${esc(t('search.collections.allForms', `All ${forms.total} matching forms →`, { n: forms.total }))}</a>
+    </section>`);
+  }
+
+  host.innerHTML = panels.join('');
 }
 
 function renderResults(rows, matches = [], explain = []) {
@@ -508,6 +559,7 @@ function relocalize() {
   renderStats();
     if (hasSearchIntent) {
     renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
+    renderCollections(currentQuery, currentCollections);
     renderResults(currentRows, currentMatches, currentExplain);
     renderPagination();
     const ids = currentRows.map(r => r[5]).filter(Boolean);

@@ -418,6 +418,16 @@ a:hover { text-decoration: underline; }
   html[lang="ru"] .lang-toggle-desktop { margin-left: 8px; }
 }
 
+/* The desktop nav is a fixed width budget and it is full: ten destinations
+   plus the brand, the auth link and the language toggle. Between the mobile
+   drawer and a comfortably wide screen, tighten the gaps rather than pushing
+   the language toggle off the right edge. Russian keeps its own tighter rule
+   above; this is the same treatment for every other language. */
+@media (min-width: 901px) and (max-width: 1439px) {
+  .nav-link { padding-inline: 11px; }
+  .nav-brand { margin-right: 20px; }
+}
+
 /* Visible keyboard focus everywhere */
 a:focus-visible, button:focus-visible, input:focus-visible,
 select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
@@ -1730,4 +1740,60 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
   .pw-filters { grid-template-columns: 1fr; }
   .pw-unit.level-sentence { margin-left: 0; }
   .pw-actions button, .pw-unit-actions button { flex: 1 1 auto; }
+}
+
+/* ── Source Library & word-form index ─────────────────────────
+   Both public pages reuse the Observatory card system; these rules cover only
+   what those components do not already provide: paging, the detail view, and
+   the word-form table. */
+.lib-name-note { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--text3); font-style: italic; }
+.lib-card-link { color: inherit; }
+.lib-card-link:hover { color: var(--accent); }
+.obs-card h2 .lib-card-link { text-decoration: none; }
+.lib-detail-link { color: var(--accent); font-weight: 600; white-space: nowrap; }
+.lib-back { display: inline-block; margin-bottom: 16px; color: var(--accent); font-weight: 600; font-size: 14px; }
+.lib-detail-card { max-width: 760px; }
+.lib-detail-card .obs-facts { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.lib-related { margin-top: 30px; }
+.lib-related h3 { font: normal 22px/1.2 var(--font-serif); letter-spacing: -.02em; margin-bottom: 8px; }
+.lib-related .obs-grid { margin-top: 16px; }
+
+.lib-pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 26px 0 4px; flex-wrap: wrap; }
+.lib-page-btn { min-height: 44px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; }
+.lib-page-btn:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.lib-page-btn[disabled] { opacity: .45; cursor: default; }
+.lib-page-status { font-size: 13px; color: var(--text2); }
+
+.wf-marker-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2);
+  min-height: 44px; cursor: pointer; }
+.wf-marker-toggle input { width: 17px; height: 17px; }
+.wf-table-wrap { margin-top: 18px; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.wf-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.wf-table th, .wf-table td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.wf-table thead th { font: 700 11px var(--font-mono); text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text3); background: var(--surface2); position: sticky; top: 0; }
+.wf-table tbody tr:last-child td { border-bottom: 0; }
+.wf-table tbody tr:hover { background: var(--surface2); }
+.wf-num { text-align: right; font-variant-numeric: tabular-nums; }
+.wf-form { font-family: var(--font-serif); font-size: 17px; overflow-wrap: anywhere; }
+.wf-marker { font: 700 10px var(--font-mono); text-transform: uppercase; letter-spacing: .05em;
+  color: var(--obs-moss); background: var(--obs-lichen); border: 1px solid #cfddca; border-radius: 99px; padding: 2px 6px; }
+.wf-confidence { font-size: 12px; border-radius: 99px; padding: 3px 9px; border: 1px solid var(--border); color: var(--text2); }
+.wf-confidence.high { color: var(--obs-moss); background: var(--obs-lichen); border-color: #cfddca; }
+.wf-confidence.medium { color: var(--accent-dk); background: var(--accent-lt); border-color: #cfc6f1; }
+
+/* Source Library and word-form collections above the corpus results. */
+.search-collections { margin: 0 0 22px; display: grid; gap: 16px; }
+.search-collection { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 15px 17px; }
+.search-collection h3 { font: normal 17px/1.25 var(--font-serif); letter-spacing: -.01em; margin-bottom: 10px; }
+.search-collection ul { list-style: none; display: grid; gap: 8px; }
+.search-collection li { font-size: 14px; line-height: 1.45; }
+.search-collection li a { font-weight: 600; }
+.search-collection .search-collection-meta { display: block; color: var(--text3); font-size: 12px; margin-top: 2px; }
+.search-collection-more { display: inline-block; margin-top: 11px; font-size: 13px; font-weight: 600; color: var(--accent); }
+
+@media (max-width: 620px) {
+  .wf-table th, .wf-table td { padding: 9px 10px; }
+  .lib-detail-card .obs-facts { grid-template-columns: 1fr 1fr; }
 }

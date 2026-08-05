@@ -53,14 +53,20 @@
     'nav.brand.name': { en: 'Lak Corpus', ru: 'Лакский корпус' },
     'nav.brand.explorer': { en: 'Explorer', ru: 'Обозреватель' },
     'nav.search': { en: 'Search', ru: 'Поиск' },
-    'nav.observatory': { en: 'Resource guide', ru: 'Каталог материалов' },
-    'nav.research': { en: 'Research update', ru: 'Что нового' },
-    'nav.lab': { en: 'Translation workspace', ru: 'Работа с переводами' },
+    'nav.sourceLibrary': { en: 'Sources', ru: 'Источники' },
+    // "Ресурсы" (outside resources) against "Источники" (our own holdings) —
+    // the same distinction the English labels draw, and short enough that both
+    // fit the desktop nav in Russian.
+    'nav.observatory': { en: 'Resource guide', ru: 'Ресурсы' },
+    'nav.research': { en: "What's new", ru: 'Что нового' },
+    'nav.lab': { en: 'Workspace', ru: 'Работа с переводами' },
     'nav.lab.short': { en: 'Workspace', ru: 'Переводы' },
     'nav.validate': { en: 'Check translations', ru: 'Проверить переводы' },
     'nav.leaderboard': { en: 'Leaderboard', ru: 'Рейтинг' },
-    'nav.about': { en: 'About & Research', ru: 'О проекте и исследованиях' },
-    'nav.queue': { en: 'Checked translations', ru: 'Проверенные переводы' },
+    // Kept short on purpose: the desktop nav has no room for the longer
+    // "О проекте и исследованиях" now that the Source Library sits in it.
+    'nav.about': { en: 'About', ru: 'О проекте' },
+    'nav.queue': { en: 'Reviewed', ru: 'Проверенные' },
     'nav.login': { en: 'Log in', ru: 'Войти' },
     'nav.primaryLabel': { en: 'Primary navigation', ru: 'Основная навигация' },
     'nav.openMenu': { en: 'Open menu', ru: 'Открыть меню' },
@@ -987,7 +993,9 @@
     'auth.profileTooltip': { en: 'Your contributor profile', ru: 'Ваш профиль участника' },
     'auth.reviewerName': { en: 'Reviewer: {name}', ru: 'Рецензент: {name}' },
     'auth.reviewerTooltip': { en: 'Manage reviewer session', ru: 'Управление сеансом рецензента' },
-    'auth.logInSignUp': { en: 'Log in / Sign up', ru: 'Войти / Зарегистрироваться' },
+    // Non-breaking space keeps "Sign up" together: with the Source Library in
+    // the nav the label is tight enough to break into three lines otherwise.
+    'auth.logInSignUp': { en: 'Log in / Sign\u00A0up', ru: 'Войти / Зарегистрироваться' },
 
     /* Shared review-state labels (search.js, queue.js) */
     'review.state.approved': { en: 'Approved', ru: 'Утверждено' },
@@ -2097,7 +2105,341 @@
     'rights.decision.save': { en: 'Record decisions', ru: 'Записать решения' },
     'rights.decision.saved': { en: 'Decisions recorded.', ru: 'Решения записаны.' },
     'rights.history.title': { en: 'Decision history', ru: 'История решений' },
-    'rights.history.empty': { en: 'No decision has been recorded yet.', ru: 'Решения ещё не записывались.' }
+    'rights.history.empty': { en: 'No decision has been recorded yet.', ru: 'Решения ещё не записывались.' },
+
+    /* ── Public Source Library ──────────────────────────────────
+     * Canonical values (material types, roles, rights states, script
+     * profiles) are localized for display only. The values themselves stay
+     * language-neutral in the API, in filters and in links.
+     */
+    'lib.meta.title': { en: 'Source Library · Lak Corpus Explorer', ru: 'Библиотека источников · Лакский корпус' },
+    'lib.kicker': { en: 'Public source catalogue', ru: 'Открытый каталог источников' },
+    'lib.h1': { en: 'Source Library', ru: 'Библиотека источников' },
+    'lib.intro': {
+      en: 'Every substantive source in the research batch, described in the open. You can see <strong>what each source is</strong>, what language and script it uses, what rights state it is in, and what it contributes — without any of the source text being published.',
+      ru: 'Все содержательные источники исследовательской подборки — открыто описаны. Видно, <strong>что представляет собой каждый источник</strong>, на каком он языке и письме, каков его правовой статус и что он даёт проекту, — при этом сам текст источника не публикуется.'
+    },
+    'lib.statsLabel': { en: 'Library summary', ru: 'Сводка по библиотеке' },
+    'lib.method': {
+      en: '<strong>What is published here, and what is not.</strong> This catalogue publishes description, never content: the kind of material, its language and script mix, its size, its rights state, and the role it plays in this project. It does not publish file paths, checksums, who supplied a source, descriptions of what a source says, or any of its text. Document titles are shown only where the file’s own metadata carries a real title; where it does not, the entry is named by its material type rather than by an invented name. A name in “attributed to” is the name recorded inside the file, which is not always the author. Dates are file dates, not publication dates.',
+      ru: '<strong>Что здесь публикуется, а что нет.</strong> Каталог публикует описание, но никогда — содержание: вид материала, соотношение языков и письма, объём, правовой статус и роль в проекте. Не публикуются пути к файлам, контрольные суммы, сведения о том, кто передал источник, описания того, о чём источник, и никакой его текст. Название документа показывается только там, где оно действительно есть в метаданных файла; иначе запись называется по виду материала, а не выдуманным именем. Имя в поле «приписывается» — это имя, записанное внутри файла, и это не всегда автор. Даты — это даты файла, а не даты публикации.'
+    },
+    'lib.catalogueLabel': { en: 'Source catalogue', ru: 'Каталог источников' },
+    'lib.searchLabel': { en: 'Search sources', ru: 'Поиск по источникам' },
+    'lib.searchPlaceholder': { en: 'Title, name, kind of material…', ru: 'Название, имя, вид материала…' },
+    'lib.materialType': { en: 'Material type', ru: 'Вид материала' },
+    'lib.materialType.all': { en: 'All material types', ru: 'Все виды материала' },
+    'lib.languageScope': { en: 'Language', ru: 'Язык' },
+    'lib.languageScope.all': { en: 'All languages', ru: 'Все языки' },
+    'lib.scriptProfile': { en: 'Script', ru: 'Письмо' },
+    'lib.scriptProfile.all': { en: 'Any script', ru: 'Любое письмо' },
+    'lib.contribution': { en: 'Contribution', ru: 'Вклад' },
+    'lib.contribution.all': { en: 'Any contribution', ru: 'Любой вклад' },
+    'lib.rightsState': { en: 'Rights state', ru: 'Правовой статус' },
+    'lib.rightsState.all': { en: 'Any rights state', ru: 'Любой правовой статус' },
+    'lib.toWordForms': { en: 'Open the Lak word-form index →', ru: 'Открыть указатель лакских словоформ →' },
+    'lib.loading': { en: 'Loading sources', ru: 'Загрузка источников' },
+    'lib.pagerLabel': { en: 'Catalogue pages', ru: 'Страницы каталога' },
+
+    'lib.unknown': { en: 'Not recorded', ru: 'Не указано' },
+    'lib.none': { en: 'None', ru: 'Нет' },
+    'lib.name.withheld': { en: 'Fieldwork material {ref}', ru: 'Полевой материал {ref}' },
+    'lib.name.family': { en: '{family} — {ref}', ru: '{family} — {ref}' },
+    'lib.name.material': { en: '{material} — {ref}', ru: '{material} — {ref}' },
+    'lib.name.note.derived': {
+      en: 'This file records no usable title, so the entry is named by what kind of material it is.',
+      ru: 'В файле нет пригодного названия, поэтому запись названа по виду материала.'
+    },
+    'lib.name.note.withheld': {
+      en: 'Named by material type only. Fieldwork recordings can identify the people taking part, so no filename, title or date is published.',
+      ru: 'Названо только по виду материала. Полевые записи могут указывать на участников, поэтому имя файла, название и дата не публикуются.'
+    },
+    'lib.fileYear': { en: 'file dated {year}', ru: 'файл датирован {year}' },
+    'lib.attributedTo': { en: 'Attributed to {name}', ru: 'Приписывается: {name}' },
+    'lib.attributionCaveat': {
+      en: 'This is the name recorded inside the file. It is often the author, but it can also be whoever prepared or scanned the document.',
+      ru: 'Это имя, записанное внутри файла. Часто это автор, но так же часто — тот, кто подготовил или отсканировал документ.'
+    },
+    'lib.size.words': { en: '{n} words', ru: '{n} слов' },
+    'lib.size.chars': { en: '{n} characters', ru: '{n} знаков' },
+    'lib.openOriginal': { en: 'Open the original', ru: 'Открыть оригинал' },
+    'lib.noPublicLink': { en: 'No public link recorded for this source', ru: 'Публичная ссылка для этого источника не записана' },
+    'lib.duplicate.canonical': { en: 'Kept copy of a repeated file', ru: 'Основной экземпляр повторяющегося файла' },
+    'lib.duplicate.other': { en: 'Repeated file', ru: 'Повторяющийся файл' },
+    'lib.howUsed': { en: 'How this source is used', ru: 'Как используется этот источник' },
+    'lib.viewDetail': { en: 'Full entry →', ru: 'Полная запись →' },
+    'lib.backToList': { en: '← All sources', ru: '← Все источники' },
+    'lib.seeWordForms': { en: 'See the word-form index this source feeds →', ru: 'Посмотреть указатель словоформ, который пополняет этот источник →' },
+    'lib.text.published': { en: 'The text of this source is published.', ru: 'Текст этого источника опубликован.' },
+    'lib.text.unpublished': {
+      en: 'The text of this source is not published. It is held privately while its rights are unresolved, and it is not used for model training.',
+      ru: 'Текст этого источника не публикуется. Он хранится закрыто, пока не решён вопрос прав, и не используется для обучения моделей.'
+    },
+    'lib.related.h3': { en: 'The same file appears {n} more times', ru: 'Тот же файл встречается ещё {n} раз' },
+    'lib.related.intro': {
+      en: 'These entries are byte-identical copies received separately. They are catalogued individually so the record of what was received stays accurate, and counted once so the totals do not double up.',
+      ru: 'Это побайтово одинаковые копии, полученные по отдельности. Они каталогизированы отдельно, чтобы запись о полученном оставалась точной, и учтены один раз, чтобы итоги не удваивались.'
+    },
+    'lib.fact.role': { en: 'Role here', ru: 'Роль в проекте' },
+    'lib.fact.size': { en: 'Size', ru: 'Объём' },
+    'lib.fact.contribution': { en: 'Contributes', ru: 'Даёт проекту' },
+    'lib.fact.wordForms': { en: 'Word forms indexed', ru: 'Словоформ в указателе' },
+    'lib.fact.materialType': { en: 'Material type', ru: 'Вид материала' },
+    'lib.fact.language': { en: 'Language', ru: 'Язык' },
+    'lib.fact.script': { en: 'Script', ru: 'Письмо' },
+    'lib.fact.rights': { en: 'Rights state', ru: 'Правовой статус' },
+    'lib.fact.format': { en: 'File format', ru: 'Формат файла' },
+    'lib.fact.pages': { en: 'Pages', ru: 'Страниц' },
+    'lib.fact.extraction': { en: 'Text extraction', ru: 'Извлечение текста' },
+    'lib.fact.extractionQuality': { en: 'Extraction quality', ru: 'Качество извлечения' },
+    'lib.fact.candidateRows': { en: 'Rows held privately', ru: 'Строк в закрытом хранении' },
+
+    'lib.resultCount': { en: '{shown} of {total} sources', ru: '{shown} из {total} источников' },
+    'lib.pageOf': { en: 'Page {page} of {pages}', ru: 'Страница {page} из {pages}' },
+    'lib.prev': { en: '← Previous', ru: '← Назад' },
+    'lib.next': { en: 'Next →', ru: 'Вперёд →' },
+    'lib.empty.title': { en: 'No sources match these filters', ru: 'Под эти фильтры ничего не подходит' },
+    'lib.empty.body': { en: 'Try a broader search, or clear one of the filters.', ru: 'Попробуйте более широкий запрос или снимите один из фильтров.' },
+    'lib.error.title': { en: 'The catalogue could not be loaded', ru: 'Не удалось загрузить каталог' },
+    'lib.error.body': { en: 'Reload the page to try again.', ru: 'Обновите страницу, чтобы повторить.' },
+    'lib.notFound.title': { en: 'No such source', ru: 'Такого источника нет' },
+    'lib.notFound.body': { en: 'That reference is not in the catalogue.', ru: 'Этого номера нет в каталоге.' },
+    'lib.preparing.title': { en: 'The library is still being built', ru: 'Библиотека ещё формируется' },
+    'lib.preparing.body': {
+      en: 'Descriptions are being derived from the research batch — {done} of {total} steps are done. Reload in a moment.',
+      ru: 'Описания выводятся из исследовательской подборки — готово {done} из {total} шагов. Обновите страницу чуть позже.'
+    },
+    'lib.stat.sources': { en: 'Sources catalogued', ru: 'Источников в каталоге' },
+    'lib.stat.materialTypes': { en: 'Kinds of material', ru: 'Видов материала' },
+    'lib.stat.contributing': { en: 'Feeding the word-form index', ru: 'Пополняют указатель словоформ' },
+    'lib.stat.underReview': { en: 'Awaiting a rights decision', ru: 'Ждут решения по правам' },
+    'lib.review.sectionLabel': { en: 'Rights review queue', ru: 'Очередь проверки прав' },
+    'lib.review.h2': { en: 'Rights review queue', ru: 'Очередь проверки прав' },
+    'lib.review.intro': {
+      en: 'A handful of sources in this batch look like they may already be in the public domain. <strong>Looking like it is not a clearance.</strong> They are listed here in the open so the question is visible and answerable — and their text stays unpublished until someone checks.',
+      ru: 'Несколько источников подборки выглядят так, будто уже перешли в общественное достояние. <strong>«Выглядит» — это ещё не разрешение.</strong> Они перечислены здесь открыто, чтобы вопрос был виден и на него можно было ответить, а их текст не публикуется, пока никто не проверил.'
+    },
+    'lib.review.empty': { en: 'Nothing is waiting on a rights decision right now.', ru: 'Сейчас ничего не ждёт решения по правам.' },
+
+    /* Canonical vocabulary — display labels only. */
+    'lib.materialType.translation_or_parallel_text': { en: 'Translation or parallel text', ru: 'Перевод или параллельный текст' },
+    'lib.materialType.academic_reference': { en: 'Academic reference', ru: 'Научная литература' },
+    'lib.materialType.grammar_or_linguistic_analysis': { en: 'Grammar or linguistic analysis', ru: 'Грамматика или лингвистический разбор' },
+    'lib.materialType.primary_text_or_folklore': { en: 'Primary text or folklore', ru: 'Первичный текст или фольклор' },
+    'lib.materialType.educational_material': { en: 'Educational material', ru: 'Учебный материал' },
+    'lib.materialType.dictionary_or_lexicon': { en: 'Dictionary or lexicon', ru: 'Словарь или лексикон' },
+    'lib.materialType.non_lak_comparative': { en: 'Non-Lak comparative material', ru: 'Сравнительный нелакский материал' },
+    'lib.materialType.historical_cultural_reference': { en: 'Historical or cultural reference', ru: 'Историко-культурный справочный материал' },
+    'lib.materialType.research_administration': { en: 'Research administration', ru: 'Документы по организации работы' },
+    'lib.materialType.fieldwork_transcript': { en: 'Fieldwork transcript', ru: 'Полевая расшифровка' },
+    'lib.materialType.elicitation_questionnaire': { en: 'Elicitation questionnaire', ru: 'Опросник для сбора данных' },
+    'lib.materialType.archive_container': { en: 'Archive container', ru: 'Архив с вложениями' },
+    'lib.materialType.system_metadata': { en: 'System metadata', ru: 'Системные метаданные' },
+
+    'lib.languageScope.Lak-Russian mixed': { en: 'Lak and Russian mixed', ru: 'Лакский и русский вместе' },
+    'lib.languageScope.Latin-script/English or transliteration': { en: 'Latin script — English or transliteration', ru: 'Латиница — английский или транслитерация' },
+    'lib.languageScope.Lak-dominant or Lak examples': { en: 'Mainly Lak, or Lak examples', ru: 'Преимущественно лакский или лакские примеры' },
+    'lib.languageScope.Lak-related, text signal insufficient': { en: 'Lak-related, too little text to tell', ru: 'Связано с лакским, но текста слишком мало' },
+    'lib.languageScope.Russian-dominant': { en: 'Mainly Russian', ru: 'Преимущественно русский' },
+    'lib.languageScope.non-Lak Caucasian/comparative': { en: 'Other Caucasian or comparative', ru: 'Другие кавказские или сравнительные' },
+    'lib.languageScope.undetermined': { en: 'Undetermined', ru: 'Не определено' },
+
+    'lib.scriptProfile.cyrillic': { en: 'Cyrillic', ru: 'Кириллица' },
+    'lib.scriptProfile.latin': { en: 'Latin', ru: 'Латиница' },
+    'lib.scriptProfile.mixed': { en: 'Both scripts', ru: 'Оба письма' },
+    'lib.scriptProfile.none': { en: 'No script detected', ru: 'Письмо не определено' },
+
+    'lib.rightsState.pending_permission': { en: 'Rights not cleared — permission pending', ru: 'Права не урегулированы — ждёт разрешения' },
+    'lib.rightsState.public_domain_candidate_review': { en: 'Public-domain candidate — under review', ru: 'Возможно общественное достояние — на проверке' },
+
+    'lib.contribution.word_forms': { en: 'Word forms to the public index', ru: 'Словоформы в открытый указатель' },
+    'lib.contribution.alignment_candidate': { en: 'Alignment candidate', ru: 'Кандидат на сопоставление' },
+    'lib.contribution.reference_only': { en: 'Reference only', ru: 'Только справочно' },
+    'lib.contribution.withheld_pending_review': { en: 'Held back pending review', ru: 'Отложено до проверки' },
+
+    'lib.priority.P0': { en: 'P0', ru: 'P0' },
+    'lib.priority.P1': { en: 'P1', ru: 'P1' },
+    'lib.priority.P2': { en: 'P2', ru: 'P2' },
+    'lib.priority.P3': { en: 'P3', ru: 'P3' },
+
+    'lib.fileFormat.pdf': { en: 'PDF', ru: 'PDF' },
+    'lib.fileFormat.doc': { en: 'Word document', ru: 'Документ Word' },
+    'lib.fileFormat.djvu': { en: 'DjVu', ru: 'DjVu' },
+    'lib.fileFormat.tiff': { en: 'TIFF image', ru: 'Изображение TIFF' },
+    'lib.fileFormat.jpg': { en: 'JPEG image', ru: 'Изображение JPEG' },
+    'lib.fileFormat.rtf': { en: 'Rich text', ru: 'Текст RTF' },
+    'lib.fileFormat.archive': { en: 'Archive', ru: 'Архив' },
+    'lib.fileFormat.other': { en: 'Other format', ru: 'Другой формат' },
+
+    'lib.extractionStatus.full_text': { en: 'Full text read from the file', ru: 'Полный текст прочитан из файла' },
+    'lib.extractionStatus.full_text_layer': { en: 'Full embedded text layer', ru: 'Полный встроенный текстовый слой' },
+    'lib.extractionStatus.ocr_full_document': { en: 'Whole document recognised by OCR', ru: 'Весь документ распознан OCR' },
+    'lib.extractionStatus.ocr_full_image': { en: 'Scanned image recognised by OCR', ru: 'Скан распознан OCR' },
+    'lib.extractionStatus.archive_member_list': { en: 'Archive contents listed, not opened', ru: 'Состав архива перечислен, но не раскрыт' },
+    'lib.extractionStatus.empty_document_verified': { en: 'Checked and found empty', ru: 'Проверено — пусто' },
+
+    'lib.extractionQuality.usable_private_extraction': { en: 'Usable', ru: 'Пригодно' },
+    'lib.extractionQuality.not_applicable': { en: 'Not applicable', ru: 'Неприменимо' },
+    'lib.extractionQuality.very_short': { en: 'Very short', ru: 'Очень короткое' },
+
+    'lib.confidence.high': { en: 'Well attested', ru: 'Хорошо засвидетельствовано' },
+    'lib.confidence.medium': { en: 'Attested', ru: 'Засвидетельствовано' },
+    'lib.confidence.low': { en: 'Barely attested', ru: 'Едва засвидетельствовано' },
+
+    'lib.corpusRole.private alignment candidate': { en: 'Private alignment candidate', ru: 'Закрытый кандидат на сопоставление' },
+    'lib.corpusRole.bibliographic and linguistic reference': { en: 'Bibliographic and linguistic reference', ru: 'Библиографический и лингвистический справочник' },
+    'lib.corpusRole.grammar evidence and search-rule source': { en: 'Grammar evidence and search rules', ru: 'Грамматические свидетельства и правила поиска' },
+    'lib.corpusRole.private sentence and genre candidate': { en: 'Private sentence and genre candidate', ru: 'Закрытый кандидат по предложениям и жанрам' },
+    'lib.corpusRole.curriculum and controlled-language evidence': { en: 'Curriculum and graded-language evidence', ru: 'Учебная программа и материал по уровням языка' },
+    'lib.corpusRole.private lexicon candidate': { en: 'Private lexicon candidate', ru: 'Закрытый лексический кандидат' },
+    'lib.corpusRole.comparative reference and negative control': { en: 'Comparative reference and negative control', ru: 'Сравнительный справочник и контрольный материал' },
+    'lib.corpusRole.cultural context and named-entity reference': { en: 'Cultural context and names reference', ru: 'Культурный контекст и справочник имён' },
+    'lib.corpusRole.project provenance and research-history record': { en: 'Project provenance and research history', ru: 'Происхождение проекта и история исследования' },
+    'lib.corpusRole.elicitation design and expert benchmark source': { en: 'Elicitation design and expert benchmark', ru: 'Составление опросников и экспертный эталон' },
+    'lib.corpusRole.private elicitation and aligned-gloss candidate': { en: 'Private elicitation and glossing candidate', ru: 'Закрытый кандидат по опросам и глоссированию' },
+    'lib.corpusRole.preservation and member inventory': { en: 'Preservation and contents inventory', ru: 'Сохранение и опись содержимого' },
+
+    'lib.family.lak_russian_epics': { en: 'Lak and Russian epic versions', ru: 'Лакские и русские версии эпоса' },
+    'lib.family.ttul_daghustan': { en: 'Gamzatov — Ttul Daghustan versions', ru: 'Гамзатов — версии «Ттул Дагъусттан»' },
+    'lib.family.authier_tales': { en: 'Authier — Lak tales in Cyrillic and Latin', ru: 'Отье — лакские сказки кириллицей и латиницей' },
+    'lib.family.tolstoy_versions': { en: 'Tolstoy in Lak — Cyrillic and Latin versions', ru: 'Толстой на лакском — кириллица и латиница' },
+    'lib.family.lorca': { en: 'García Lorca — Lak and Russian versions', ru: 'Гарсиа Лорка — лакская и русская версии' },
+    'lib.family.eleonora_materials': { en: 'Eleonora — transcription and translation material', ru: 'Элеонора — материалы расшифровки и перевода' },
+    'lib.family.war_pilot': { en: 'War — Russian/Lak pilot set', ru: 'Война — пилотный русско-лакский набор' },
+
+    /* One recommendation per material type; the API carries the same sentence
+     * in English and this is its Russian counterpart. */
+    'lib.use.translation_or_parallel_text': {
+      en: 'Preserve document structure and align Lak with the corresponding Russian/Latin/English version after human verification.',
+      ru: 'Сохранять структуру документа и сопоставлять лакский текст с соответствующей русской, латинской или английской версией после проверки человеком.'
+    },
+    'lib.use.academic_reference': {
+      en: 'Index metadata, citations and any reviewed Lak examples; do not ingest article prose as Lak corpus data.',
+      ru: 'Индексировать метаданные, ссылки и проверенные лакские примеры; текст самих статей в лакский корпус не включать.'
+    },
+    'lib.use.grammar_or_linguistic_analysis': {
+      en: 'Extract cited Lak examples and grammatical analyses for lemma/morphology rules and expert benchmarks; keep prose out of the sentence corpus.',
+      ru: 'Извлекать приведённые лакские примеры и грамматические разборы для правил лемматизации и морфологии и для экспертных эталонов; авторский текст в корпус предложений не включать.'
+    },
+    'lib.use.primary_text_or_folklore': {
+      en: 'Segment into documents, paragraphs and sentences for concordance and genre coverage; retain author, translator and edition metadata.',
+      ru: 'Разбивать на документы, абзацы и предложения для конкорданса и охвата жанров; сохранять сведения об авторе, переводчике и издании.'
+    },
+    'lib.use.educational_material': {
+      en: 'Use privately for orthography, graded vocabulary and benchmark design; extract examples only after rights review.',
+      ru: 'Использовать закрыто для орфографии, лексики по уровням и подготовки эталонов; примеры извлекать только после проверки прав.'
+    },
+    'lib.use.dictionary_or_lexicon': {
+      en: 'Segment headwords, translations, examples and morphology; reconcile against existing Khaydakov, Dzhidalaev, Gadzhiyev and Digiev layers.',
+      ru: 'Выделять заголовочные слова, переводы, примеры и морфологию; сверять со слоями Хайдакова, Джидалаева, Гаджиева и Дигиева.'
+    },
+    'lib.use.non_lak_comparative': {
+      en: 'Index metadata and relevant comparisons; exclude non-Lak sentences from the Lak corpus.',
+      ru: 'Индексировать метаданные и уместные сопоставления; нелакские предложения в лакский корпус не включать.'
+    },
+    'lib.use.historical_cultural_reference': {
+      en: 'Index people, places, dates and Lak cultural context; do not mix Russian historical prose into the Lak sentence corpus.',
+      ru: 'Индексировать людей, места, даты и лакский культурный контекст; русскую историческую прозу в лакский корпус предложений не добавлять.'
+    },
+    'lib.use.research_administration': {
+      en: 'Preserve names, dates and project context; exclude administrative prose from linguistic candidate layers.',
+      ru: 'Сохранять имена, даты и контекст проекта; служебные тексты в лингвистические слои не включать.'
+    },
+    'lib.use.fieldwork_transcript': {
+      en: 'Preserve speaker/session cues and align Lak transcription with supplied translations; require speaker-consent and encoding review before any release.',
+      ru: 'Сохранять пометы о говорящем и сеансе и сопоставлять лакскую расшифровку с приложенными переводами; до любой публикации требуется согласие говорящих и проверка кодировки.'
+    },
+    'lib.use.elicitation_questionnaire': {
+      en: 'Convert prompts into a reviewed elicitation and morphology benchmark; do not treat prompt prose as attested Lak usage.',
+      ru: 'Превращать вопросы в проверенный эталон по сбору данных и морфологии; сами формулировки вопросов не считать засвидетельствованным лакским употреблением.'
+    },
+    'lib.use.archive_container': {
+      en: 'Retain unchanged; reconcile members against separately received files before extraction.',
+      ru: 'Хранить без изменений; перед извлечением сверить вложения с отдельно полученными файлами.'
+    },
+
+    /* ── Public word-form index ─────────────────────────────── */
+    'wf.meta.title': { en: 'Lak word forms · Lak Corpus Explorer', ru: 'Лакские словоформы · Лакский корпус' },
+    'wf.kicker': { en: 'Derived public index', ru: 'Производный открытый указатель' },
+    'wf.h1': { en: 'Lak word forms', ru: 'Лакские словоформы' },
+    'wf.intro': {
+      en: 'Word forms as they actually appear across the research batch — not dictionary headwords, but <strong>the shapes the words take in real texts</strong>. Each entry shows how often the form occurs and how many independent sources attest it.',
+      ru: 'Словоформы в том виде, в каком они реально встречаются в исследовательской подборке, — не словарные заголовки, а <strong>тот облик, который слова принимают в живых текстах</strong>. Для каждой формы показано, как часто она встречается и сколько независимых источников её подтверждают.'
+    },
+    'wf.statsLabel': { en: 'Index summary', ru: 'Сводка по указателю' },
+    'wf.method': {
+      en: '<strong>Why a form has to appear twice.</strong> A word that occurs in only one restricted document is a fact about that document, and enough such facts would reconstruct it. So a form is published only when <strong>at least two independent sources</strong> use it. That is also why the index carries no sentences, no context and no line references: it is a list of words and counts, deliberately not a way to read anything. Fieldwork recordings contribute nothing at all, because their filenames and content can identify the people who were recorded.',
+      ru: '<strong>Почему форма должна встретиться дважды.</strong> Слово, встречающееся лишь в одном закрытом документе, — это факт об этом документе, и достаточное число таких фактов позволило бы его восстановить. Поэтому форма публикуется, только если её используют <strong>не менее двух независимых источников</strong>. По той же причине в указателе нет ни предложений, ни контекста, ни ссылок на строки: это список слов и чисел и намеренно не способ что-либо прочитать. Полевые записи не дают сюда ничего — их имена файлов и содержание могут указать на записанных людей.'
+    },
+    'wf.indexLabel': { en: 'Word form index', ru: 'Указатель словоформ' },
+    'wf.searchLabel': { en: 'Find a form', ru: 'Найти форму' },
+    'wf.searchPlaceholder': { en: 'Start typing a Lak word…', ru: 'Начните вводить лакское слово…' },
+    'wf.script': { en: 'Script', ru: 'Письмо' },
+    'wf.script.all': { en: 'Any script', ru: 'Любое письмо' },
+    'wf.confidence': { en: 'Attestation', ru: 'Подтверждённость' },
+    'wf.confidence.all': { en: 'Any attestation', ru: 'Любая подтверждённость' },
+    'wf.sort': { en: 'Order by', ru: 'Сортировать' },
+    'wf.sort.sources': { en: 'Most sources', ru: 'Больше источников' },
+    'wf.sort.occurrences': { en: 'Most occurrences', ru: 'Чаще встречается' },
+    'wf.sort.alphabetical': { en: 'Alphabetical', ru: 'По алфавиту' },
+    'wf.markerOnly': { en: 'Only forms with Lak-specific letters', ru: 'Только формы с лакскими буквами' },
+    'wf.loading': { en: 'Loading word forms', ru: 'Загрузка словоформ' },
+    'wf.pagerLabel': { en: 'Index pages', ru: 'Страницы указателя' },
+    'wf.markerTitle': { en: 'Contains a Lak-specific letter', ru: 'Содержит специфическую лакскую букву' },
+    'wf.markerShort': { en: 'Lak', ru: 'лак.' },
+    'wf.findSources': { en: 'Sources', ru: 'Источники' },
+    'wf.tableCaption': { en: 'Lak word forms with occurrence and source counts', ru: 'Лакские словоформы с числом вхождений и источников' },
+    'wf.col.form': { en: 'Form', ru: 'Форма' },
+    'wf.col.occurrences': { en: 'Occurrences', ru: 'Вхождений' },
+    'wf.col.sources': { en: 'Sources', ru: 'Источников' },
+    'wf.col.script': { en: 'Script', ru: 'Письмо' },
+    'wf.col.confidence': { en: 'Attestation', ru: 'Подтверждённость' },
+    'wf.col.explore': { en: 'Explore', ru: 'Перейти' },
+    'wf.resultCount': { en: '{shown} of {total} forms', ru: '{shown} из {total} форм' },
+    'wf.empty.title': { en: 'No forms match', ru: 'Ничего не найдено' },
+    'wf.empty.body': {
+      en: 'A form appears here only when at least two independent sources use it. Try a shorter beginning, or clear a filter.',
+      ru: 'Форма попадает сюда, только если её используют не менее двух независимых источников. Попробуйте более короткое начало слова или снимите фильтр.'
+    },
+    'wf.error.title': { en: 'The index could not be loaded', ru: 'Не удалось загрузить указатель' },
+    'wf.error.body': { en: 'Reload the page to try again.', ru: 'Обновите страницу, чтобы повторить.' },
+    'wf.preparing.title': { en: 'The index is still being built', ru: 'Указатель ещё формируется' },
+    'wf.preparing.body': {
+      en: 'Word forms are being derived from the research batch — {done} of {total} steps are done. Reload in a moment.',
+      ru: 'Словоформы выводятся из исследовательской подборки — готово {done} из {total} шагов. Обновите страницу чуть позже.'
+    },
+    'wf.stat.forms': { en: 'Published word forms', ru: 'Опубликованных словоформ' },
+    'wf.stat.threshold': { en: 'Sources needed to publish a form', ru: 'Источников нужно для публикации формы' },
+    'wf.stat.thresholdValue': { en: '2+', ru: '2+' },
+
+    /* Search-page collections */
+    'search.collections.sources': { en: 'Sources matching “{q}”', ru: 'Источники по запросу «{q}»' },
+    'search.collections.forms': { en: 'Word forms starting with “{q}”', ru: 'Словоформы, начинающиеся на «{q}»' },
+    'search.collections.allSources': { en: 'All {n} matching sources →', ru: 'Все совпадающие источники ({n}) →' },
+    'search.collections.allForms': { en: 'All {n} matching forms →', ru: 'Все совпадающие формы ({n}) →' },
+    'search.collections.formSummary': { en: '{occurrences} occurrences · {sources} sources', ru: '{occurrences} вхождений · {sources} источников' },
+
+    /* Help popovers */
+    'help.sourceLibrary': {
+      en: 'A catalogue of every research source we hold: what it is and how it is used. The documents themselves stay private until their rights are cleared.',
+      ru: 'Каталог всех имеющихся исследовательских источников: что это и как используется. Сами документы остаются закрытыми, пока не решён вопрос прав.'
+    },
+    'help.contribution': {
+      en: 'How this source feeds the project: some contribute word forms to the public index, others are held as references only.',
+      ru: 'Что источник даёт проекту: одни пополняют открытый указатель словоформ, другие хранятся только как справочные.'
+    },
+    'help.rightsReview': {
+      en: 'These sources look like they may already be out of copyright. Until someone confirms that, their text stays unpublished.',
+      ru: 'Похоже, что срок охраны этих источников уже истёк. Пока это не подтверждено, их текст не публикуется.'
+    },
+    'help.wordForms': {
+      en: 'Single words as they actually appear across the research sources, with how often they occur and how many separate sources use them.',
+      ru: 'Отдельные слова в том виде, в каком они встречаются в исследовательских источниках, с числом вхождений и числом использующих их источников.'
+    },
+    'help.attestation': {
+      en: 'How many separate sources use this form. More sources means the form is better attested.',
+      ru: 'Сколько разных источников используют эту форму. Чем больше источников, тем надёжнее подтверждение.'
+    }
   };
 
   /* ── State ────────────────────────────────────────────────── */
