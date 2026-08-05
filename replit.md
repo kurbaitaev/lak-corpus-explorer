@@ -59,6 +59,30 @@ never served:
   Candidate text requires a trusted validator or above, and the training export fails closed.
 - Archives, extracted text and generated candidate output are all gitignored.
 
+## Reviewed translation memory and evaluation isolation
+
+`lib/lab-memory.js` is the single place where three rules live; the retriever, the provider and
+every lab route delegate to it, so no caller can drift:
+
+- **Gold evidence.** A pair counts as reviewed translation memory only when it is expert-approved,
+  non-private, public access, openly licensed (public domain / CC BY / CC BY-SA), human-authored
+  and in the train/dev split. `permission_granted`, `unknown` and `restricted` rights fail closed.
+  Pending, private, unreviewed rows and the private v1.2/v1.3 research candidates stay candidates
+  and can never be gold. `GET /api/lab/memory` serves the gold layer and its policy.
+- **Evidence typing and abstention.** Every answer reports its evidence class — `approved_parallel_pair`
+  (gold), `direct_dictionary`, `attested_public_example`, or `usage_support_only` — plus review state,
+  provenance and a `certainty` of reviewed / candidate / usage_only / none. **Monolingual examples can
+  support usage but never prove a translation**: an example carrying only one side is downgraded to
+  usage support and the lab abstains explicitly with a reason instead of guessing. Answers carry a
+  claim object that is always `model_learning: false`, `fine_tuned: false`.
+- **Benchmark isolation.** Held-out benchmark answers are removed from retrieval, from the memory
+  layer and from every export in one shared guard — including a stored pair that happens to duplicate
+  a held-out item. The private benchmark (target 500–1,000 expert pairs, test split forced private)
+  has its own expert-only import and `no-store` export routes, kept apart from the public export
+  surfaces. Evaluation runs are logged as `retrieval_only` or `model_plus_retrieval` with gold and
+  abstain counts; nothing is trained or fine-tuned, and a model+retrieval run is refused while no
+  model is configured rather than faked.
+
 ## Data structure
 
 Each `CORPUS_DATA` row: `[type, lak_text, meaning, source, variety, record_id, url]`

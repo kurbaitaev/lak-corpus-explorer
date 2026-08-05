@@ -24,6 +24,7 @@ const auth = require('../lib/auth');
 const gam = require('../lib/gamification');
 const { createRetriever } = require('../lib/lab-retrieval');
 const provider = require('../lib/lab-provider');
+const labMemory = require('../lib/lab-memory');
 
 const DIRECTIONS = ['ru2lak', 'lak2ru'];
 const SPLITS = ['train', 'dev', 'test'];
@@ -84,6 +85,11 @@ module.exports = function createLabRouter(deps) {
     corpusData, corpusAliases, curatedAliases, norm, tokenHas,
   });
 
+  // The ONE gate every answer path goes through: corpus retrieval + reviewed
+  // translation memory, with held-out benchmark isolation applied once, here.
+  // No route may call `retriever` directly.
+  const gate = labMemory.createEvidenceGate({ pool, retriever, norm });
+
   const audit = (req, eventType, targetType, targetId, payload) => {
     const id = req.identity || auth.getIdentity(req) || { type: 'system', id: null, name: null };
     return pool.query(
@@ -127,7 +133,7 @@ module.exports = function createLabRouter(deps) {
       const identity = auth.getIdentity(req);
       const requestedBy = identity && identity.type === 'account' ? identity.id : null;
 
-      const retrieval = retriever.retrieve(direction, source, { limit: 25 });
+      const retrieval = await gate.gather(direction, source, { limit: 25 });
       const p = provider.propose(direction, retrieval);
 
       const requestId = 'lreq_' + crypto.randomUUID();
@@ -140,11 +146,14 @@ module.exports = function createLabRouter(deps) {
       await pool.query(
         `INSERT INTO translation_proposals
            (id, request_id, provider, evidence_only, classification, suggested_target,
-            alternatives, unknowns, coverage, model_version, prompt_version, confidence, rationale)
-         VALUES ($1,$2,$3,TRUE,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+            alternatives, unknowns, coverage, model_version, prompt_version, confidence, rationale,
+            evidence_type, evidence_class, review_state, gold_used, abstained, abstain_reason, certainty)
+         VALUES ($1,$2,$3,TRUE,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`,
         [proposalId, requestId, p.provider, p.classification, p.suggested_target,
          JSON.stringify(p.alternatives), JSON.stringify(p.unknowns), JSON.stringify(p.coverage),
-         p.model_version, p.prompt_version, p.confidence, p.rationale]);
+         p.model_version, p.prompt_version, p.confidence, p.rationale,
+         p.evidence_type, p.evidence_class, p.review_state, p.gold,
+         p.abstained, p.abstain.reason, p.certainty]);
 
       // Persist ranked evidence (bounded to what we returned).
       let rank = 0;
@@ -153,11 +162,14 @@ module.exports = function createLabRouter(deps) {
         await pool.query(
           `INSERT INTO proposal_evidence
              (proposal_id, rank, evidence_type, lak_text, gloss, source, variety,
-              record_ref, record_url, is_ocr, validated, score)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+              record_ref, record_url, is_ocr, validated, score,
+              evidence_class, review_state, gold_eligible)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
           [proposalId, rank, e.evidence_type, e.lak_text || null, e.gloss || null,
            e.source || null, e.variety || null, e.record_ref || null,
-           e.record_url || null, e.is_ocr, e.validated, e.score]);
+           e.record_url || null, e.is_ocr, e.validated, e.score,
+           e.evidence_class || labMemory.classOf(e), e.review_state || null,
+           e.gold_eligible === true]);
       }
 
       // Attach evidence ids so a saved pair can cite exactly what it drew from.
@@ -178,6 +190,16 @@ module.exports = function createLabRouter(deps) {
         classification: p.classification,
         confidence: p.confidence,
         abstained: p.abstained,
+        abstain: p.abstain,
+        certainty: p.certainty,
+        evidence_type: p.evidence_type,
+        evidence_class: p.evidence_class,
+        review_state: p.review_state,
+        gold: p.gold,
+        provenance: p.provenance,
+        claim: p.claim,
+        isolation: p.isolation,
+        fine_tuned: false,
         suggested_target: p.suggested_target,
         literal_target: p.literal_target,
         natural_target: p.natural_target,
@@ -205,10 +227,65 @@ module.exports = function createLabRouter(deps) {
         WHERE p.id = $1`, [req.params.id]);
     if (!pr.rows[0]) return res.status(404).json({ error: 'Proposal not found.' });
     const ev = await pool.query(
-      `SELECT rank, evidence_type, lak_text, gloss, source, variety,
+      `SELECT rank, evidence_type, evidence_class, review_state, gold_eligible,
+              lak_text, gloss, source, variety,
               record_ref, record_url, is_ocr, validated, score
          FROM proposal_evidence WHERE proposal_id = $1 ORDER BY rank`, [req.params.id]);
     res.json({ proposal: pr.rows[0], evidence: ev.rows });
+  });
+
+  // ══ Reviewed translation memory ═══════════════════════════════
+  // Read-only view of the gold layer. Only expert-approved, rights-eligible,
+  // public, non-held-out pairs can appear here — nothing pending, private or
+  // unreviewed, and never a private v1.2/v1.3 research candidate.
+  router.get('/api/lab/memory', async (req, res) => {
+    try {
+      const direction = normDirection(req.query.direction);
+      const q = cleanReq(req.query.q, 2000);
+      const policy = {
+        ...labMemory.GOLD_POLICY,
+        monolingual_rule: 'Monolingual examples may support usage but can never ' +
+          'be presented as proof of a translation.',
+      };
+      if (!q) {
+        const all = await gate.memory.snapshot();
+        return res.json({
+          policy,
+          query: null,
+          entries: [],
+          gold_total: all.length,
+        });
+      }
+      if (!direction)
+        return res.status(400).json({ error: `direction must be one of: ${DIRECTIONS.join(', ')}` });
+      const entries = await gate.memory.lookup(direction, q, { limit: 20 });
+      res.json({
+        policy,
+        query: q,
+        direction,
+        gold_count: entries.length,
+        entries: entries.map(e => ({
+          record_ref: e.record_ref,
+          record_url: e.record_url,
+          direction,
+          source_text: direction === 'ru2lak' ? e.gloss : e.lak_text,
+          target_text: direction === 'ru2lak' ? e.lak_text : e.gloss,
+          evidence_type: e.evidence_type,
+          evidence_class: e.evidence_class,
+          review_state: e.review_state,
+          gold: true,
+          rights_status: e.rights_status,
+          access_status: e.access_status,
+          provenance: e.provenance,
+          variety: e.variety,
+          approved_by: e.approved_by,
+          approved_at: e.approved_at,
+        })),
+      });
+    } catch (err) {
+      console.error('lab/memory:', err.message);
+      res.status(500).json({ error: 'Server error' });
+    }
   });
 
   // ══ 2. Submit a parallel pair ═════════════════════════════════
@@ -427,6 +504,7 @@ module.exports = function createLabRouter(deps) {
            head_version=$9, updated_at=now()
          WHERE id=$1 RETURNING *`,
         [pair.id, ru, lak, litCol, natCol, cleanVariety, orthography, cleanNotes, nextVersion]);
+      gate.invalidate();
       await audit(req, 'lab_pair_edit', 'parallel_pair', pair.id, { version: nextVersion });
       res.json({ pair: pairPublic(r.rows[0]), version: nextVersion });
     } catch (err) {
@@ -612,6 +690,9 @@ module.exports = function createLabRouter(deps) {
           points: LAB_POINTS.adjudication, status: 'confirmed',
           reason: `Adjudicated a pair as ${req.identity.role}` });
       }
+      // Gold membership just changed: reviewed translation memory must reflect
+      // this decision on the very next request.
+      gate.invalidate();
       await audit(req, 'lab_pair_adjudicate', 'parallel_pair', pair.id,
         { decision, split: finalSplit, resulting_status: resultingStatus, idempotent_skip: !firstTime });
 
@@ -645,19 +726,26 @@ module.exports = function createLabRouter(deps) {
   // Transparent counts describing exactly what is (and is not) exportable.
   router.get('/api/lab/dataset-card', async (req, res) => {
     try {
-      const [statusRows, splitRows, provRows, varRows, dirRows, licenseRows, reviewedRows, bench] = await Promise.all([
+      const [statusRows, provRows, reviewedRows, bench, rows, goldRows] = await Promise.all([
         pool.query(`SELECT status, COUNT(*) n FROM parallel_pairs GROUP BY status`),
-        pool.query(`SELECT split, COUNT(*) n FROM parallel_pairs WHERE ${EXPORT_FILTER} GROUP BY split`),
         pool.query(`SELECT provenance, COUNT(*) n FROM parallel_pairs GROUP BY provenance`),
-        pool.query(`SELECT variety, COUNT(*) n FROM parallel_pairs WHERE ${EXPORT_FILTER} GROUP BY variety`),
-        pool.query(`SELECT direction, COUNT(*) n FROM parallel_pairs WHERE ${EXPORT_FILTER} GROUP BY direction`),
-        pool.query(`SELECT rights_status, COUNT(*) n FROM parallel_pairs WHERE ${EXPORT_FILTER} GROUP BY rights_status`),
         pool.query(`SELECT COUNT(DISTINCT pair_id) n FROM pair_reviews`),
         pool.query(`SELECT split, COUNT(*) n FROM benchmark_items GROUP BY split`),
+        // Already filtered through the benchmark isolation guard.
+        exportableRows(),
+        gate.memory.snapshot(),
       ]);
+      const tally = (list, keyFn) => {
+        const out = {};
+        for (const item of list) {
+          const k = keyFn(item);
+          out[k] = (out[k] || 0) + 1;
+        }
+        return out;
+      };
       const byStatus = Object.fromEntries(statusRows.rows.map(r => [r.status, Number(r.n)]));
-      const bySplit = Object.fromEntries(splitRows.rows.map(r => [r.split, Number(r.n)]));
-      const exportable = (bySplit.train || 0) + (bySplit.dev || 0);
+      const bySplit = tally(rows, r => r.split);
+      const exportable = rows.length;
       res.json({
         card: {
           name: 'Lak ↔ Russian parallel corpus (Translation Lab)',
@@ -669,18 +757,26 @@ module.exports = function createLabRouter(deps) {
           exportPolicy: 'Exports include ONLY approved train/dev pairs that are ' +
             'public (access_status=public), openly licensed (public_domain or cc_by) ' +
             'and human-authored. Excluded: the held-out test split, private/restricted ' +
-            'pairs, pending/under-review/rejected/withdrawn pairs, and any ' +
-            'synthetic-provenance rows.',
+            'pairs, pending/under-review/rejected/withdrawn pairs, any ' +
+            'synthetic-provenance rows, and any pair that duplicates a held-out ' +
+            'benchmark item.',
+          goldEvidencePolicy: labMemory.GOLD_POLICY,
+          benchmarkIsolation: 'Held-out benchmark items live in a private, expert-only ' +
+            'store. They never enter retrieval, a public answer, or any export, and ' +
+            'the rule is enforced in one place for every caller.',
           modelLineage: { provider: 'evidence-only', model_version: 'none', prompt_version: 'evidence-only-v1' },
           evidenceOnlyProvider: true,
+          fineTuning: 'No model is trained or fine-tuned. Evaluation runs are ' +
+            'retrieval-only unless a model provider is configured.',
           counts: {
             byStatus,
             byProvenance: Object.fromEntries(provRows.rows.map(r => [r.provenance, Number(r.n)])),
             exportableBySplit: bySplit,
-            exportableByDirection: Object.fromEntries(dirRows.rows.map(r => [r.direction, Number(r.n)])),
-            exportableByVariety: Object.fromEntries(varRows.rows.map(r => [r.variety, Number(r.n)])),
-            exportableByLicense: Object.fromEntries(licenseRows.rows.map(r => [r.rights_status, Number(r.n)])),
+            exportableByDirection: tally(rows, r => r.direction),
+            exportableByVariety: tally(rows, r => r.variety),
+            exportableByLicense: tally(rows, r => r.rights_status),
             exportableTotal: exportable,
+            goldMemoryPairs: goldRows.length,
             pairsWithReviews: Number(reviewedRows.rows[0].n),
             benchmarkBySplit: Object.fromEntries(bench.rows.map(r => [r.split, Number(r.n)])),
           },
@@ -701,6 +797,9 @@ module.exports = function createLabRouter(deps) {
       AND provenance IN ('human','human_from_evidence')
       AND split IN ('train','dev')`;
 
+  // Every export surface reads through the same benchmark isolation guard, so
+  // a pair that duplicates a held-out item can never leave the system even if
+  // it otherwise satisfies the export filter.
   async function exportableRows() {
     const r = await pool.query(
       `SELECT id, direction, ru_text, lak_text, literal_target, natural_target,
@@ -710,7 +809,8 @@ module.exports = function createLabRouter(deps) {
          FROM parallel_pairs
         WHERE ${EXPORT_FILTER}
         ORDER BY split, id`);
-    return r.rows;
+    const safe = await gate.safePairs(r.rows);
+    return safe.kept;
   }
 
   // JSONL — one JSON object per line.
@@ -798,11 +898,14 @@ module.exports = function createLabRouter(deps) {
     }
   });
 
-  // ══ 7. Benchmark import template + management ═════════════════
-  // Blank downloadable TSV template with 500 empty numbered rows and NO fake
-  // example data. The UI links directly to this path.
+  // ══ 7. Private benchmark: import template, management, export ═
+  // Expert-only throughout. Held-out items are sized for a 500–1,000 item
+  // expert benchmark and are kept entirely apart from the public export
+  // surfaces: they have their own import and their own export route, and the
+  // isolation guard keeps them out of every retrieval and public answer.
   const BENCH_TSV_COLUMNS = ['row', 'direction', 'source_text', 'reference_text',
     'split', 'variety', 'category', 'difficulty', 'notes', 'is_private'];
+  const BENCH_TARGET_SIZE = { min: 500, max: 1000 };
 
   router.get('/api/lab/benchmark/template.tsv', requireRole(auth.EXPERT_PLUS), (req, res) => {
     const header = BENCH_TSV_COLUMNS.join('\t');
@@ -852,6 +955,9 @@ module.exports = function createLabRouter(deps) {
         }
         const split = SPLITS.includes(it.split) ? it.split : 'test';
         const difficulty = ['easy', 'medium', 'hard'].includes(it.difficulty) ? it.difficulty : null;
+        // Held-out items are private by construction: the test split can never
+        // be marked public, whatever the import file says.
+        const isPrivate = split === 'test' ? true : it.is_private !== false;
         const id = 'bench_' + crypto.randomUUID();
         await pool.query(
           `INSERT INTO benchmark_items
@@ -861,7 +967,7 @@ module.exports = function createLabRouter(deps) {
           [id, split, direction, source, reference,
            cleanReq(it.variety, 40) || 'standard', clean(it.category, 80), difficulty,
            clean(it.notes, 1000),
-           it.is_private === false ? false : true,
+           isPrivate,
            req.identity.id, req.identity.name]);
         created.push(id);
         if (req.identity.type === 'account') {
@@ -870,9 +976,18 @@ module.exports = function createLabRouter(deps) {
             points: LAB_POINTS.benchmarkItem, status: 'confirmed', reason: 'Authored a benchmark item' });
         }
       }
+      // The isolation guard must see the new held-out items immediately.
+      gate.invalidate();
       await audit(req, 'lab_benchmark_import', 'benchmark', null,
         { created: created.length, errors: errors.length });
-      res.json({ created: created.length, ids: created, errors });
+      const total = await pool.query(`SELECT COUNT(*) n FROM benchmark_items WHERE split='test'`);
+      res.json({
+        created: created.length, ids: created, errors,
+        held_out_total: Number(total.rows[0].n),
+        target_size: BENCH_TARGET_SIZE,
+        isolation: 'Imported items are held out: they never enter retrieval, a ' +
+          'public answer, or any public export.',
+      });
     } catch (err) {
       console.error('lab/benchmark/import:', err.message);
       res.status(500).json({ error: 'Server error' });
@@ -883,13 +998,94 @@ module.exports = function createLabRouter(deps) {
   router.get('/api/lab/benchmark', requireRole(auth.EXPERT_PLUS), async (req, res) => {
     const split = SPLITS.includes(req.query.split) ? req.query.split : null;
     const direction = normDirection(req.query.direction);
-    const r = await pool.query(
+    const [r, counts] = await Promise.all([
+      pool.query(
+        `SELECT id, split, direction, source_text, reference_text, variety, category,
+                difficulty, notes, is_private, created_by_name, created_at
+           FROM benchmark_items
+          WHERE ($1::text IS NULL OR split=$1) AND ($2::text IS NULL OR direction=$2)
+          ORDER BY created_at DESC LIMIT 1000`, [split, direction]),
+      pool.query(`SELECT split, COUNT(*) n FROM benchmark_items GROUP BY split`),
+    ]);
+    const bySplit = Object.fromEntries(counts.rows.map(row => [row.split, Number(row.n)]));
+    const heldOut = bySplit.test || 0;
+    res.json({
+      items: r.rows,
+      counts: { bySplit, held_out: heldOut },
+      capacity: {
+        target_size: BENCH_TARGET_SIZE,
+        held_out: heldOut,
+        remaining_to_minimum: Math.max(0, BENCH_TARGET_SIZE.min - heldOut),
+        at_capacity: heldOut >= BENCH_TARGET_SIZE.max,
+      },
+      isolation: {
+        enforced: true,
+        note: 'Held-out items are expert-only. They are excluded from retrieval, ' +
+          'public answers and every public export by a single shared guard.',
+      },
+    });
+  });
+
+  // Private benchmark export — expert-only and deliberately separate from the
+  // public /api/lab/export.* surfaces. Never linked from a public page and
+  // never cached by an intermediary.
+  function benchmarkExportRows(split, direction) {
+    return pool.query(
       `SELECT id, split, direction, source_text, reference_text, variety, category,
               difficulty, notes, is_private, created_by_name, created_at
          FROM benchmark_items
         WHERE ($1::text IS NULL OR split=$1) AND ($2::text IS NULL OR direction=$2)
-        ORDER BY created_at DESC LIMIT 500`, [split, direction]);
-    res.json({ items: r.rows });
+        ORDER BY created_at`, [split, direction]);
+  }
+
+  const privateHeaders = (res, filename, contentType) => {
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-store, private');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  };
+
+  router.get('/api/lab/benchmark/export.jsonl', requireRole(auth.EXPERT_PLUS), async (req, res) => {
+    try {
+      const split = SPLITS.includes(req.query.split) ? req.query.split : null;
+      const direction = normDirection(req.query.direction);
+      const r = await benchmarkExportRows(split, direction);
+      await audit(req, 'lab_benchmark_export', 'benchmark', null,
+        { format: 'jsonl', split, direction, items: r.rows.length });
+      privateHeaders(res, 'benchmark-heldout.jsonl', 'application/x-ndjson; charset=utf-8');
+      res.send(r.rows.map(row => JSON.stringify({
+        id: row.id, split: row.split, direction: row.direction,
+        source_text: row.source_text, reference_text: row.reference_text,
+        variety: row.variety, category: row.category, difficulty: row.difficulty,
+        notes: row.notes, created_by: row.created_by_name, created_at: row.created_at,
+        visibility: 'private_held_out',
+      })).join('\n') + (r.rows.length ? '\n' : ''));
+    } catch (err) {
+      console.error('lab/benchmark/export.jsonl:', err.message);
+      res.status(500).json({ error: 'Export failed' });
+    }
+  });
+
+  router.get('/api/lab/benchmark/export.tsv', requireRole(auth.EXPERT_PLUS), async (req, res) => {
+    try {
+      const split = SPLITS.includes(req.query.split) ? req.query.split : null;
+      const direction = normDirection(req.query.direction);
+      const r = await benchmarkExportRows(split, direction);
+      const esc = v => String(v == null ? '' : v).replace(/[\t\r\n]/g, ' ');
+      const cols = ['id', 'split', 'direction', 'source_text', 'reference_text',
+        'variety', 'category', 'difficulty', 'notes', 'created_by', 'created_at'];
+      await audit(req, 'lab_benchmark_export', 'benchmark', null,
+        { format: 'tsv', split, direction, items: r.rows.length });
+      privateHeaders(res, 'benchmark-heldout.tsv', 'text/tab-separated-values; charset=utf-8');
+      res.send('\uFEFF' + cols.join('\t') + '\n' + r.rows.map(row => [
+        row.id, row.split, row.direction, row.source_text, row.reference_text,
+        row.variety, row.category, row.difficulty, row.notes, row.created_by_name,
+        row.created_at,
+      ].map(esc).join('\t')).join('\n') + (r.rows.length ? '\n' : ''));
+    } catch (err) {
+      console.error('lab/benchmark/export.tsv:', err.message);
+      res.status(500).json({ error: 'Export failed' });
+    }
   });
 
   router.put('/api/lab/benchmark/:id', requireRole(auth.EXPERT_PLUS), async (req, res) => {
@@ -920,6 +1116,7 @@ module.exports = function createLabRouter(deps) {
        category != null ? clean(category, 80) : null, difficulty || null,
        notes != null ? clean(notes, 1000) : null,
        typeof is_private === 'boolean' ? is_private : null]);
+    gate.invalidate();
     await audit(req, 'lab_benchmark_update', 'benchmark', item.id, null);
     res.json({ item: r.rows[0] });
   });
@@ -927,43 +1124,92 @@ module.exports = function createLabRouter(deps) {
   router.delete('/api/lab/benchmark/:id', requireRole(auth.EXPERT_PLUS), async (req, res) => {
     const r = await pool.query('DELETE FROM benchmark_items WHERE id=$1 RETURNING id', [req.params.id]);
     if (!r.rows[0]) return res.status(404).json({ error: 'Benchmark item not found.' });
+    gate.invalidate();
     await audit(req, 'lab_benchmark_delete', 'benchmark', req.params.id, null);
     res.json({ ok: true });
   });
 
-  // Record an evidence-only evaluation run over a benchmark split. Because no
-  // generative model exists, this honestly records how many items HAD evidence
-  // and that ZERO were scored by a model (evidence_only = true).
+  // ══ 8. Evaluation runs ════════════════════════════════════════
+  // A run answers each held-out item through the SAME gate a public request
+  // uses, and records what evidence was available and whether the lab
+  // abstained. Two configurations can be logged and compared:
+  //   retrieval_only       — evidence retrieval + reviewed memory (the only
+  //                          configuration possible while no model is configured)
+  //   model_plus_retrieval — the same, with a generative model on top
+  // No fine-tuning happens in either: nothing is trained on the benchmark or
+  // on anything else, and a run can never assert that a model learned.
+  const RUN_CONFIGS = ['retrieval_only', 'model_plus_retrieval'];
+
   router.post('/api/lab/runs', requireRole(auth.EXPERT_PLUS), writeLimiter, async (req, res) => {
     try {
-      const split = SPLITS.includes(req.body && req.body.split) ? req.body.split : 'test';
-      const direction = req.body ? normDirection(req.body.direction) : null;
+      const body = req.body || {};
+      const split = SPLITS.includes(body.split) ? body.split : 'test';
+      const direction = normDirection(body.direction);
+      const config = RUN_CONFIGS.includes(body.config) ? body.config : 'retrieval_only';
+      if (config === 'model_plus_retrieval' && !PROVIDER_META.configured) {
+        return res.status(409).json({
+          error: 'No generative model is configured, so a model+retrieval run ' +
+                 'cannot be recorded. Only retrieval_only runs are possible, and ' +
+                 'no model is trained or fine-tuned in any configuration.',
+          config_available: ['retrieval_only'],
+        });
+      }
+
       const items = await pool.query(
         `SELECT direction, source_text FROM benchmark_items
           WHERE split=$1 AND ($2::text IS NULL OR direction=$2)`, [split, direction]);
-      let withEvidence = 0;
+
+      let withEvidence = 0, withGold = 0, abstained = 0;
+      const byEvidenceClass = {};
       for (const it of items.rows) {
-        const r = retriever.retrieve(it.direction, it.source_text, { limit: 1 });
-        if (r.evidence.length) withEvidence += 1;
+        // Same gate as a public answer: held-out references cannot come back
+        // as evidence even when the item itself is the query.
+        const retrieval = await gate.gather(it.direction, it.source_text, { limit: 10 });
+        const p = provider.propose(it.direction, retrieval);
+        if (retrieval.evidence.length) withEvidence += 1;
+        if (p.gold) withGold += 1;
+        if (p.abstained) abstained += 1;
+        const k = p.evidence_class || 'none';
+        byEvidenceClass[k] = (byEvidenceClass[k] || 0) + 1;
       }
+
       const id = 'run_' + crypto.randomUUID();
+      const total = items.rows.length;
       const summary = {
-        note: 'Evidence-only provider: no generative model configured, so no ' +
-              'item was scored by a model. Reported metric is evidence coverage only.',
-        evidence_coverage: items.rows.length ? withEvidence / items.rows.length : 0,
+        config,
+        note: config === 'retrieval_only'
+          ? 'Retrieval-only run: reviewed translation memory plus corpus evidence. ' +
+            'No generative model was invoked, no model was trained or fine-tuned, ' +
+            'and nothing here demonstrates model learning.'
+          : 'Model+retrieval run: the configured model was given retrieved evidence. ' +
+            'No fine-tuning took place.',
+        evidence_coverage: total ? withEvidence / total : 0,
+        gold_coverage: total ? withGold / total : 0,
+        abstain_rate: total ? abstained / total : 0,
+        evidence_class_breakdown: byEvidenceClass,
+        fine_tuning: false,
+        benchmark_isolation: 'Held-out references are withheld from retrieval; the ' +
+          'run measures coverage over items the system has never been able to see.',
       };
       await pool.query(
         `INSERT INTO model_runs
-           (id, provider, split, direction, items_total, items_with_evidence, items_scored,
-            evidence_only, summary, run_by, run_by_name)
-         VALUES ($1,'evidence-only',$2,$3,$4,$5,0,TRUE,$6,$7,$8)`,
-        [id, split, direction, items.rows.length, withEvidence,
+           (id, provider, config, split, direction, items_total, items_with_evidence,
+            items_with_gold, items_abstained, items_scored, evidence_only,
+            model_version, fine_tuned, summary, run_by, run_by_name)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,FALSE,$13,$14,$15)`,
+        [id, PROVIDER_META.provider, config, split, direction, total, withEvidence,
+         withGold, abstained, config === 'retrieval_only' ? 0 : total,
+         config === 'retrieval_only', PROVIDER_META.model_version,
          JSON.stringify(summary), req.identity.id, req.identity.name]);
-      await audit(req, 'lab_run', 'model_run', id, { split, direction, items: items.rows.length });
+      await audit(req, 'lab_run', 'model_run', id,
+        { split, direction, config, items: total });
       res.json({
-        run_id: id, split, direction, provider: 'evidence-only',
-        items_total: items.rows.length, items_with_evidence: withEvidence,
-        items_scored: 0, evidence_only: true, summary,
+        run_id: id, split, direction, config, provider: PROVIDER_META.provider,
+        items_total: total, items_with_evidence: withEvidence,
+        items_with_gold: withGold, items_abstained: abstained,
+        items_scored: config === 'retrieval_only' ? 0 : total,
+        evidence_only: config === 'retrieval_only',
+        model_version: PROVIDER_META.model_version, fine_tuned: false, summary,
       });
     } catch (err) {
       console.error('lab/runs:', err.message);
@@ -971,12 +1217,39 @@ module.exports = function createLabRouter(deps) {
     }
   });
 
+  const RUN_COLUMNS = `id, provider, config, split, direction, items_total,
+              items_with_evidence, items_with_gold, items_abstained, items_scored,
+              evidence_only, model_version, fine_tuned, summary, run_by_name, created_at`;
+
   router.get('/api/lab/runs', requireRole(auth.EXPERT_PLUS), async (req, res) => {
+    const config = RUN_CONFIGS.includes(req.query.config) ? req.query.config : null;
     const r = await pool.query(
-      `SELECT id, provider, split, direction, items_total, items_with_evidence,
-              items_scored, evidence_only, summary, run_by_name, created_at
-         FROM model_runs ORDER BY created_at DESC LIMIT 100`);
-    res.json({ runs: r.rows });
+      `SELECT ${RUN_COLUMNS} FROM model_runs
+        WHERE ($1::text IS NULL OR config=$1)
+        ORDER BY created_at DESC LIMIT 100`, [config]);
+    res.json({ runs: r.rows, configs: RUN_CONFIGS, fine_tuning: false });
+  });
+
+  // Side-by-side comparison of the two configurations for one split.
+  router.get('/api/lab/runs/compare', requireRole(auth.EXPERT_PLUS), async (req, res) => {
+    const split = SPLITS.includes(req.query.split) ? req.query.split : 'test';
+    const r = await pool.query(
+      `SELECT DISTINCT ON (config) ${RUN_COLUMNS}
+         FROM model_runs WHERE split=$1
+        ORDER BY config, created_at DESC`, [split]);
+    const byConfig = Object.fromEntries(r.rows.map(row => [row.config, row]));
+    res.json({
+      split,
+      retrieval_only: byConfig.retrieval_only || null,
+      model_plus_retrieval: byConfig.model_plus_retrieval || null,
+      model_configured: PROVIDER_META.configured,
+      fine_tuning: false,
+      note: PROVIDER_META.configured
+        ? 'Both configurations use the same held-out benchmark and the same ' +
+          'isolation guard. No model is trained or fine-tuned.'
+        : 'No generative model is configured, so only retrieval-only runs exist. ' +
+          'No model is trained or fine-tuned, and no claim of model learning is made.',
+    });
   });
 
   return router;
