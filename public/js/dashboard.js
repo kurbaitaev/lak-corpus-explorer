@@ -64,6 +64,13 @@ let labPairsCache = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.fetchIdentity();
+  // Show the "needs a role" notice from the identity alone. Calling the admin
+  // route first would work too, but it makes every signed-out visitor's
+  // console log a 401 for a request that was never going to be answered.
+  if (!window.hasTrustedRole()) {
+    document.getElementById('denied').style.display = '';
+    return;
+  }
   const res = await fetch('/api/admin/overview');
   if (!res.ok) {
     document.getElementById('denied').style.display = '';
