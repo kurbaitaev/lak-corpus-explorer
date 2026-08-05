@@ -74,8 +74,14 @@ let currentOcrSenses = [];
 let currentRows     = [];
 let currentMatches  = [];
 let openReviewId  = null;
-let searchPending = false;
 let hasSearchIntent = false;
+// Monotonic id of the most recently *started* search. Only the request whose id
+// still equals this may write page state or the DOM, so a slow earlier request
+// can never overwrite the results of a newer query/filter change.
+let searchSeq     = 0;
+// AbortController of the in-flight search, so a superseded request is dropped at
+// the network level as well as ignored on resolution.
+let searchAbort   = null;
 
 // ── DOM refs ─────────────────────────────────────────────────
 const $q       = document.getElementById('q');
@@ -118,11 +124,14 @@ function renderStats() {
 
 // ── Search (calls server API) ─────────────────────────────────
 async function search(page = 1) {
-  if (searchPending) return;
-  searchPending = true;
+  // Supersede any search already in flight: the newest user action always wins.
+  const seq = ++searchSeq;
+  searchAbort?.abort();
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  searchAbort = controller;
+
   hasSearchIntent = true;
   document.querySelectorAll('.results-only').forEach(el => el.hidden = false);
-  currentPage = page;
 
   const q       = $q.value.trim();
   const kind    = $kind.value;
@@ -139,9 +148,11 @@ async function search(page = 1) {
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
-    const res  = await fetch(`/api/corpus/search?${params}`);
+    const res  = await fetch(`/api/corpus/search?${params}`, controller ? { signal: controller.signal } : undefined);
     if (!res.ok) throw new Error(t('search.error.failed', 'Search failed'));
     const data = await res.json();
+    // A newer search started while this one was resolving — discard it whole.
+    if (seq !== searchSeq) return;
 
     currentTotal    = data.total;
     currentPages    = data.pages;
@@ -158,11 +169,14 @@ async function search(page = 1) {
     renderPagination();
 
   } catch (err) {
+    // Superseded requests (aborted or simply late) must not touch the DOM: the
+    // newer request owns the loading state and will resolve it itself.
+    if (seq !== searchSeq || err?.name === 'AbortError') return;
     $tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
       <div class="icon">⚠️</div><h3>${esc(t('search.error.title', 'Search error'))}</h3><p>${esc(err.message)}</p>
     </div></td></tr>`;
   } finally {
-    searchPending = false;
+    if (seq === searchSeq) searchAbort = null;
   }
 }
 

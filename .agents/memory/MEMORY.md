@@ -6,4 +6,4 @@
 - [Local test ports](local-test-ports.md) — Node fetch refuses 5060/5061 (blocked ports); pick test server ports outside that list.
 - [Post-merge stale process](post-merge-stale-process.md) — "merge didn't land" is usually a pre-merge server process; restart first, and read real route paths before probing them.
 - [Private v1.2 package runtime](private-v12-package-runtime.md) — package lives only in gitignored paths; it vanishes on rebuild, must be re-uploaded, never reconstructed from counts.
-- [Search UX test flake](search-ux-test-flake.md) — "empty search state missing" fails ~1 run in 3 from a dropped concurrent search; re-run before blaming a change.
+- [Search in-flight races](search-ux-test-flake.md) — supersede in-flight searches, never drop the newer one; in browser tests a response landing is not yet a render.
