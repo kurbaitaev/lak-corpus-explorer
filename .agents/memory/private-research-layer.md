@@ -25,7 +25,15 @@ not a special case, and the UI must be able to say honestly "expected N, staged 
   accepted review **and** settled consent — checked server-side, not in the UI.
 - Bible exclusion is a claim about the *source*, not about vocabulary: match it on
   source/title/author fields only. A dictionary entry for "библия" is ordinary lexicography and
-  must not reject a whole source.
+  must not reject a whole source. It is also **package-specific**, not a global rule: a later
+  package may legitimately hold restricted religious material that is staged privately and never
+  published. Applying the older package's exclusion to it would block the whole package.
+- Non-language material (system metadata, research administration, non-Lak comparative,
+  archive containers) may be inventoried as reference/control records but must never feed a Lak
+  language layer. Where a package's own routing already honours that, encode it as a hard
+  verification check rather than trusting it.
+- Do not store absolute filesystem paths from the sender's machine; they leak the sender's home
+  directory. Keep the package-relative path only.
 - Identical normalized spellings across sources are linked as corroboration rows with an
   explicit "not semantic deduplication" note. Never merge candidates into canonical records.
 - Consent stays `unknown` unless the package documents it; audio inventories must not assert

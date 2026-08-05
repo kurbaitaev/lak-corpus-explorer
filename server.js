@@ -76,37 +76,55 @@ const LAB_CURATED_ALIASES = {
 pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
   .catch(err => console.error('Migration failed:', err.message));
 
-// ── Private source-import layer (audited v1.2 research sources) ──
-// Verification runs at boot and never throws: an absent or inconsistent
-// package blocks ingestion for that source instead of guessing at content.
-const SOURCE_IMPORT = sourceImport.verifySources();
-for (const s of SOURCE_IMPORT.sources) {
-  if (s.status === 'verified') {
-    console.log(`Source import verified: ${s.source_id} (${s.records.length} private candidates)`);
-  } else {
-    console.warn(`Source import blocked: ${s.source_id} — ${s.status}: ${s.error}`);
-  }
-}
-if (SOURCE_IMPORT.overlap) {
-  console.log(`Source import: ${SOURCE_IMPORT.overlap.overlapping_forms} overlapping spellings ` +
-    'linked as corroboration (never merged).');
-}
-if (SOURCE_IMPORT.ingestion_blocked) {
-  console.warn('Source import: candidate ingestion is stopped for unverified sources; ' +
-    'audited counts are shown as expected values only.');
-}
+// ── Private source-import layer (audited v1.2 and v1.3 packages) ──
+// The packages themselves are gitignored, so their archives live in
+// persistent private storage and `private/` is only a cache. On boot the
+// cache is restored when missing, each archive digest is checked, each
+// package is verified against its own declarations, and only what verified
+// is staged. Nothing here throws: a package that cannot be restored or
+// verified is reported with a reason and contributes nothing, while the rest
+// of the app keeps running.
+const { preparePrivatePackages } = require('./lib/private-boot');
 
-// Validation & gamification schema (idempotent, backward-compatible),
-// then import whatever the verification step actually cleared.
+// Mutable holder: preparation is asynchronous, and the router must always
+// read the current state rather than a snapshot taken at mount time.
+// Until preparation finishes, the public status honestly reports the audited
+// counts as expectations with nothing staged.
+const PRIVATE_STATE = {
+  v12: require('./lib/private-boot').absentVerification(
+    'The private packages are still being restored and verified.'),
+  packages: null,
+};
+
+// Validation & gamification schema (idempotent, backward-compatible), then
+// restore, verify and stage the private packages.
 migrate()
-  .then(() => sourceImport.importVerified(pool, SOURCE_IMPORT))
-  .then(result => {
-    for (const entry of result.imported) {
-      console.log(`Source import: ${entry.source_id} → ${entry.imported_count} private candidates` +
-        (entry.already_present ? ' (already staged)' : ''));
+  .then(() => preparePrivatePackages(pool))
+  .then(report => {
+    PRIVATE_STATE.v12 = report.v12;
+    PRIVATE_STATE.packages = report;
+    console.log(`Private package storage backend: ${report.backend}`);
+    for (const entry of report.packages) {
+      const where = entry.restore_source ? ` from ${entry.restore_source}` : '';
+      if (entry.verification_status === 'verified') {
+        console.log(`Private package ${entry.package_id} verified${where}` +
+          (entry.verification_cache_hit ? ' (cached verification reused)' : ''));
+      } else {
+        console.warn(`Private package ${entry.package_id} blocked${where}: ${entry.blocked_reason}`);
+      }
+      if (entry.staged && Array.isArray(entry.staged.imported)) {
+        for (const layer of entry.staged.imported) {
+          console.log(`  ${entry.package_id} → ${layer.layer || layer.source_id}: ` +
+            `${layer.imported_count} private rows` + (layer.already_present ? ' (already staged)' : ''));
+        }
+      }
+    }
+    if (report.v12 && report.v12.overlap) {
+      console.log(`Source import: ${report.v12.overlap.overlapping_forms} overlapping spellings ` +
+        'linked as corroboration (never merged).');
     }
   })
-  .catch(err => console.error('Schema migration failed:', err.message));
+  .catch(err => console.error('Private package preparation failed:', err.message));
 
 // ── Search primitives (shared with the client-side normalisation) ──
 // Field-scoped matching and phrase-first ranking live in lib/search.js so the
@@ -186,7 +204,11 @@ app.use(require('./routes/lab')({
 }));
 // Private source-import review layer (fail-closed; candidate content is never
 // served publicly and never enters ordinary corpus search or exports).
-app.use(require('./routes/source-import')({ pool, verification: SOURCE_IMPORT }));
+app.use(require('./routes/source-import')({
+  pool,
+  verification: () => PRIVATE_STATE.v12,
+  packages: () => PRIVATE_STATE.packages,
+}));
 
 function sendPage(res, html) {
   // Revalidate HTML on every navigation so markup never goes stale,

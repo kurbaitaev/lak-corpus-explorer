@@ -1,28 +1,32 @@
 ---
-name: Private v1.2 research package is runtime-only
-description: Why the audited private source package disappears, and how it is restored and verified.
+name: Private research packages: persistent storage and disposable cache
+description: Where the audited private packages actually live, and why the extracted tree may be deleted freely.
 ---
 
-The audited processed-only research package lives **only** in gitignored paths: the
-uploaded ZIP under `attached_assets/` and the extracted tree under `private/`. Neither
-is ever committed.
+The audited private research packages never enter git. Their **archives** are the
+persistent artifact and live in persistent private storage, reachable only through the
+server-side database pool. The extracted tree under `private/<id>/` is a **disposable
+cache**: deleting it is safe and expected — boot restores any missing package from
+persistent storage, re-hashing the archive before extracting it.
 
-**Why:** That exclusion is what keeps unlicensed/permission-pending rows out of the
-repo. The cost is that the package is not part of any checkout — a container rebuild,
-fresh clone, or new workspace comes up with `package_present=false`, all sources
-`awaiting_manifest`, and `ingestion_blocked=true`. That state is *correct*, not a bug:
-it is the fail-closed default when no package is on disk. Do not "fix" it by
-synthesizing rows from the audited counts — the counts are expectations to check
-against, never data.
+**Why:** an earlier arrangement kept the packages only in gitignored workspace paths
+(`attached_assets/*.zip` plus `private/`), so a container rebuild came up with nothing
+staged and the only remedy was asking the user to re-upload. Persistent storage removes
+that failure mode without putting a single permission-pending row into the repo.
 
-**How to apply:** When the status endpoint reports the package missing, the only
-remedy is re-uploading the ZIP; say so plainly rather than reconstructing anything.
-After upload: checksum the archive against the recorded digest, extract into the
-gitignored runtime dir, restart the workflow (verification runs at startup, not on
-request), then confirm `git status` is still clean.
-
-Verification is layered and any single failure blocks *everything*, not just one
-source: archive digest mismatch, missing/unreadable `stats.json`, a package that does
-not declare Bible exclusion, or a per-source count that disagrees with the declaration.
-Duplicate spellings across lexical sources are linked as corroboration only — never
-merged, since identical normalized forms are not evidence of identical meaning.
+**How to apply:**
+- Never synthesize rows from the audited counts. The counts are expectations to check a
+  package against; if no package can be restored, `ingestion_blocked` with a reason is the
+  *correct* state.
+- When adding a new package, register it with its recorded archive digest and let the
+  boot pipeline upload/restore it. Do not hand-copy files into `private/`.
+- Verification results are cached by a digest over every file the verifier reads — not by
+  package name or mtime. That is what lets an unchanged package skip re-parsing while
+  guaranteeing a changed, missing or tampered file can never reuse a stale "verified"
+  answer. If you add a file to the verifier's inputs, add it to that list too or the cache
+  becomes a hole.
+- Any single failure blocks the whole package, not one layer: archive digest mismatch,
+  missing report, count disagreement, or a tampered record.
+- Extraction staging must happen on the same filesystem as the destination. `/tmp` and the
+  workspace are different devices in this container, so `rename()` across them fails with
+  `EXDEV`.

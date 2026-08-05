@@ -27,23 +27,37 @@ Workflow: "Start application" → `node server.js` on port 5000.
 - **Review queue page**: all reviews, filter by state, JSON/CSV export
 - **About/Research page**: methodology, sources, quality ladder, statistics, collaboration invitation
 
-## Private source-import layer (audited v1.2 research sources)
+## Private source-import layer (audited v1.2 and v1.3 research packages)
 
 Third-party research material that is **not part of the public corpus** is staged privately and
 never served:
 
-- The processed package lives in `private/v1.2/` (gitignored, never under `public/`). Nothing is
-  ingested from a quoted count: `lib/source-import.js` verifies record counts against the
-  package's own `stats.json`, checks provenance and the SHA-256 of each received source file,
-  requires fail-closed policy fields on every record, refuses Bible-derived sources and URLs to
-  protected binaries — and blocks ingestion for any source that fails.
+- **Persistent storage, disposable cache.** The package archives live in persistent private
+  storage (`lib/private-storage.js`) — Replit Object Storage when a bucket exists, otherwise
+  chunked binary blobs in Postgres behind the same interface, reachable only through the
+  server-side pool. `private/<id>/` is a rebuildable cache: `lib/private-boot.js` restores any
+  missing package on boot, re-hashing the archive before it is extracted.
+- **Nothing is ingested from a quoted count.** `lib/source-import.js` (v1.2) and
+  `lib/source-import-v13.js` (v1.3) check each package against its own reports: declared totals,
+  actual line counts, the SHA-256 of every received source file, fail-closed policy fields on
+  every record, and — for v1.3 — that system, administrative and non-Lak material stays an
+  inventory or reference record and never feeds a Lak language layer. Any checksum mismatch,
+  count disagreement, missing report or tampered file blocks that package with a reason string
+  and leaves the rest of the app running.
+- **Verification is cached by content, not by name.** A result is keyed by a digest over every
+  file the verifier reads, so an unchanged package is not re-parsed on boot and a changed,
+  missing or tampered file can never reuse a stale "verified" answer.
 - Staged rows default to private research / permission pending / import unreviewed /
-  not training-ready. Rights, access, review and training are four separate human decisions
-  (`routes/source-import.js`); publishing or enabling training needs a verified expert plus
-  cleared rights, an accepted review and settled consent.
+  not public-search-eligible / not training-ready. Rights, access, review and training are four
+  separate human decisions (`routes/source-import.js`); publishing or enabling training needs a
+  verified expert plus cleared rights, an accepted review and settled consent. Nothing is
+  promoted automatically, and imports are idempotent.
 - Identical spellings across sources are linked as corroboration; records are never merged.
-- `/api/source-import/status` is public but content-free (counts and states only); candidate text
-  requires a trusted validator or above, and the training export fails closed.
+- `/api/source-import/status` is public but content-free (counts and states only) and mentions
+  no package file or path. `/api/source-import/packages` reports presence, digest verification,
+  declared vs staged counts, restore source and blocked reasons to a trusted validator or above.
+  Candidate text requires a trusted validator or above, and the training export fails closed.
+- Archives, extracted text and generated candidate output are all gitignored.
 
 ## Data structure
 

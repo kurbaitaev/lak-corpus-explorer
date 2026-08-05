@@ -5,5 +5,6 @@
 - [Private research layer](private-research-layer.md) — a quoted count is not data: verify the package, fail closed, corroborate duplicates, never merge.
 - [Local test ports](local-test-ports.md) — Node fetch refuses 5060/5061 (blocked ports); pick test server ports outside that list.
 - [Post-merge stale process](post-merge-stale-process.md) — "merge didn't land" is usually a pre-merge server process; restart first, and read real route paths before probing them.
-- [Private v1.2 package runtime](private-v12-package-runtime.md) — package lives only in gitignored paths; it vanishes on rebuild, must be re-uploaded, never reconstructed from counts.
+- [Private package storage](private-v12-package-runtime.md) — archives live in persistent storage; `private/` is a disposable cache restored on boot, never reconstructed from counts.
+- [No Object Storage bucket](object-storage-unavailable.md) — none available in this repl; private blobs go to Postgres behind a pluggable backend. Check before assuming.
 - [Search in-flight races](search-ux-test-flake.md) — supersede in-flight searches, never drop the newer one; in browser tests a response landing is not yet a render.

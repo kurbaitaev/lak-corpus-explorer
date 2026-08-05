@@ -16,6 +16,7 @@
 const express = require('express');
 const auth = require('../lib/auth');
 const sourceImport = require('../lib/source-import');
+const v13 = require('../lib/source-import-v13');
 
 const ACCESS_STATUSES = ['private_research', 'restricted', 'public'];
 const RIGHTS_STATUSES = ['permission_pending', 'permission_granted', 'public_domain', 'restricted'];
@@ -26,11 +27,16 @@ const RELATIONS = ['corroborates', 'conflicts'];
 const CLEARED_RIGHTS = ['permission_granted', 'public_domain'];
 const SETTLED_CONSENT = ['documented', 'not_applicable'];
 
-module.exports = function createSourceImportRouter({ pool, verification }) {
+// `verification` and `packages` are read through getters: the private
+// packages are restored and verified asynchronously after boot, so the router
+// must always read the current state rather than a snapshot taken at mount.
+module.exports = function createSourceImportRouter({ pool, verification, packages }) {
   const router = express.Router();
   const { requireRole } = auth.makeMiddleware(pool);
   const requireReviewer = requireRole(auth.TRUSTED_PLUS);
   const requireExpert = requireRole(auth.EXPERT_PLUS);
+  const currentVerification = () => (typeof verification === 'function' ? verification() : verification);
+  const currentPackages = () => (typeof packages === 'function' ? packages() : packages) || null;
 
   const clean = (v, max) => (v == null ? null : String(v).slice(0, max));
 
@@ -45,7 +51,7 @@ module.exports = function createSourceImportRouter({ pool, verification }) {
   // still blocked. No candidate text is reachable without authorization.
   router.get('/api/source-import/status', async (req, res) => {
     try {
-      const status = sourceImport.publicStatus(verification);
+      const status = sourceImport.publicStatus(currentVerification());
       const batches = await pool.query(
         `SELECT source_id, verification_status, imported_count, expected_count,
                 declared_count, metrics, created_at
@@ -76,6 +82,64 @@ module.exports = function createSourceImportRouter({ pool, verification }) {
       });
     } catch (err) {
       console.error('source-import/status:', err.message);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
+  // ── Authenticated private-package status ───────────────────
+  // Operational detail about the private packages: whether each one is
+  // present, where it was restored from, whether its archive digest checked
+  // out, declared vs staged counts, and the verbatim reason a package is
+  // blocked. This names files and reasons, so it needs authorization; the
+  // public status endpoint above stays content- and path-free.
+  router.get('/api/source-import/packages', requireReviewer, async (req, res) => {
+    try {
+      const report = currentPackages();
+      if (!report) {
+        return res.json({
+          storage_backend: null, ready: false,
+          message: 'The private packages have not finished preparing yet.',
+          packages: [],
+        });
+      }
+      const staged = await v13.stagedCounts(pool).catch(() => null);
+      const v12Counts = await pool.query(
+        `SELECT COUNT(*)::int AS candidates,
+                COUNT(*) FILTER (WHERE access_status = 'public')::int AS public_candidates,
+                COUNT(*) FILTER (WHERE training_ready)::int AS training_ready
+           FROM source_import_candidates`);
+      res.json({
+        storage_backend: report.backend,
+        ready: true,
+        policy_defaults: v13.REQUIRED_POLICY,
+        packages: report.packages.map(entry => ({
+          package_id: entry.package_id,
+          package_label: entry.package_label,
+          present: entry.present,
+          restore_source: entry.restore_source,
+          archive_sha256: entry.archive_sha256,
+          archive_in_persistent_storage: entry.archive_in_persistent_storage,
+          archive_digest_verified: entry.archive_digest_verified,
+          archive_uploaded_this_boot: entry.archive_uploaded_this_boot,
+          verification_status: entry.verification_status,
+          verification_cache_hit: entry.verification_cache_hit,
+          content_key: entry.content_key,
+          blocked_reason: entry.blocked_reason,
+          declared_counts: entry.declared_counts,
+          verified_counts: entry.verified_counts,
+          staged_counts: entry.package_id === 'v1.3'
+            ? staged
+            : { staged_private_candidates: v12Counts.rows[0].candidates },
+          public_candidates: entry.package_id === 'v1.3'
+            ? (staged ? staged.public_search_eligible : null)
+            : v12Counts.rows[0].public_candidates,
+          training_ready: entry.package_id === 'v1.3'
+            ? (staged ? staged.training_ready : null)
+            : v12Counts.rows[0].training_ready,
+        })),
+      });
+    } catch (err) {
+      console.error('source-import/packages:', err.message);
       res.status(500).json({ error: 'Server error' });
     }
   });

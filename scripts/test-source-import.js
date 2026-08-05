@@ -27,12 +27,17 @@ const os = require('os');
 const path = require('path');
 const { Pool } = require('pg');
 const sourceImport = require('../lib/source-import');
+const v13 = require('../lib/source-import-v13');
+const privatePackages = require('../lib/private-packages');
+const privateStorage = require('../lib/private-storage');
 
 const BASE = 'http://127.0.0.1:5058';
 const PASSPHRASE = process.env.REVIEWER_PASSPHRASE;
 if (!PASSPHRASE) { console.error('REVIEWER_PASSPHRASE is required'); process.exit(1); }
 
 const PACKAGE_DIR = sourceImport.PACKAGE_DIR;
+const V13_PACKAGE = privatePackages.PACKAGES.find(p => p.id === 'v1.3');
+const V13_DIR = path.resolve(privatePackages.cacheDirFor(V13_PACKAGE));
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: false });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -315,6 +320,284 @@ function verificationTests(tmpRoot) {
   fs.rmSync(archiveDir, { recursive: true, force: true });
 }
 
+// ── Part 1b: v1.3 package verification ───────────────────────
+// The v1.3 package is ~300 MB extracted, so the tampered copies are built
+// from symlinks: only the directory holding the edited file is materialised,
+// and only that one file is really rewritten.
+function linkTree(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src)) {
+    fs.symlinkSync(path.join(src, entry), path.join(dest, entry));
+  }
+}
+
+function v13Scratch(tmpRoot, name, materialise) {
+  const dir = path.join(tmpRoot, 'v13-' + name);
+  fs.rmSync(dir, { recursive: true, force: true });
+  linkTree(V13_DIR, dir);
+  for (const sub of materialise) {
+    if (sub === '.') continue;
+    fs.unlinkSync(path.join(dir, sub));
+    linkTree(path.join(V13_DIR, sub), path.join(dir, sub));
+  }
+  return dir;
+}
+
+// `mutate === null` removes the file instead of rewriting it. A mutator may
+// return a replacement value; returning a raw string inside a JSONL array
+// writes that line verbatim, which is how the invalid-JSON case is built.
+function v13TamperedDir(tmpRoot, name, rel, mutate) {
+  const dir = v13Scratch(tmpRoot, name, [path.dirname(rel)]);
+  const target = path.join(dir, rel);
+  fs.unlinkSync(target);
+  if (mutate === null) return dir;
+  const source = path.join(V13_DIR, rel);
+  if (rel.endsWith('.jsonl')) {
+    const records = fs.readFileSync(source, 'utf8').trim().split('\n').map(l => JSON.parse(l));
+    const out = mutate(records) || records;
+    fs.writeFileSync(target, out.map(r => (typeof r === 'string' ? r : JSON.stringify(r))).join('\n') + '\n');
+  } else {
+    const json = JSON.parse(fs.readFileSync(source, 'utf8'));
+    fs.writeFileSync(target, JSON.stringify(mutate(json) || json));
+  }
+  return dir;
+}
+
+async function v13Tamper(tmpRoot, name, rel, mutate) {
+  return v13.verifyPackage({ packageDir: v13TamperedDir(tmpRoot, name, rel, mutate) });
+}
+
+// A source sequence whose material documents the collection, not the
+// language: it may be inventoried, never routed into a Lak layer.
+function systemMetadataSource() {
+  for (const line of fs.readFileSync(path.join(V13_DIR, 'processed/source_manifest.jsonl'), 'utf8').split('\n')) {
+    if (!line.trim()) continue;
+    const record = JSON.parse(line);
+    if (record.material_type === 'system_metadata') return record;
+  }
+  throw new Error('the v1.3 package holds no system-metadata record');
+}
+
+async function v13VerificationTests(tmpRoot) {
+  group('verified v1.3 package');
+  const good = await v13.verifyPackage({ packageDir: V13_DIR });
+  check('the v1.3 package verifies against its own declarations',
+    good.status === 'verified' && good.blocked_reason === null, good.blocked_reason);
+  const o = good.observed;
+  check('320 source routes', o.source_routes === 320 && o.source_manifest === 320, o.source_routes);
+  check('293 rights-review items', o.rights_review_items === 293, o.rights_review_items);
+  check('290 usable private extractions', o.usable_private_extractions === 290, o.usable_private_extractions);
+  check('27 system-metadata records', o.system_metadata_files === 27, o.system_metadata_files);
+  check('249,229 raw lexicon candidate lines', o.private_lexicon_lines === 249229, o.private_lexicon_lines);
+  check('21,151 text blocks', o.private_text_segments === 21151, o.private_text_segments);
+  check('7,658 grammar-example candidates', o.private_grammar_examples === 7658, o.private_grammar_examples);
+  check('84 reference records', o.private_reference_index === 84, o.private_reference_index);
+  check('the audited numbers and the observed numbers are the same set',
+    Object.entries(v13.AUDITED).every(([key, value]) => o[key] === value), { audited: v13.AUDITED, observed: o });
+
+  group('the v1.3 archive still matches its recorded checksum');
+  const archive = privatePackages.findWorkspaceArchive(V13_PACKAGE);
+  if (archive) {
+    check('the received v1.3 archive hashes to the digest recorded on receipt',
+      privatePackages.hashFileSync(archive) === V13_PACKAGE.archive_sha256);
+  } else {
+    check('the v1.3 archive is held in persistent storage instead of the workspace', true);
+  }
+
+  group('tampered v1.3 packages are rejected');
+  const cases = [
+    ['stats-total', 'reports/stats.json', j => { j.source_files_total = 319; },
+      /source_files_total is 319, not the audited 320/],
+    ['stats-fail-open', 'reports/stats.json', j => { j.fail_closed = false; },
+      /does not declare fail_closed/],
+    ['stats-declares-public', 'reports/stats.json', j => { j.public_search_eligible = 5; },
+      /declares 5 public-search-eligible files/],
+    ['stats-declares-training', 'reports/stats.json', j => { j.training_eligible = 2; },
+      /declares 2 training-eligible files/],
+    ['stats-split', 'reports/stats.json', j => { j.substantive_files = 293; j.system_metadata_files = 26; },
+      /system_metadata_files is 26, not the audited 27/],
+    ['candidate-stats-count', 'reports/candidate_stats.json', j => { j.private_text_segments = 21000; },
+      /private_text_segments is 21000, not the audited 21151/],
+    ['missing-findings', 'reports/FINDINGS.md', null,
+      /missing the required report reports\/FINDINGS\.md/],
+    ['missing-candidate-stats', 'reports/candidate_stats.json', null,
+      /missing the required report reports\/candidate_stats\.json/],
+    ['missing-data-card', 'DATA_CARD.md', null,
+      /missing the required report DATA_CARD\.md/],
+    ['missing-reconciliation', 'processed/archive_reconciliation.json', null,
+      /missing the required report processed\/archive_reconciliation\.json/],
+    ['missing-layer', 'processed/private_grammar_examples.jsonl', null,
+      /missing processed\/private_grammar_examples\.jsonl/],
+    ['manifest-short', 'processed/source_manifest.jsonl', r => r.slice(0, -1),
+      /source_manifest\.jsonl holds 319 files but the audit recorded 320/],
+    ['manifest-no-digest', 'processed/source_manifest.jsonl', r => { r[0].sha256 = ''; },
+      /has no SHA-256 of the received file/],
+    ['routes-short', 'processed/source_routes.jsonl', r => r.slice(0, -1),
+      /source_routes\.jsonl holds 319 dispositions/],
+    ['rights-short', 'processed/rights_review_queue.jsonl', r => r.slice(0, -1),
+      /rights_review_queue\.jsonl holds 292 items but the audit recorded 293/],
+    ['grammar-short', 'processed/private_grammar_examples.jsonl', r => r.slice(0, -1),
+      /holds 7657 records but the audit recorded 7658/],
+    ['grammar-searchable', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].public_search_eligible = true; }, /must declare public_search_eligible:false/],
+    ['grammar-trainable', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].training_eligible = true; }, /must declare training_eligible:false/],
+    ['grammar-approved', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].review_status = 'approved'; }, /declares review_status "approved"/],
+    ['grammar-cleared', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].rights_status = 'cleared_for_public'; }, /unknown rights_status/],
+    ['grammar-wrong-digest', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].source_sha256 = 'a'.repeat(64); }, /different file digest than the source manifest/],
+    ['grammar-wrong-path', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].source_relative_path = 'somewhere/else.doc'; }, /different source path than the source manifest/],
+    ['grammar-unknown-source', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].source_sequence = 99999; }, /which is not in the source manifest/],
+    ['grammar-duplicate-id', 'processed/private_grammar_examples.jsonl',
+      r => { r[1].candidate_id = r[0].candidate_id; }, /duplicate candidate_id/],
+    ['grammar-empty-text', 'processed/private_grammar_examples.jsonl',
+      r => { r[0].text = '   '; }, /carries no candidate text/],
+    ['grammar-broken-json', 'processed/private_grammar_examples.jsonl',
+      r => r.concat(['{"candidate_id": ']), /is not valid JSON/],
+    ['reference-missing-body', 'processed/private_reference_index.jsonl',
+      r => { r[0].extracted_text_relpath = 'processed/extracted_text/does-not-exist.txt'; },
+      /which is not in the package/],
+  ];
+  for (const [name, rel, mutate, expected] of cases) {
+    const result = await v13Tamper(tmpRoot, name, rel, mutate);
+    check(`${name} is refused with a reason`,
+      result.status === 'blocked' && expected.test(result.blocked_reason || ''), result.blocked_reason);
+  }
+
+  // Routing invariants get their own cases: they are the rule that keeps
+  // system, administrative and non-Lak files out of Lak language search.
+  const sysmeta = systemMetadataSource();
+  const routed = await v13Tamper(tmpRoot, 'route-sysmeta-to-lexicon', 'processed/source_routes.jsonl', records => {
+    const row = records.find(r => r.source_sequence === sysmeta.sequence);
+    row.derived_route = 'private_lexicon_lines';
+  });
+  check('routing system metadata into a Lak layer is refused',
+    routed.status === 'blocked' &&
+    /non-language material stays an inventory or reference record/.test(routed.blocked_reason || ''),
+    routed.blocked_reason);
+
+  const fedFromSysmeta = await v13Tamper(tmpRoot, 'sysmeta-into-grammar',
+    'processed/private_grammar_examples.jsonl', records => {
+      records[0].source_sequence = sysmeta.sequence;
+      records[0].source_sha256 = sysmeta.sha256;
+      records[0].source_relative_path = sysmeta.relative_path;
+    });
+  check('a Lak layer fed from system metadata is refused',
+    fedFromSysmeta.status === 'blocked' &&
+    /must stay an inventory or reference record/.test(fedFromSysmeta.blocked_reason || ''),
+    fedFromSysmeta.blocked_reason);
+
+  const queuedSysmeta = await v13Tamper(tmpRoot, 'sysmeta-in-rights',
+    'processed/rights_review_queue.jsonl', records => {
+      records[0].source_sequence = sysmeta.sequence;
+    });
+  check('queueing a system-metadata file for rights review is refused',
+    queuedSysmeta.status === 'blocked' &&
+    /queues a system-metadata file for rights review/.test(queuedSysmeta.blocked_reason || ''),
+    queuedSysmeta.blocked_reason);
+
+  group('a blocked v1.3 package stages nothing');
+  const blockedDir = v13TamperedDir(tmpRoot, 'blocked-import', 'reports/stats.json', j => { j.fail_closed = false; });
+  const blockedVerification = await v13.verifyPackage({ packageDir: blockedDir });
+  const before = await v13.stagedCounts(pool);
+  const attempt = await v13.importPackage(pool, blockedDir, blockedVerification);
+  const after = await v13.stagedCounts(pool);
+  check('importing a blocked package is skipped with the verifier reason',
+    attempt.skipped === true && /fail_closed/.test(attempt.reason || ''), attempt);
+  check('a blocked import changes no staged count',
+    JSON.stringify(before) === JSON.stringify(after), { before, after });
+}
+
+// ── Part 1c: persistent storage and the disposable cache ─────
+async function persistentStorageTests(tmpRoot) {
+  group('both packages live in persistent private storage');
+  for (const pkg of privatePackages.PACKAGES) {
+    const stored = await privateStorage.head(pool, pkg.storage_key);
+    check(`${pkg.id} archive is held in persistent storage`, !!stored, pkg.storage_key);
+    check(`${pkg.id} archive is stored under its recorded digest`,
+      !!stored && stored.sha256 === pkg.archive_sha256, stored && stored.sha256);
+    check(`${pkg.id} archive is stored as ordered chunks that add up to its size`,
+      !!stored && stored.chunk_count >= 1 && stored.byte_size > 0 &&
+      stored.chunk_count === Math.max(1, Math.ceil(stored.byte_size / stored.chunk_bytes)), stored);
+  }
+  const reachable = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM private_storage_objects WHERE key NOT LIKE 'private-packages/%'`);
+  check('nothing else is parked in private storage', reachable.rows[0].n === 0, reachable.rows[0]);
+  check('no private package archive is exposed under public/',
+    !fs.readdirSync(path.join(__dirname, '..', 'public')).some(f => /\.zip$/i.test(f)));
+
+  group('the local package tree is a disposable cache');
+  fs.rmSync(V13_DIR, { recursive: true, force: true });
+  check('deleting the local copy leaves the cache incomplete',
+    privatePackages.cacheComplete(V13_PACKAGE) === false);
+  const restored = await privatePackages.ensureLocalCache(pool, V13_PACKAGE);
+  check('the package is restored on demand',
+    restored.present === true && restored.blocked_reason === null, restored.blocked_reason);
+  check('the restore came from persistent storage, not the workspace archive',
+    restored.restore_source === 'persistent_storage', restored.restore_source);
+  const afterRestore = await v13.verifyPackage({ packageDir: V13_DIR });
+  check('the restored package reports the same verified state',
+    afterRestore.status === 'verified' &&
+    Object.entries(v13.AUDITED).every(([key, value]) => afterRestore.observed[key] === value),
+    afterRestore.blocked_reason || afterRestore.observed);
+
+  group('a stale verification cannot resurrect a failing package');
+  const goodKey = privatePackages.contentKey(V13_DIR, v13.VERIFIED_FILES);
+  const cachedGood = await privatePackages.readCachedVerification(pool, v13.PACKAGE_ID, goodKey);
+  check('the unchanged package has a cached verification to reuse',
+    !!cachedGood && cachedGood.status === 'verified', cachedGood && cachedGood.status);
+
+  const changedDir = v13TamperedDir(tmpRoot, 'stale-changed', 'reports/stats.json', j => { j.fail_closed = false; });
+  const changedKey = privatePackages.contentKey(changedDir, v13.VERIFIED_FILES);
+  check('a changed file produces a different content key', changedKey !== goodKey);
+  check('the cached "verified" answer does not apply to the changed package',
+    (await privatePackages.readCachedVerification(pool, v13.PACKAGE_ID, changedKey)) === null);
+
+  const removedDir = v13TamperedDir(tmpRoot, 'stale-removed', 'reports/FINDINGS.md', null);
+  const removedKey = privatePackages.contentKey(removedDir, v13.VERIFIED_FILES);
+  check('a removed file produces a different content key',
+    removedKey !== goodKey && removedKey !== changedKey);
+  check('the cached "verified" answer does not apply to the incomplete package',
+    (await privatePackages.readCachedVerification(pool, v13.PACKAGE_ID, removedKey)) === null);
+
+  const bodyDir = v13Scratch(tmpRoot, 'stale-body', ['processed']);
+  const bodies = path.join(bodyDir, 'processed', 'extracted_text');
+  fs.unlinkSync(bodies);
+  linkTree(path.join(V13_DIR, 'processed/extracted_text'), bodies);
+  fs.unlinkSync(path.join(bodies, fs.readdirSync(bodies)[0]));
+  check('a removed extracted-text body produces a different content key',
+    privatePackages.contentKey(bodyDir, v13.VERIFIED_FILES) !== goodKey);
+
+  // Even a forged "verified" row cannot be reached: the lookup key is derived
+  // from the bytes on disk, not from anything the package or caller supplies.
+  await privatePackages.writeCachedVerification(pool, v13.PACKAGE_ID, 'test-si-forged-key', {
+    status: 'verified', blocked_reason: null, declared: {}, observed: {},
+  }, V13_PACKAGE.archive_sha256);
+  check('a forged cache row is unreachable from a tampered package',
+    (await privatePackages.readCachedVerification(pool, v13.PACKAGE_ID, changedKey)) === null);
+  await pool.query(
+    `DELETE FROM private_package_verifications WHERE content_key = 'test-si-forged-key'`);
+
+  group('re-importing v1.3 stages nothing new');
+  const beforeCounts = await v13.stagedCounts(pool);
+  const again = await v13.importPackage(pool, V13_DIR, afterRestore);
+  check('every layer reports it was already staged',
+    again.skipped !== true && again.imported.every(entry => entry.already_present === true), again);
+  const afterCounts = await v13.stagedCounts(pool);
+  check('staged counts are unchanged by the repeated import',
+    JSON.stringify(beforeCounts) === JSON.stringify(afterCounts), { beforeCounts, afterCounts });
+  check('staged counts equal the audited numbers',
+    afterCounts.source_routes === 320 && afterCounts.rights_review_items === 293 &&
+    afterCounts.usable_private_extractions === 290 && afterCounts.system_metadata_files === 27 &&
+    afterCounts.private_lexicon_lines === 249229 && afterCounts.private_text_segments === 21151 &&
+    afterCounts.private_grammar_examples === 7658 && afterCounts.private_reference_index === 84,
+    afterCounts);
+}
+
 // ── Part 2: runtime boundaries ───────────────────────────────
 async function runtimeTests() {
   group('status endpoint after import');
@@ -522,6 +805,114 @@ async function runtimeTests() {
   const after = await pool.query(
     `SELECT COUNT(*)::int AS n FROM source_import_candidates WHERE source_id IN (${IDS})`);
   check('candidate count is unchanged after re-import', after.rows[0].n === EXPECTED_TOTAL, after.rows[0]);
+
+  // ── v1.3 ──────────────────────────────────────────────────
+  group('the private package report is authenticated');
+  check('anonymous package report → 401', (await anon.get('/api/source-import/packages')).status === 401);
+  check('self-registered contributor cannot read the package report',
+    (await contributor.get('/api/source-import/packages')).status === 403);
+  const report = await trusted.get('/api/source-import/packages');
+  check('trusted validator can read the package report', report.status === 200, report.data);
+  const byPackage = Object.fromEntries((report.data.packages || []).map(p => [p.package_id, p]));
+  check('the report names the storage backend it restored from',
+    typeof report.data.storage_backend === 'string' && report.data.storage_backend.length > 0,
+    report.data.storage_backend);
+  check('both packages are reported',
+    !!byPackage['v1.2'] && !!byPackage['v1.3'], Object.keys(byPackage));
+  check('v1.2 still reports 12,478 of 12,478 staged private candidates',
+    byPackage['v1.2'].verified_counts.staged_private_candidates === EXPECTED_TOTAL &&
+    byPackage['v1.2'].staged_counts.staged_private_candidates === EXPECTED_TOTAL,
+    byPackage['v1.2']);
+  check('every package archive digest is verified against persistent storage',
+    Object.values(byPackage).every(p =>
+      p.present && p.archive_in_persistent_storage && p.archive_digest_verified &&
+      p.verification_status === 'verified' && p.blocked_reason === null),
+    Object.values(byPackage).map(p => [p.package_id, p.verification_status, p.blocked_reason]));
+  check('the report states where each package was restored from',
+    Object.values(byPackage).every(p =>
+      ['local_cache', 'persistent_storage', 'workspace_archive'].includes(p.restore_source)),
+    Object.values(byPackage).map(p => p.restore_source));
+  check('v1.3 declared and staged counts agree with the audit',
+    Object.entries(v13.AUDITED).every(([key, value]) =>
+      byPackage['v1.3'].declared_counts[key] === value &&
+      byPackage['v1.3'].verified_counts[key] === value &&
+      byPackage['v1.3'].staged_counts[key] === value),
+    byPackage['v1.3']);
+  check('nothing in either package is public or training-ready',
+    Object.values(byPackage).every(p => p.public_candidates === 0 && p.training_ready === 0),
+    Object.values(byPackage).map(p => [p.package_id, p.public_candidates, p.training_ready]));
+
+  group('v1.3 rows are staged fail-closed and nothing is promoted');
+  const failClosed = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_candidates
+      WHERE access_status <> 'private_research' OR rights_status <> 'permission_pending'
+         OR review_state <> 'source_import_unreviewed' OR consent_status <> 'unknown'
+         OR public_search_eligible OR training_ready`);
+  check('no v1.3 candidate departs from the fail-closed default', failClosed.rows[0].n === 0, failClosed.rows[0]);
+  const sourceState = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_sources
+      WHERE access_status <> 'private_research' OR rights_status <> 'permission_pending'
+         OR review_state <> 'source_import_unreviewed' OR public_search_eligible OR training_ready`);
+  check('no v1.3 source route departs from the fail-closed default', sourceState.rows[0].n === 0, sourceState.rows[0]);
+  const rightsState = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_rights_reviews
+      WHERE rights_status <> 'permission_pending' OR review_state <> 'source_import_unreviewed'`);
+  check('every rights-review item is still pending', rightsState.rows[0].n === 0, rightsState.rows[0]);
+  const provenance = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_candidates
+      WHERE source_path IS NULL OR source_path = ''
+         OR source_sha256 !~ '^[0-9a-f]{64}$' OR material_type IS NULL`);
+  check('every v1.3 candidate carries its source path, file digest and material type',
+    provenance.rows[0].n === 0, provenance.rows[0]);
+  const senderPaths = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_sources WHERE source_path LIKE '/%'`);
+  check('no absolute path from the sender\'s machine is stored', senderPaths.rows[0].n === 0, senderPaths.rows[0]);
+
+  group('non-Lak material stays an inventory or reference record');
+  const nonLanguage = [...v13.NON_LANGUAGE_MATERIAL].map(m => `'${m}'`).join(',');
+  const leaked = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM v13_candidates
+      WHERE layer <> 'private_reference_index' AND material_type IN (${nonLanguage})`);
+  check('no system, administrative or non-Lak file feeds a Lak language layer',
+    leaked.rows[0].n === 0, leaked.rows[0]);
+  const sysmetaRoutes = await pool.query(
+    `SELECT COUNT(*)::int AS n, COUNT(*) FILTER (WHERE derived_route = 'private_reference_index')::int AS reference
+       FROM v13_sources WHERE material_type = 'system_metadata'`);
+  check('all 27 system-metadata files stay reference records',
+    sysmetaRoutes.rows[0].n === 27 && sysmetaRoutes.rows[0].reference === 27, sysmetaRoutes.rows[0]);
+
+  group('v1.3 never reaches public search, exports or the public status');
+  for (const marker of ['CaucTexts', 'LakTextMaterials', 'private_lexicon_lines']) {
+    const hit = await anon.get(`/api/corpus/search?q=${encodeURIComponent(marker)}&limit=5`);
+    check(`"${marker}" is not searchable`, hit.data.total === 0, hit.data.total);
+  }
+  const v13Sample = await pool.query(
+    `SELECT text FROM v13_candidates WHERE layer = 'private_text_segments'
+        AND text IS NOT NULL AND length(text) > 40 ORDER BY candidate_ref LIMIT 1`);
+  const sampleText = v13Sample.rows[0].text.trim();
+  const exportJson13 = await anon.get('/api/export.json');
+  const exportCsv13 = await anon.get('/api/export.csv');
+  const labExport13 = await anon.get('/api/lab/export.jsonl');
+  for (const [what, res] of [['JSON export', exportJson13], ['CSV export', exportCsv13], ['Lab export', labExport13]]) {
+    check(`the public ${what} holds no v1.3 text or path`,
+      !res.text.includes(sampleText) && !res.text.includes('CaucTexts') && !res.text.includes('v13c_'));
+  }
+  const publicStatus13 = await anon.get('/api/source-import/status');
+  check('the public status names no v1.3 package, file or path',
+    !/v1\.3|CaucTexts|LakTextMaterials|private_lexicon_lines|\/Users\//.test(publicStatus13.text),
+    publicStatus13.text.slice(0, 300));
+  check('the public status still describes only the v1.2 sources',
+    (publicStatus13.data.sources || []).length === SOURCE_IDS.length &&
+    (publicStatus13.data.sources || []).every(s => SOURCE_IDS.includes(s.source_id)),
+    (publicStatus13.data.sources || []).map(s => s.source_id));
+
+  group('the public corpus is untouched');
+  const stats = await anon.get('/api/corpus/stats');
+  check('the public corpus is still exactly 24,403 records',
+    stats.data.totalRecords === 24403, stats.data.totalRecords);
+  const observatory = await anon.get('/api/observatory/resources');
+  check('the Observatory still lists 68 resources',
+    (observatory.data.resources || []).length === 68, (observatory.data.resources || []).length);
 }
 
 async function main() {
@@ -537,6 +928,15 @@ async function main() {
   let child = null;
   try {
     verificationTests(tmpRoot);
+
+    // The v1.3 tree is a cache: if it is not here, restore it before testing.
+    if (!privatePackages.cacheComplete(V13_PACKAGE)) {
+      console.log('Restoring the v1.3 package from persistent storage…');
+      const restored = await privatePackages.ensureLocalCache(pool, V13_PACKAGE);
+      if (!restored.present) throw new Error(`v1.3 package unavailable: ${restored.blocked_reason}`);
+    }
+    await v13VerificationTests(tmpRoot);
+    await persistentStorageTests(tmpRoot);
 
     console.log('\nStarting isolated test server on :5058 …');
     child = spawn(process.execPath, [path.join(__dirname, '..', 'server.js')], {
@@ -556,7 +956,9 @@ async function main() {
     for (;;) {
       const res = await fetch(`${BASE}/api/source-import/status`).then(r => r.json()).catch(() => null);
       const khaydakov = res && (res.sources || []).find(s => s.source_id === 'khaydakov-1962');
-      if (khaydakov && khaydakov.imported_record_count === 9294) break;
+      // `verified` only appears once the package has been restored, verified
+      // and staged, so this also waits out the private-package boot pipeline.
+      if (khaydakov && khaydakov.status === 'verified' && khaydakov.imported_record_count === 9294) break;
       if (Date.now() > importDeadline) throw new Error('Import did not finish:\n' + log);
       await sleep(500);
     }
