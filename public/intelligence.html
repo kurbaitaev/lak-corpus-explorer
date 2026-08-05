@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="si.meta.title">Source Intelligence · Lak Corpus Explorer</title>
+<meta name="description" content="Authenticated private workspace: the source registry, its families and the relationships proposed between sources.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/app.css?v=2">
+</head>
+<body>
+<nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/observatory.html" data-i18n="nav.observatory">Observatory</a>
+      <a class="nav-link" href="/lab.html" data-i18n="nav.lab">Translation Lab</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link active" href="/intelligence.html" aria-current="page" hidden data-i18n="nav.intelligence">Private workspace</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
+    </div>
+  </div>
+</nav>
+<main class="pw-main">
+  <header class="pw-head">
+    <div class="container">
+      <div class="pw-kicker" data-i18n="si.kicker">Private workspace · authenticated only</div>
+      <h1 data-i18n="si.h1">Source Intelligence</h1>
+      <p data-i18n="si.intro">Every source held in the research layers — public corpus sources alongside the private v1.2 and v1.3 material — with what it is, what language it holds, which family it belongs to, how well it extracted, and where its rights and review stand.</p>
+      <div id="pw-banner"></div>
+      <nav class="pw-subnav" aria-label="Private workspace sections" data-i18n-aria="pw.subnav.label">
+        <a class="active" href="/intelligence.html" data-i18n="pw.subnav.sources">Sources</a>
+        <a href="/alignment.html" data-i18n="pw.subnav.alignment">Alignment Lab</a>
+        <a href="/rights.html" data-i18n="pw.subnav.rights">Rights &amp; review</a>
+      </nav>
+      <div class="pw-stats" id="si-stats" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <section class="pw-section" id="si-app" aria-busy="true">
+    <div class="container">
+      <div class="pw-loading" data-i18n="pw.loading">Loading…</div>
+    </div>
+  </section>
+
+  <template id="si-template">
+    <div class="container">
+      <div class="pw-subnav" role="tablist" aria-label="Source views" data-i18n-aria="si.views.label">
+        <button class="pw-tab active" type="button" role="tab" aria-selected="true" data-view="sources" data-i18n="si.view.sources">All sources</button>
+        <button class="pw-tab" type="button" role="tab" aria-selected="false" data-view="families" data-i18n="si.view.families">Families</button>
+      </div>
+
+      <div id="si-sources-view">
+        <div class="pw-filters">
+          <div class="field-wrap"><label for="si-q" data-i18n="si.filter.search">Search sources</label><input id="si-q" type="search" autocomplete="off" placeholder="File name, path, material type…" data-i18n-placeholder="si.filter.searchPlaceholder"></div>
+          <div class="field-wrap"><label for="si-scope" data-i18n="si.filter.scope">Layer</label><div class="select-wrap"><select id="si-scope"></select></div></div>
+          <div class="field-wrap"><label for="si-material" data-i18n="si.filter.material">Material type</label><div class="select-wrap"><select id="si-material"></select></div></div>
+          <div class="field-wrap"><label for="si-language" data-i18n="si.filter.language">Language scope</label><div class="select-wrap"><select id="si-language"></select></div></div>
+          <div class="field-wrap"><label for="si-family" data-i18n="si.filter.family">Family</label><div class="select-wrap"><select id="si-family"></select></div></div>
+          <div class="field-wrap"><label for="si-quality" data-i18n="si.filter.quality">Extraction quality</label><div class="select-wrap"><select id="si-quality"></select></div></div>
+          <div class="field-wrap"><label for="si-rights" data-i18n="si.filter.rights">Rights status</label><div class="select-wrap"><select id="si-rights"></select></div></div>
+          <div class="field-wrap"><label for="si-review" data-i18n="si.filter.review">Review status</label><div class="select-wrap"><select id="si-review"></select></div></div>
+          <div class="field-wrap"><label for="si-access" data-i18n="si.filter.access">Access</label><div class="select-wrap"><select id="si-access"></select></div></div>
+        </div>
+        <div class="pw-layout">
+          <div class="pw-panel">
+            <h2 data-i18n="si.list.title">Sources</h2>
+            <p class="pw-hint" id="si-count" role="status" aria-live="polite"></p>
+            <div class="pw-list" id="si-list"></div>
+          </div>
+          <div class="pw-panel" id="si-detail" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div id="si-families-view" hidden>
+        <div class="pw-panel">
+          <h2 data-i18n="si.families.title">Families</h2>
+          <p class="pw-hint" data-i18n="si.families.hint">Sources grouped by the family key derived from the path they arrived on. A family with proposed relationships is listed first.</p>
+          <div id="si-families"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+</main>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/private-workspace.js?v=1"></script>
+<script src="/js/intelligence.js?v=1"></script>
+</body>
+</html>

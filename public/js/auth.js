@@ -29,8 +29,22 @@ window.fetchIdentity = async function() {
     window.ACCOUNT = null;
   }
   updateAuthLink();
+  updatePrivateLink();
   return { reviewer: window.REVIEWER, account: window.ACCOUNT };
 };
+
+// Roles allowed into the private workspace. This mirrors the server's gate; it
+// only decides whether the nav link is shown, never what data is available.
+const TRUSTED_PLUS_ROLES = ['trusted_validator', 'verified_expert', 'administrator'];
+
+function updatePrivateLink() {
+  const role = window.ACCOUNT ? window.ACCOUNT.role
+    : (window.REVIEWER ? 'administrator' : null);
+  const allowed = TRUSTED_PLUS_ROLES.includes(role);
+  document.querySelectorAll('.nav-links a[href="/intelligence.html"]').forEach((link) => {
+    link.hidden = !allowed;
+  });
+}
 
 // Backward-compatible helper used by the reviewer pages.
 window.fetchReviewer = async function() {

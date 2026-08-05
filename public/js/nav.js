@@ -187,6 +187,19 @@
       links.insertBefore(lab, validate2 || links.firstChild);
     }
 
+    // The private workspace is only meaningful to signed-in reviewers, so the
+    // link ships hidden and auth.js reveals it once a trusted role is known.
+    if (!links.querySelector('a[href="/intelligence.html"]')) {
+      var intelligence = document.createElement('a');
+      intelligence.className = 'nav-link';
+      intelligence.href = '/intelligence.html';
+      intelligence.hidden = true;
+      intelligence.setAttribute('data-i18n', 'nav.intelligence');
+      intelligence.textContent = tr('nav.intelligence', 'Private workspace');
+      var about = links.querySelector('a[href="/about.html"]');
+      links.insertBefore(intelligence, about || links.querySelector('#auth-link') || null);
+    }
+
     if (!links.id) links.id = 'nav-links';
 
     var btn = document.createElement('button');

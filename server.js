@@ -63,6 +63,65 @@ const OBSERVATORY_IDS = new Set(OBSERVATORY.resources.map(resource => resource.i
 console.log(`Observatory loaded: ${OBSERVATORY.resources.length} non-Bible resources`);
 const withoutObservatoryReviews = rows => rows.filter(row => !OBSERVATORY_IDS.has(row.record_id));
 
+// ── Public corpus sources, as seen by the private source browser ──
+// The Source Intelligence screen lists private and public sources side by
+// side so a reviewer can filter across all of them. These entries are
+// inventory only — counts, layer and provenance — and the private screens
+// never write to the public corpus.
+function buildPublicSourceIndex(rows) {
+  const groups = new Map();
+  for (const row of rows) {
+    const kind = row[0];
+    const source = row[3] || 'unspecified';
+    const key = kind + '|' + source;
+    let entry = groups.get(key);
+    if (!entry) {
+      entry = {
+        kind: 'public_corpus',
+        ref: key,
+        label: source + ' (' + kind + ')',
+        folder: null,
+        scope: 'public_corpus',
+        material_type: kind === 'lexicon' ? 'public_lexicon_layer' : 'public_text_layer',
+        language_scope: 'Lak with Russian glosses',
+        family_key: 'public:' + source.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        extraction_quality: 'published_public_corpus',
+        extraction_status: 'published',
+        rights_status: 'public_domain',
+        review_state: 'accepted_candidate',
+        access_status: 'public',
+        training_ready: false,
+        text_chars: 0,
+        word_count: null,
+        priority: null,
+        extension: null,
+        duplicate_group: null,
+        records: 0,
+      };
+      groups.set(key, entry);
+    }
+    entry.records += 1;
+    entry.text_chars += String(row[1] || '').length;
+  }
+  return Array.from(groups.values()).sort((a, b) => a.ref.localeCompare(b.ref));
+}
+
+// Lak forms attested in the public corpus. The relationship scanner uses them
+// as dictionary anchors: evidence that a private source is attested outside
+// itself. Nothing is copied in either direction.
+function buildPublicLexicalForms(rows) {
+  const forms = new Set();
+  for (const row of rows) {
+    for (const token of String(row[1] || '').toLowerCase().match(/[\p{L}\p{N}]+/gu) || []) {
+      if (token.length >= 4) forms.add(token);
+    }
+  }
+  return forms;
+}
+
+const PUBLIC_SOURCE_INDEX = buildPublicSourceIndex(CORPUS_DATA);
+const PUBLIC_LEXICAL_FORMS = buildPublicLexicalForms(CORPUS_DATA);
+
 // ── Curated alias additions (fill gaps in the extracted alias dictionary) ──
 const CURATED_ALIASES = {
   'солнце': ['баргь'],
@@ -96,6 +155,10 @@ const PRIVATE_STATE = {
   v12: require('./lib/private-boot').absentVerification(
     'The private packages are still being restored and verified.'),
   packages: null,
+  // Result of the deterministic source-relationship scan. It runs once after
+  // the packages are staged and is a no-op when the same sources were already
+  // scanned by the same generator, so boot stays fast as the package grows.
+  intel: { state: 'pending', message: 'The source-relationship scan has not run yet.' },
 };
 
 // ── Public research summary (metadata only) ──────────────────
@@ -161,7 +224,33 @@ migrate()
       `${summary.family_count} source families, ` +
       `counts ${summary.counts_match ? 'match the audit' : 'not confirmed against the audit'}`);
   })
+  .then(() => runSourceIntelligenceScan())
   .catch(err => console.error('Private package preparation failed:', err.message));
+
+// The scan proposes source relationships from deterministic evidence only and
+// seeds the War family. It never marks anything validated, and a failure here
+// leaves the rest of the app running with an honest reason on the screen.
+function runSourceIntelligenceScan() {
+  const sourceIntelligence = require('./lib/source-intelligence');
+  const started = Date.now();
+  return sourceIntelligence.scan(pool, { publicForms: PUBLIC_LEXICAL_FORMS })
+    .then(result => {
+      PRIVATE_STATE.intel = { state: 'ready', ...result, duration_ms: Date.now() - started };
+      const war = result.war_family || {};
+      console.log(`Source intelligence: ${result.ran ? 'scanned' : 'cached'} ` +
+        `${result.sources_scanned} sources → ${result.proposals} relationship candidates ` +
+        `(${Date.now() - started} ms)`);
+      if (war.missing && war.missing.length) {
+        console.warn(`  War family not seeded, missing: ${war.missing.join(', ')}`);
+      } else if (war.seeded) {
+        console.log(`  War family seeded: ${war.seeded} relationships (candidates, not validated)`);
+      }
+    })
+    .catch(err => {
+      PRIVATE_STATE.intel = { state: 'failed', message: err.message };
+      console.error('Source intelligence scan failed:', err.message);
+    });
+}
 
 // ── Search primitives (shared with the client-side normalisation) ──
 // Field-scoped matching and phrase-first ranking live in lib/search.js so the
@@ -221,7 +310,7 @@ const PAGES = {};
 for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
                    'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html',
-                   'research.html']) {
+                   'research.html', 'intelligence.html', 'alignment.html', 'rights.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -266,6 +355,15 @@ app.use(require('./routes/source-import')({
   pool,
   verification: () => PRIVATE_STATE.v12,
   packages: () => PRIVATE_STATE.packages,
+}));
+// Private Alignment Lab & Source Intelligence. Every route is authenticated:
+// relationship candidates, alignment segments and rights provenance are never
+// reachable without a role, and nothing here is a validated translation.
+app.use(require('./routes/source-intelligence')({
+  pool,
+  publicSources: () => PUBLIC_SOURCE_INDEX,
+  publicForms: () => PUBLIC_LEXICAL_FORMS,
+  scanState: () => PRIVATE_STATE.intel,
 }));
 
 function sendPage(res, html) {

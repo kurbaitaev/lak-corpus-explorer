@@ -10,6 +10,9 @@ const routes = [
   '/', '/lab.html', '/observatory.html', '/research.html', '/validate.html', '/queue.html',
   '/leaderboard.html', '/about.html', '/how-it-works.html', '/login.html',
   '/register.html', '/profile.html', '/dashboard.html',
+  // The private workspace renders its access gate for an anonymous visitor;
+  // that gate is part of the localized surface and must fit 390x844 too.
+  '/intelligence.html', '/alignment.html', '/rights.html',
 ];
 
 function loadRuntime(language) {
@@ -109,7 +112,7 @@ async function main() {
         width: await page.evaluate(() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]),
         toggle: await page.locator('.lang-toggle-desktop').isVisible(),
         rawKeys: await page.locator('body').evaluate(body => body.innerText).then(text =>
-          (text.match(/\b(?:nav|search|lab|obs|research|queue|leaderboard|profile|dashboard|auth)\.[a-z][\w.]+/g) || [])),
+          (text.match(/\b(?:nav|search|lab|obs|research|queue|leaderboard|profile|dashboard|auth|pw|si|align|rights)\.[a-z][\w.]+/g) || [])),
       });
     }
     for (const result of routeResults) {

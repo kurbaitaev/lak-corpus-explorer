@@ -59,6 +59,33 @@ never served:
   Candidate text requires a trusted validator or above, and the training export fails closed.
 - Archives, extracted text and generated candidate output are all gitignored.
 
+
+## Private workspace: Source Intelligence, Alignment Lab, rights review
+
+Authenticated-only screens (`/intelligence.html`, `/alignment.html`, `/rights.html`) where the
+relationships between private sources are proposed by evidence and cleared by people:
+
+- **Deterministic proposals only.** `lib/source-intelligence.js` scores every plausible pair over
+  filename/title normalisation, folder families, duplicate and near-duplicate text, language and
+  script classification, headings, dates, names, numbers, punctuation profile, paragraph structure,
+  length ratios, dictionary anchors and public-corpus overlap. Each proposal stores the signals
+  that fired, the measurements behind them, both source references, a confidence value and its
+  generator version. The same inputs always produce the same proposals, and a scan is skipped
+  when the inputs have not changed. Operating-system artefacts (`.DS_Store` and friends) stay
+  listed as received files but are not paired.
+- **The War family is the reference example**: War-1 as the Lak text, War-1a as an alternate
+  near-duplicate Lak version, War-2 as the Russian parallel/translation candidate.
+- **Alignment is a draft to correct, not to regenerate.** `lib/alignment-engine.js` aligns a pair
+  section → paragraph → sentence with 1:1, 1:many, many:1 and explicitly unmatched units;
+  regeneration is refused once a reviewer has decided anything.
+- **Nothing here is a validated translation.** Every relationship, unit and response carries
+  `validated: false`; acceptance clears a candidate for further work, it does not certify it.
+- **Server-side gates** (`routes/source-intelligence.js`): every `/api/private/...` route needs a
+  trusted validator or above and returns 401 with no content otherwise; accepting candidates or
+  units, regenerating an alignment and raising exposure need a verified expert, and public access
+  or training use is refused (409) until rights are cleared and the review is accepted. Rights,
+  access, review and training remain four separate decisions, each logged immutably with its note.
+
 ## Reviewed translation memory and evaluation isolation
 
 `lib/lab-memory.js` is the single place where three rules live; the retriever, the provider and

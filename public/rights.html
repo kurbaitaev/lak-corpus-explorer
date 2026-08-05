@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="rights.meta.title">Rights &amp; candidate review · Lak Corpus Explorer</title>
+<meta name="description" content="Authenticated private workspace: the rights-review queue for private sources, with provenance, corroborating spellings and four independent decisions.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/app.css?v=2">
+</head>
+<body>
+<nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/observatory.html" data-i18n="nav.observatory">Observatory</a>
+      <a class="nav-link" href="/lab.html" data-i18n="nav.lab">Translation Lab</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link active" href="/intelligence.html" aria-current="page" hidden data-i18n="nav.intelligence">Private workspace</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
+    </div>
+  </div>
+</nav>
+<main class="pw-main">
+  <header class="pw-head">
+    <div class="container">
+      <div class="pw-kicker" data-i18n="rights.kicker">Private workspace · authenticated only</div>
+      <h1 data-i18n="rights.h1">Rights &amp; candidate review</h1>
+      <p data-i18n="rights.intro">Work the rights queue one source at a time: read its immutable provenance, check the spellings that corroborate it, and record rights, access, review and training as four separate decisions.</p>
+      <div id="pw-banner"></div>
+      <nav class="pw-subnav" aria-label="Private workspace sections" data-i18n-aria="pw.subnav.label">
+        <a href="/intelligence.html" data-i18n="pw.subnav.sources">Sources</a>
+        <a href="/alignment.html" data-i18n="pw.subnav.alignment">Alignment Lab</a>
+        <a class="active" href="/rights.html" data-i18n="pw.subnav.rights">Rights &amp; review</a>
+      </nav>
+      <div class="pw-stats" id="rq-stats" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <section class="pw-section" id="rq-app" aria-busy="true">
+    <div class="container">
+      <div class="pw-loading" data-i18n="pw.loading">Loading…</div>
+    </div>
+  </section>
+
+  <template id="rq-template">
+    <div class="container">
+      <div class="pw-filters">
+        <div class="field-wrap"><label for="rq-q" data-i18n="rights.filter.search">Search queue</label><input id="rq-q" type="search" autocomplete="off" placeholder="File name or material type…" data-i18n-placeholder="rights.filter.searchPlaceholder"></div>
+        <div class="field-wrap"><label for="rq-action" data-i18n="rights.filter.action">Required action</label><div class="select-wrap"><select id="rq-action"></select></div></div>
+        <div class="field-wrap"><label for="rq-material" data-i18n="rights.filter.material">Material type</label><div class="select-wrap"><select id="rq-material"></select></div></div>
+        <div class="field-wrap"><label for="rq-rights" data-i18n="rights.filter.rights">Rights status</label><div class="select-wrap"><select id="rq-rights"></select></div></div>
+        <div class="field-wrap"><label for="rq-review" data-i18n="rights.filter.review">Review status</label><div class="select-wrap"><select id="rq-review"></select></div></div>
+      </div>
+      <div class="pw-layout">
+        <div class="pw-panel">
+          <h2 data-i18n="rights.list.title">Rights queue</h2>
+          <p class="pw-hint" id="rq-count" role="status" aria-live="polite"></p>
+          <div class="pw-list" id="rq-list"></div>
+          <div class="pw-actions">
+            <button class="btn" id="rq-prev" data-i18n="rights.page.prev">Previous</button>
+            <button class="btn" id="rq-next" data-i18n="rights.page.next">Next</button>
+          </div>
+        </div>
+        <div class="pw-panel" id="rq-detail" aria-live="polite"></div>
+      </div>
+    </div>
+  </template>
+</main>
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/private-workspace.js?v=1"></script>
+<script src="/js/rights.js?v=1"></script>
+</body>
+</html>

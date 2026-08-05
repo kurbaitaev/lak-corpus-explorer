@@ -38,3 +38,12 @@ not a special case, and the UI must be able to say honestly "expected N, staged 
   explicit "not semantic deduplication" note. Never merge candidates into canonical records.
 - Consent stays `unknown` unless the package documents it; audio inventories must not assert
   speaker, dialect, or row/time alignment.
+- Relationships between private sources (translation, parallel text, transliteration, alternate
+  edition, duplicate) are machine *proposals*: store the signals that fired and the measurements
+  behind them, and keep every response flagged as not-validated. Acceptance by a reviewer clears a
+  candidate for further work; it never certifies a translation, and no alignment a human has
+  touched may be regenerated away.
+- A scan whose result is cached by an input key must also remove its own stale output when the
+  input set shrinks (a file withdrawn, or an artefact the scanner stops treating as a work) —
+  otherwise withdrawn material lingers as live candidates. Delete only untouched machine output:
+  anything a human has moved, seeded, or built on stays.
