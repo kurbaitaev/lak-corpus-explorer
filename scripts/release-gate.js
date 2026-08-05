@@ -330,6 +330,19 @@ async function main() {
   check('private-only search terms were sampled', markers.queries.length >= 12, markers.queries.length);
   console.log(`  … probing ${total} markers and ${markers.queries.length} private search terms`);
 
+  // ── 0. Deployment portability of the private restore ─────────
+  // Production once reported v1.3 blocked because the restore shelled out to
+  // `unzip`, which the workspace provides but the deployment image does not.
+  // The extractor must stay free of external binaries, or the same failure
+  // returns silently the next time the package is rebuilt in production.
+  group('the private restore path is portable to the deployment image');
+  for (const rel of ['lib/private-packages.js', 'lib/private-storage.js', 'lib/private-boot.js']) {
+    const src = fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
+    check(`${rel} spawns no external binary`,
+      !/child_process|spawnSync|execSync|execFileSync|\bspawn\(/.test(src),
+      rel);
+  }
+
   // ── 1. Leak probe ────────────────────────────────────────────
   group('leak probe: public HTML pages');
   for (const page of HTML_PAGES) {
