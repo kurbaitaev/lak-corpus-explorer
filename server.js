@@ -177,11 +177,15 @@ const RESEARCH_STATE = {
 
 async function refreshResearchSummary(report) {
   let staged = null;
+  let progress = null;
   try { staged = await v13.stagedCounts(pool); }
   catch (err) { console.error('Research summary: staged counts unavailable:', err.message); }
+  try { progress = await v13.importProgress(pool); }
+  catch (err) { console.error('Research summary: staging progress unavailable:', err.message); }
   RESEARCH_STATE.summary = await researchUpdate.buildSummary({
     report,
     staged,
+    progress,
     corpusRecords: CORPUS_DATA.length,
     observatoryResources: OBSERVATORY.resources.length,
   });
@@ -191,8 +195,18 @@ async function refreshResearchSummary(report) {
 
 // Validation & gamification schema (idempotent, backward-compatible), then
 // restore, verify and stage the private packages.
+//
+// Staging a package this size can outlive a single boot on a host that
+// suspends the process between requests, so the summary is republished from
+// the database as soon as the schema is ready and again after every layer
+// lands. The page then shows real progress instead of an indefinite
+// "preparing", and picks up where it left off on the next boot.
 migrate()
-  .then(() => preparePrivatePackages(pool))
+  .then(() => refreshResearchSummary(null).catch(err =>
+    console.error('Research summary: initial publish failed:', err.message)))
+  .then(() => preparePrivatePackages(pool, {
+    onLayer: () => refreshResearchSummary(null),
+  }))
   .then(report => {
     PRIVATE_STATE.v12 = report.v12;
     PRIVATE_STATE.packages = report;

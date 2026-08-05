@@ -13,3 +13,4 @@
 - [Publish diff drops prod tables](publish-schema-diff-drops.md) — code-created schema + a dev DB behind the code makes publish propose DROPs; converge dev via post-merge, never approve.
 - [Deployment image binaries](deployment-image-binaries.md) — workspace-only tools like `unzip` can be absent in production; do boot-path work in-process, and ENOENT has empty stderr.
 - [Console-clean auth gates](console-clean-auth-gates.md) — decide from `/api/auth/me` before calling a gated route, or every signed-out visitor logs a 401.
+- [Autoscale boot work](autoscale-boot-work.md) — long boot jobs are suspended, not run; chunk them, commit progress with the rows, and never gate completeness on row presence.

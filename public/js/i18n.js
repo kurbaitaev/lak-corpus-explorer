@@ -324,6 +324,11 @@
     'research.verify.verified': { en: 'Package verified', ru: 'Пакет проверен' },
     'research.verify.blocked': { en: 'Package blocked — nothing staged', ru: 'Пакет заблокирован — ничего не загружено' },
     'research.verify.preparing': { en: 'Verification in progress', ru: 'Идёт проверка' },
+    'research.verify.importing': { en: 'Staging in progress', ru: 'Идёт загрузка' },
+    'research.verify.progress': {
+      en: 'Staged {staged} of {declared} records — {done} of {total} layers',
+      ru: 'Загружено {staged} из {declared} записей — {done} из {total} слоёв',
+    },
     'research.verify.countsMatch': { en: 'Staged counts match the audit', ru: 'Загруженные числа совпадают с аудитом' },
     'research.verify.countsUnconfirmed': { en: 'Staged counts not confirmed against the audit', ru: 'Загруженные числа не подтверждены аудитом' },
     'research.table.measure': { en: 'Measure', ru: 'Показатель' },

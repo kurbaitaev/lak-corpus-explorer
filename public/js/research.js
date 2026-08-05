@@ -91,6 +91,7 @@
     }
     const corpus = summary.public_corpus || {};
     const staged = summary.staged;
+    const progress = summary.progress;
     const verification = summary.package ? summary.package.verification_status : 'preparing';
 
     const checks = [
@@ -120,6 +121,16 @@
       '<div class="research-verify">' +
       '<span class="research-chip ' + (verification === 'verified' ? 'ok' : 'warn') + '">' +
       esc(t('research.verify.' + verification, verification === 'verified' ? 'Package verified' : 'Verification pending')) + '</span>' +
+      // While the package is still landing, say how far it has got rather than
+      // leaving an unexplained "pending" chip on the page.
+      (progress && !progress.complete
+        ? '<span class="research-chip warn">' + esc(t('research.verify.progress', {
+          staged: num(progress.records_staged),
+          declared: num(progress.records_declared),
+          done: num(progress.layers_complete),
+          total: num(progress.layers_total),
+        })) + '</span>'
+        : '') +
       '<span class="research-chip ' + (summary.counts_match ? 'ok' : 'warn') + '">' +
       esc(summary.counts_match
         ? t('research.verify.countsMatch', 'Staged counts match the audit')
