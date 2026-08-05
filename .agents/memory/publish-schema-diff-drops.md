@@ -32,3 +32,16 @@ the production environment.
   path is: converge development, then re-publish.
 - The convergence lands when the task merges, so the correct order is merge
   first, publish second.
+
+## Pre-publish check: explainSchemaDiff()
+
+Before any publish that follows schema work, call `explainSchemaDiff()` (CodeExecution,
+deployment skill) and read `statementsToExecute` yourself. Safe means every statement
+is CREATE/ADD and `tablesToRemove`, `tablesToTruncate`, `columnsToRemove` are empty.
+
+**Why:** the publish dialog's own summary is easy to misread under time pressure; the
+diff API names the destructive objects explicitly.
+
+**How to apply:** if any destructive list is non-empty, stop and converge the dev
+schema first (see above). If all additive, tell the user it is safe to approve —
+publishing still requires their click.
