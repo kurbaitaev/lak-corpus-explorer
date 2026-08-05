@@ -11,9 +11,22 @@ yarn-error.log*
 # Generated corpus data (rebuild with: python3 scripts/extract-corpus.py)
 data/corpus-data.json
 data/corpus-meta.json
+
+# Private research packages. The archives live in persistent storage; the
+# extracted tree under private/ is a disposable cache restored on boot. The
+# archives and anything generated from them (candidate layers, extracted
+# text, alignment output) must never enter version control.
 private/
-# Private research packages are runtime-only: they are uploaded, verified and
-# extracted into private/, and must never enter version control.
 attached_assets/lak-corpus-v1.2-processed-only-*.zip
+attached_assets/lak-corpus-v1.3-private-data-and-findings-*.zip
 attached_assets/lak-corpus-*private*.zip
 attached_assets/lak-corpus-*findings*.zip
+**/private_lexicon_lines.jsonl
+**/private_text_segments.jsonl
+**/private_grammar_examples.jsonl
+**/private_reference_index.jsonl
+**/rights_review_queue.jsonl
+**/source_routes.jsonl
+**/source_manifest.jsonl
+**/extracted_text/
+**/full_ocr/
