@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="research.meta.title">Research update · Lak Corpus Explorer</title>
+<meta name="description" content="What changed in the Lak corpus research programme: audited private research candidates, parallel-source discovery, and the human review workflow before anything becomes public.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/app.css?v=2">
+</head>
+<body>
+<nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link active" href="/research.html" aria-current="page" data-i18n="nav.research">Research update</a>
+      <a class="nav-link" href="/observatory.html" data-i18n="nav.observatory">Observatory</a>
+      <a class="nav-link" href="/lab.html" data-i18n="nav.lab">Translation Lab</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Validate</a>
+      <a class="nav-link" href="/leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About &amp; Research</a>
+      <a class="nav-link" href="/queue.html" data-i18n="nav.queue">Review Queue</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="observatory research-page">
+  <header class="obs-hero">
+    <div class="container">
+      <div class="obs-kicker" data-i18n="research.kicker">Research update · what changed</div>
+      <h1><span data-i18n="research.h1">What changed in this research round</span><span class="help-marker" data-help="help.researchUpdate" data-help-fallback="This page reports what the latest source audit found. The materials themselves stay private until rights and review are settled."></span></h1>
+      <p data-i18n-html="research.intro">A new batch of source materials was audited, extracted and routed into a <strong>private research layer</strong>. Nothing on this page was added to the public corpus: these are counted candidates awaiting rights clearance and expert review.</p>
+      <div class="obs-stats" id="research-stats" aria-label="Audited research aggregates" data-i18n-aria="research.statsLabel"></div>
+      <div class="obs-method" data-i18n-html="research.method"><strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.</div>
+    </div>
+  </header>
+
+  <section class="research-section" aria-label="Public corpus unchanged" data-i18n-aria="research.publicLabel">
+    <div class="container">
+      <div class="research-public" id="research-public" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="research-section" aria-label="Discovery and review workflow" data-i18n-aria="research.workflowLabel">
+    <div class="container">
+      <h2 data-i18n="research.workflow.h2">How parallel sources are found — and what happens next</h2>
+      <p class="research-lede" data-i18n-html="research.workflow.intro">Some of these materials appear to exist in more than one version: the same work in Lak and in Russian, in Cyrillic and in Latin script, or as a recording with a transcription. A pair of versions is a <strong>lead, not a translation</strong>: two files sitting next to each other is not proof that their sentences correspond.</p>
+      <ol class="research-steps" id="research-steps"></ol>
+    </div>
+  </section>
+
+  <section class="research-section" aria-label="Source families" data-i18n-aria="research.familiesLabel">
+    <div class="container">
+      <h2 data-i18n="research.families.h2">Strongest alignment opportunities</h2>
+      <p class="research-lede" data-i18n-html="research.families.intro">These are the source families most likely to yield aligned Lak–Russian material once permission and review are settled. Each card shows <strong>metadata only</strong> — how many files the family holds, how the versions were spotted, and what still has to happen. No passage, title page or extracted line from these materials appears on any public page.</p>
+      <div id="research-families" aria-live="polite" aria-busy="true">
+        <div class="obs-grid" aria-label="Loading" data-i18n-aria="research.loading"><div class="obs-skeleton"></div><div class="obs-skeleton"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="research-section research-gate" aria-label="Before anything becomes public" data-i18n-aria="research.gateLabel">
+    <div class="container">
+      <h2 data-i18n="research.gate.h2">Before any of this could become public</h2>
+      <ul class="research-gate-list" id="research-gate"></ul>
+      <p class="research-lede" data-i18n-html="research.gate.footer">Until every step is complete for a given source, its material stays private: not searchable, not published, not exported, and not used for training. The public corpus grows only through material that is already clear to publish.</p>
+    </div>
+  </section>
+</main>
+
+<script src="/js/i18n.js?v=1"></script>
+<script src="/js/nav.js?v=3"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/research.js?v=1"></script>
+</body>
+</html>

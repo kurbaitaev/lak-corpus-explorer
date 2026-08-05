@@ -7,6 +7,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { loadObservatory } = require('./lib/observatory');
 const sourceImport = require('./lib/source-import');
+const researchUpdate = require('./lib/research-update');
+const v13 = require('./lib/source-import-v13');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -96,6 +98,34 @@ const PRIVATE_STATE = {
   packages: null,
 };
 
+// ── Public research summary (metadata only) ──────────────────
+// The public "Research update" page reads audited aggregates and
+// source-family metadata for the v1.3 package. lib/research-update.js is the
+// only path from the private package to a public surface, and it can emit
+// nothing but counts, booleans and canonical identifiers it declares itself.
+// Until preparation finishes, the audited numbers are reported as
+// expectations with nothing staged.
+const RESEARCH_STATE = {
+  summary: researchUpdate.preparingSummary({
+    corpusRecords: CORPUS_DATA.length,
+    observatoryResources: OBSERVATORY.resources.length,
+  }),
+};
+
+async function refreshResearchSummary(report) {
+  let staged = null;
+  try { staged = await v13.stagedCounts(pool); }
+  catch (err) { console.error('Research summary: staged counts unavailable:', err.message); }
+  RESEARCH_STATE.summary = await researchUpdate.buildSummary({
+    report,
+    staged,
+    corpusRecords: CORPUS_DATA.length,
+    observatoryResources: OBSERVATORY.resources.length,
+  });
+  // Fail fast at boot rather than at request time if the shape ever drifts.
+  researchUpdate.emit(RESEARCH_STATE.summary);
+}
+
 // Validation & gamification schema (idempotent, backward-compatible), then
 // restore, verify and stage the private packages.
 migrate()
@@ -123,6 +153,13 @@ migrate()
       console.log(`Source import: ${report.v12.overlap.overlapping_forms} overlapping spellings ` +
         'linked as corroboration (never merged).');
     }
+    return refreshResearchSummary(report);
+  })
+  .then(() => {
+    const summary = RESEARCH_STATE.summary;
+    console.log(`Research update: ${summary.package.verification_status}, ` +
+      `${summary.family_count} source families, ` +
+      `counts ${summary.counts_match ? 'match the audit' : 'not confirmed against the audit'}`);
   })
   .catch(err => console.error('Private package preparation failed:', err.message));
 
@@ -131,7 +168,7 @@ migrate()
 // same rules can be unit-tested without a running server.
 const {
   MATCH_PHRASE, MATCH_TOKENS, NO_MATCH, QUERY_FIELDS, META_FIELDS,
-  norm, normalizeQuery, tokenize, tokenHas, recordMatchTier,
+  norm, normalizeQuery, tokenize, tokenHas, recordMatchTier, fieldMatchTier,
   findMatchSpans, highlightSpansFor,
 } = require('./lib/search');
 
@@ -183,13 +220,33 @@ function stampHtml(file) {
 const PAGES = {};
 for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
-                   'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html']) {
+                   'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html',
+                   'research.html']) {
   PAGES[f] = stampHtml(f);
 }
 
 // ── Middleware ────────────────────────────────────────────────
 app.use(compression());
 app.use(express.json());
+
+// The ONE evidence gate: corpus retrieval + reviewed translation memory, with
+// benchmark isolation applied once. The Lab and the public result cards share
+// it, so both surfaces answer from exactly the same evidence rules and caches.
+const labMemory = require('./lib/lab-memory');
+const EVIDENCE_GATE = labMemory.createEvidenceGate({
+  pool,
+  retriever: require('./lib/lab-retrieval').createRetriever({
+    corpusData: CORPUS_DATA,
+    corpusAliases: CORPUS_ALIASES,
+    curatedAliases: LAB_CURATED_ALIASES,
+    norm,
+    tokenHas,
+  }),
+  norm,
+});
+const PUBLIC_EVIDENCE = require('./lib/public-evidence').createPublicEvidence({
+  corpusData: CORPUS_DATA, norm, tokenize, gate: EVIDENCE_GATE,
+});
 
 // Expert-validation & gamification API
 app.use(require('./routes/validation')({ pool }));
@@ -201,6 +258,7 @@ app.use(require('./routes/lab')({
   curatedAliases: LAB_CURATED_ALIASES,
   norm,
   tokenHas,
+  gate: EVIDENCE_GATE,
 }));
 // Private source-import review layer (fail-closed; candidate content is never
 // served publicly and never enters ordinary corpus search or exports).
@@ -280,7 +338,44 @@ app.get('/api/observatory/resources', (req, res) => {
   res.json(OBSERVATORY);
 });
 
+// ── Public research update (metadata only) ───────────────────
+// Audited aggregates and source-family metadata for the private v1.3 package.
+// lib/research-update.js re-validates the payload on every request and throws
+// on anything it did not declare, so a drifting shape fails closed here rather
+// than emitting a passage, a filename or a candidate row.
+app.get('/api/research/update', (req, res) => {
+  try {
+    res.json(researchUpdate.emit(RESEARCH_STATE.summary));
+  } catch (err) {
+    console.error('Research update blocked:', err.message);
+    res.status(500).json({ error: 'Research summary unavailable' });
+  }
+});
+
 // ── Corpus search ─────────────────────────────────────────────
+// Canonical names for the searchable fields, so a client can say WHERE a
+// record matched. The values are language-neutral; the UI localises them.
+const MATCH_FIELD_NAMES = { 1: 'lak', 2: 'translation', 3: 'source', 4: 'variety', 5: 'record_id' };
+
+// Explain a hit whose Lak text carries no visible highlight: the match was in
+// the translation, the source, the variety or the identifier — or the query
+// was expanded to a Lak form through the dictionary.
+function explainMatch(record, { currentQ, queryTokens, normForms, lakSpans }) {
+  if (!currentQ) return null;
+  if (lakSpans && lakSpans.length) return null;
+  const fields = normForms.length ? META_FIELDS : QUERY_FIELDS;
+  for (const index of fields) {
+    if (fieldMatchTier(record[index], currentQ, queryTokens) === NO_MATCH) continue;
+    const spans = index === 2
+      ? highlightSpansFor(record[2], { phrase: currentQ, queryTokens, aliasForms: [] })
+      : [];
+    return { field: MATCH_FIELD_NAMES[index], spans };
+  }
+  // The alias expansion matched the Lak form itself, but not as a span we can
+  // point at (a different spelling of the same concept).
+  return normForms.length ? { field: 'alias', spans: [] } : null;
+}
+
 // GET /api/corpus/search?q=&kind=&source=&variety=&page=&limit=
 app.get('/api/corpus/search', (req, res) => {
   const {
@@ -370,18 +465,47 @@ app.get('/api/corpus/search', (req, res) => {
     phrase: currentQ, queryTokens, aliasForms: normForms,
   }));
 
+  // Where the match actually happened, for rows whose Lak text shows nothing.
+  // Without this, a record that matched on its translation, its source or its
+  // identifier looks like an unexplained hit.
+  const explain = rows.map((r, i) => explainMatch(r, {
+    currentQ, queryTokens, normForms, lakSpans: matches[i],
+  }));
+
   res.json({
     query: q,
     expanded,
     senses,
     ocrSenses,
     matches,
+    explain,
     total,
     pages,
     page: safePageNum,
     limit: pageSize,
     rows,
   });
+});
+
+// ── Public evidence for one page of results ──────────────────
+// POST /api/corpus/evidence { record_ids: [...], expanded: [...] }
+// Answers "what backs this record?" for the visible rows, through the same
+// evidence gate the Translation Lab uses: reviewed translation memory,
+// published dictionary senses, attested public examples, and public corpus
+// usage — with benchmark isolation applied and an explicit
+// "not enough evidence" answer when nothing qualifies.
+app.post('/api/corpus/evidence', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const ids = Array.isArray(body.record_ids) ? body.record_ids : [];
+    const aliasForms = Array.isArray(body.expanded) ? body.expanded.slice(0, 12).map(String) : [];
+    if (!ids.length) return res.json({ evidence: {} });
+    const evidence = await PUBLIC_EVIDENCE.forRecords(ids, { aliasForms });
+    res.json({ evidence });
+  } catch (err) {
+    console.error('Public evidence failed:', err.message);
+    res.status(500).json({ error: 'Evidence unavailable' });
+  }
 });
 
 // ── Reviews ───────────────────────────────────────────────────

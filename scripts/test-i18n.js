@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:5000';
 const routes = [
-  '/', '/lab.html', '/observatory.html', '/validate.html', '/queue.html',
+  '/', '/lab.html', '/observatory.html', '/research.html', '/validate.html', '/queue.html',
   '/leaderboard.html', '/about.html', '/how-it-works.html', '/login.html',
   '/register.html', '/profile.html', '/dashboard.html',
 ];
@@ -109,7 +109,7 @@ async function main() {
         width: await page.evaluate(() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]),
         toggle: await page.locator('.lang-toggle-desktop').isVisible(),
         rawKeys: await page.locator('body').evaluate(body => body.innerText).then(text =>
-          (text.match(/\b(?:nav|search|lab|obs|queue|leaderboard|profile|dashboard|auth)\.[a-z][\w.]+/g) || [])),
+          (text.match(/\b(?:nav|search|lab|obs|research|queue|leaderboard|profile|dashboard|auth)\.[a-z][\w.]+/g) || [])),
       });
     }
     for (const result of routeResults) {

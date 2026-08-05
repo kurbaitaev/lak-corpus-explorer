@@ -73,6 +73,10 @@ let currentQuery    = '';
 let currentOcrSenses = [];
 let currentRows     = [];
 let currentMatches  = [];
+// Where each row matched, when the Lak text itself shows no highlight.
+let currentExplain  = [];
+// Public evidence per record id, filled in after the rows render.
+const evidenceCache = {};
 let openReviewId  = null;
 let hasSearchIntent = false;
 // Monotonic id of the most recently *started* search. Only the request whose id
@@ -144,7 +148,7 @@ async function search(page = 1) {
   if (source)  params.set('source', source);
   if (variety) params.set('variety', variety);
 
-  $tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
+  $tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
@@ -163,16 +167,18 @@ async function search(page = 1) {
     currentOcrSenses = data.ocrSenses || [];
     currentRows     = data.rows || [];
     currentMatches  = data.matches || [];
+    currentExplain  = data.explain || [];
 
     renderConceptCard(q, currentExpanded, currentSenses, currentOcrSenses);
-    renderResults(currentRows, currentMatches);
+    renderResults(currentRows, currentMatches, currentExplain);
     renderPagination();
+    loadEvidence(seq, currentRows, currentExpanded);
 
   } catch (err) {
     // Superseded requests (aborted or simply late) must not touch the DOM: the
     // newer request owns the loading state and will resolve it itself.
     if (seq !== searchSeq || err?.name === 'AbortError') return;
-    $tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+    $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
       <div class="icon">⚠️</div><h3>${esc(t('search.error.title', 'Search error'))}</h3><p>${esc(err.message)}</p>
     </div></td></tr>`;
   } finally {
@@ -238,9 +244,95 @@ function varietyLabel(variety) {
   return t(key, cap);
 }
 
-function renderResults(rows, matches = []) {
+// ── Match explanation ─────────────────────────────────────────
+// A record can match on its translation, source, variety or identifier rather
+// than on its Lak text. Saying so is what makes every result explainable.
+function matchChipHtml(explain, isLexicon) {
+  if (!explain || !explain.field) return '';
+  const field = String(explain.field);
+  // Field 2 of a record is a translation for lexicon rows and a translation or
+  // document title for text rows, so the label stays honest about both.
+  const key = field === 'translation' && !isLexicon ? 'translationOrDocument' : field;
+  const label = t('search.match.' + key, '');
+  if (!label) return '';
+  return `<span class="match-where" data-field="${esc(field)}">${esc(label)}</span>`;
+}
+
+// ── Public evidence on a result card ──────────────────────────
+// Rendered from /api/corpus/evidence: reviewed pairs, dictionary translations,
+// attested phrase pairs and public corpus examples — or an explicit
+// "not enough evidence" state. Never a guess.
+function evidenceItemHtml(item) {
+  const className = t('search.evidence.class.' + item.evidence_class, item.evidence_class);
+  const usageOnly = item.can_propose
+    ? ''
+    : `<span class="ev-caveat">${esc(t('search.evidence.usageOnly', 'context only — not proof of a translation'))}</span>`;
+  const ocr = item.is_ocr
+    ? `<span class="quality-badge q-ocr">${esc(t('search.badge.ocrUnreviewed', 'OCR — unreviewed'))}</span>`
+    : '';
+  const gloss = item.gloss ? `<span class="ev-gloss">${esc(item.gloss)}</span>` : '';
+  const lak = item.lak_text ? `<span class="ev-lak" lang="lbe">${esc(item.lak_text)}</span>` : '';
+  const source = item.source
+    ? `<span class="ev-chip ev-source">${esc(item.source)}</span>`
+    : '';
+  return `<li class="ev-item">
+    <span class="ev-chip ev-class ev-${esc(item.evidence_class)}">${esc(className)}</span>
+    ${lak}${lak && gloss ? '<span class="ev-arrow" aria-hidden="true">→</span>' : ''}${gloss}
+    <span class="ev-meta">${source}${ocr}${usageOnly}</span>
+  </li>`;
+}
+
+function evidenceCellHtml(recordId) {
+  const bundle = evidenceCache[recordId];
+  if (bundle === undefined) {
+    return `<span class="ev-loading">${esc(t('search.evidence.loading', 'Checking evidence…'))}</span>`;
+  }
+  if (bundle === null) {
+    return `<span class="ev-loading">${esc(t('search.evidence.unavailable', 'Evidence check unavailable'))}</span>`;
+  }
+  const confidence = bundle.confidence || 'none';
+  const head = `<span class="ev-chip ev-confidence ev-conf-${esc(confidence)}">${esc(t('search.evidence.confidence.' + confidence, confidence))}</span>` +
+    `<span class="ev-chip ev-review">${esc(t('search.evidence.review.' + (bundle.review_state || 'no_public_evidence'), bundle.review_state || ''))}</span>`;
+  if (bundle.status !== 'ok' || !bundle.evidence || !bundle.evidence.length) {
+    return `<div class="ev-block ev-empty">${head}
+      <p class="ev-none">${esc(t('search.evidence.none.body',
+        'No dictionary entry, reviewed pair or public example backs this record yet.'))}</p></div>`;
+  }
+  return `<div class="ev-block">${head}
+    <ul class="ev-list">${bundle.evidence.slice(0, 3).map(evidenceItemHtml).join('')}</ul></div>`;
+}
+
+// Fill the evidence cells of the rows that are already on screen. The search
+// sequence guard applies here too: a superseded page never paints.
+function paintEvidence(rows) {
+  for (const r of rows) {
+    const recordId = r[5];
+    if (!recordId) continue;
+    const cell = document.querySelector(`tr[data-record="${CSS.escape(recordId)}"] .td-evidence`);
+    if (cell) cell.innerHTML = evidenceCellHtml(recordId);
+  }
+}
+
+async function loadEvidence(seq, rows, expanded) {
+  const ids = rows.map(r => r[5]).filter(Boolean);
+  if (!ids.length) return;
+  let bundles = null;
+  try {
+    const res = await fetch('/api/corpus/evidence', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ record_ids: ids, expanded: expanded || [] }),
+    });
+    if (res.ok) bundles = (await res.json()).evidence || {};
+  } catch { bundles = null; }
+  // A newer search owns the table now — its own request will paint it.
+  if (seq !== searchSeq) return;
+  for (const id of ids) evidenceCache[id] = bundles ? (bundles[id] || null) : null;
+  paintEvidence(rows);
+}
+
+function renderResults(rows, matches = [], explain = []) {
   if (!rows.length) {
-    $tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+    $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
       <div class="icon">🔍</div><h3>${esc(t('search.empty.title', 'No records match'))}</h3>
       <p>${esc(t('search.empty.body', 'Try a different query, or clear the filters above.'))}</p>
     </div></td></tr>`;
@@ -265,16 +357,27 @@ function renderResults(rows, matches = []) {
       ? ` <span class="help-marker" data-help="help.pcmlbe" data-help-fallback="PCMLBE is the Pangloss Collection metadata and archive source used for this record."></span>`
       : '';
 
+    // Where the match happened, when the Lak text carries no highlight.
+    const where = explain[i] || null;
+    const whereChip = matchChipHtml(where, isLexicon);
+    const translationHtml = where && where.field === 'translation' && where.spans && where.spans.length
+      ? highlightSpans(meaning, where.spans)
+      : esc(translation);
+    const documentHtml = where && where.field === 'translation' && where.spans && where.spans.length && !isLexicon
+      ? highlightSpans(documentId, where.spans)
+      : esc(documentId);
+
     return `<tr data-record="${esc(recordId)}">
       <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}">${typeTag}</td>
-      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span></td>
-      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${esc(translation)}</td>
+      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${highlightSpans(lak, matches[i])}</span>${whereChip}</td>
+      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${isLexicon ? translationHtml : esc(translation)}</td>
       <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}">
-        <span>${esc(documentId)}</span>
+        <span>${documentHtml}</span>
         <span class="record-meta">${esc(t('search.results.recordId', 'Record ID'))}: ${esc(recordId)}</span>
       </td>
       <td data-label="${esc(t('search.col.source', 'Source'))}">${sourceCell}${sourceHelp}</td>
       <td data-label="${esc(t('search.col.variety', 'Variety'))}">${esc(varietyLabel(variety))}</td>
+      <td class="td-evidence" data-label="${esc(t('search.col.evidence', 'Evidence'))}">${evidenceCellHtml(recordId)}</td>
       <td class="td-actions"><a class="btn btn-sm btn-primary" href="/validate.html?record=${encodeURIComponent(recordId)}">${esc(t('search.results.validateAction', 'Check translation'))}</a></td>
     </tr>`;
   }).join('');
@@ -324,7 +427,7 @@ window.toggleReview = function(btn) {
   const panelRow = document.createElement('tr');
   panelRow.className = 'review-row';
   panelRow.innerHTML = `
-    <td colspan="6">
+    <td colspan="8">
       <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;">
         ${esc(t('search.review.heading', 'Review'))} — <span style="font-family:var(--font-mono);font-weight:400;">${esc(recordId)}</span>
       </div>
@@ -405,7 +508,7 @@ function relocalize() {
   renderStats();
     if (hasSearchIntent) {
     renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
-    renderResults(currentRows, currentMatches);
+    renderResults(currentRows, currentMatches, currentExplain);
     renderPagination();
     const ids = currentRows.map(r => r[5]).filter(Boolean);
     if (ids.length) updateBadges(currentRows, reviewCache);

@@ -7,4 +7,5 @@
 - [Post-merge stale process](post-merge-stale-process.md) — "merge didn't land" is usually a pre-merge server process; restart first, and read real route paths before probing them.
 - [Private package storage](private-v12-package-runtime.md) — archives live in persistent storage; `private/` is a disposable cache restored on boot, never reconstructed from counts.
 - [No Object Storage bucket](object-storage-unavailable.md) — none available in this repl; private blobs go to Postgres behind a pluggable backend. Check before assuming.
+- [Desktop nav width budget](nav-width-budget.md) — the top nav is full at 1280px; a new entry needs a short *Russian* label (longest word wins), measured not guessed.
 - [Search in-flight races](search-ux-test-flake.md) — supersede in-flight searches, never drop the newer one; in browser tests a response landing is not yet a render.

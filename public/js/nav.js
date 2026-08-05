@@ -167,6 +167,16 @@
       links.insertBefore(observatory, validate || links.firstChild);
     }
 
+    if (!links.querySelector('a[href="/research.html"]')) {
+      var research = document.createElement('a');
+      research.className = 'nav-link';
+      research.href = '/research.html';
+      research.setAttribute('data-i18n', 'nav.research');
+      research.textContent = tr('nav.research', 'Research update');
+      var beforeObservatory = links.querySelector('a[href="/observatory.html"]');
+      links.insertBefore(research, beforeObservatory || links.firstChild);
+    }
+
     if (!links.querySelector('a[href="/lab.html"]')) {
       var lab = document.createElement('a');
       lab.className = 'nav-link';

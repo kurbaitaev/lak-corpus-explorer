@@ -88,7 +88,9 @@ module.exports = function createLabRouter(deps) {
   // The ONE gate every answer path goes through: corpus retrieval + reviewed
   // translation memory, with held-out benchmark isolation applied once, here.
   // No route may call `retriever` directly.
-  const gate = labMemory.createEvidenceGate({ pool, retriever, norm });
+  // The server may pass a shared gate so the public result cards and the Lab
+  // answer from the same evidence rules and the same caches.
+  const gate = deps.gate || labMemory.createEvidenceGate({ pool, retriever, norm });
 
   const audit = (req, eventType, targetType, targetId, payload) => {
     const id = req.identity || auth.getIdentity(req) || { type: 'system', id: null, name: null };

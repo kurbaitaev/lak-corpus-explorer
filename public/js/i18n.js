@@ -54,6 +54,7 @@
     'nav.brand.explorer': { en: 'Explorer', ru: 'Обозреватель' },
     'nav.search': { en: 'Search', ru: 'Поиск' },
     'nav.observatory': { en: 'Resource guide', ru: 'Каталог материалов' },
+    'nav.research': { en: 'Research update', ru: 'Что нового' },
     'nav.lab': { en: 'Translation workspace', ru: 'Работа с переводами' },
     'nav.lab.short': { en: 'Workspace', ru: 'Переводы' },
     'nav.validate': { en: 'Check translations', ru: 'Проверить переводы' },
@@ -131,6 +132,17 @@
     'index.col.source': { en: 'Source', ru: 'Источник' },
     'index.col.variety': { en: 'Lak variety', ru: 'Вариант лакского' },
     'index.col.review': { en: 'Check translation', ru: 'Проверить перевод' },
+    'index.col.evidence': { en: 'Evidence', ru: 'Основания' },
+    'index.research.kicker': { en: 'Research update', ru: 'Ход исследования' },
+    'index.research.title': {
+      en: 'A new batch of sources was audited — and none of it was added to this corpus',
+      ru: 'Новая партия источников прошла проверку — и ничего из неё не добавлено в корпус'
+    },
+    'index.research.body': {
+      en: 'See what the audit counted, how parallel Lak and Russian versions of the same work are found, and what has to happen before any of it can become public.',
+      ru: 'Посмотрите, что подсчитал аудит, как находят параллельные лакские и русские версии одного произведения и что должно произойти, прежде чем это станет публичным.'
+    },
+    'index.research.cta': { en: 'Read the research update →', ru: 'Читать обновление исследования →' },
 
     /* ── observatory.html ────────────────────────────────────── */
     'obs.meta.title': {
@@ -269,6 +281,144 @@
     'obs.view.acquisition': { en: 'Acquisition leads', ru: 'Наводки по приобретению' },
     'obs.view.contact': { en: 'Contact priorities', ru: 'Приоритеты для контакта' },
     'obs.loading': { en: 'Loading resources', ru: 'Загрузка ресурсов' },
+
+    /* ── research.html (public research update) ──────────────── */
+    'research.meta.title': { en: 'Research update · Lak Corpus Explorer', ru: 'Ход исследования · Обозреватель лакского корпуса' },
+    'research.kicker': { en: 'Research update · what changed', ru: 'Ход исследования · что изменилось' },
+    'research.h1': { en: 'What changed in this research round', ru: 'Что изменилось в этом этапе исследования' },
+    'research.intro': {
+      en: 'A new batch of source materials was audited, extracted and routed into a <strong>private research layer</strong>. Nothing on this page was added to the public corpus: these are counted candidates awaiting rights clearance and expert review.',
+      ru: 'Новая партия исходных материалов прошла проверку, извлечение и была направлена в <strong>закрытый исследовательский слой</strong>. Ничего с этой страницы не добавлено в публичный корпус: это подсчитанные кандидаты, ожидающие урегулирования прав и экспертной проверки.'
+    },
+    'research.method': {
+      en: '<strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.',
+      ru: '<strong>Как читать эти числа.</strong> «По аудиту» — то, что зафиксировала проверка источников. «Загружено» — то, что действительно прошло машинную верификацию и попало в закрытый слой. Они показаны отдельно, и число остаётся только числом: ни отрывок, ни имя файла, ни извлечённая строка здесь не публикуются.'
+    },
+    'research.statsLabel': { en: 'Audited research aggregates', ru: 'Сводные показатели аудита' },
+    'research.publicLabel': { en: 'Public corpus unchanged', ru: 'Публичный корпус без изменений' },
+    'research.workflowLabel': { en: 'Discovery and review workflow', ru: 'Порядок поиска и проверки' },
+    'research.familiesLabel': { en: 'Source families', ru: 'Группы источников' },
+    'research.gateLabel': { en: 'Before anything becomes public', ru: 'Прежде чем что-либо станет публичным' },
+    'research.loading': { en: 'Loading the research update…', ru: 'Загрузка обновления исследования…' },
+    'research.value.unknown': { en: 'not counted yet', ru: 'пока не подсчитано' },
+    'research.stat.sourceRoutes': { en: 'Files audited', ru: 'Проверено файлов' },
+    'research.stat.rightsReviews': { en: 'Substantive materials', ru: 'Содержательных материалов' },
+    'research.stat.extractions': { en: 'Usable extractions', ru: 'Пригодных извлечений' },
+    'research.stat.lexiconLines': { en: 'Lexicon candidate lines', ru: 'Строк — кандидатов в словарь' },
+    'research.stat.textBlocks': { en: 'Text blocks', ru: 'Текстовых блоков' },
+    'research.stat.grammarExamples': { en: 'Grammar-example candidates', ru: 'Кандидатов в грамматические примеры' },
+    'research.stat.referenceRecords': { en: 'Reference records', ru: 'Справочных записей' },
+    'research.public.h2': { en: 'The public corpus did not change', ru: 'Публичный корпус не изменился' },
+    'research.public.body': {
+      en: 'Everything counted above lives in the private research layer. It is not searchable on this site, not exported, and not used for training.',
+      ru: 'Всё, что подсчитано выше, находится в закрытом исследовательском слое. Это не ищется на сайте, не выгружается и не используется для обучения моделей.'
+    },
+    'research.public.corpusRecords': { en: 'Public corpus records', ru: 'Записей в публичном корпусе' },
+    'research.public.corpusRecordsNote': { en: 'unchanged by this research round', ru: 'этот этап их не изменил' },
+    'research.public.observatory': { en: 'Resource guide entries', ru: 'Записей в каталоге материалов' },
+    'research.public.observatoryNote': { en: 'counted separately from the corpus', ru: 'считаются отдельно от корпуса' },
+    'research.public.added': { en: 'Records added to the public corpus', ru: 'Записей добавлено в публичный корпус' },
+    'research.public.addedNote': { en: 'every candidate stays private', ru: 'все кандидаты остаются закрытыми' },
+    'research.public.searchable': { en: 'Private candidates searchable here', ru: 'Закрытых кандидатов доступно для поиска' },
+    'research.public.searchableNote': { en: 'excluded from search and exports', ru: 'исключены из поиска и выгрузок' },
+    'research.verify.verified': { en: 'Package verified', ru: 'Пакет проверен' },
+    'research.verify.blocked': { en: 'Package blocked — nothing staged', ru: 'Пакет заблокирован — ничего не загружено' },
+    'research.verify.preparing': { en: 'Verification in progress', ru: 'Идёт проверка' },
+    'research.verify.countsMatch': { en: 'Staged counts match the audit', ru: 'Загруженные числа совпадают с аудитом' },
+    'research.verify.countsUnconfirmed': { en: 'Staged counts not confirmed against the audit', ru: 'Загруженные числа не подтверждены аудитом' },
+    'research.table.measure': { en: 'Measure', ru: 'Показатель' },
+    'research.table.audited': { en: 'Audited', ru: 'По аудиту' },
+    'research.table.staged': { en: 'Staged', ru: 'Загружено' },
+    'research.table.none': {
+      en: 'Nothing has been staged yet, so only the audited expectations are shown.',
+      ru: 'Пока ничего не загружено, поэтому показаны только ожидаемые числа из аудита.'
+    },
+    'research.workflow.h2': { en: 'How parallel sources are found — and what happens next', ru: 'Как находят параллельные источники и что происходит дальше' },
+    'research.workflow.intro': {
+      en: 'Some of these materials appear to exist in more than one version: the same work in Lak and in Russian, in Cyrillic and in Latin script, or as a recording with a transcription. A pair of versions is a <strong>lead, not a translation</strong>: two files sitting next to each other is not proof that their sentences correspond.',
+      ru: 'Часть этих материалов, судя по всему, существует в нескольких версиях: одно и то же произведение на лакском и на русском, кириллицей и латиницей, или запись вместе с расшифровкой. Пара версий — это <strong>наводка, а не перевод</strong>: соседство двух файлов не доказывает, что их предложения соответствуют друг другу.'
+    },
+    'research.step.discover.title': { en: 'Spot the versions', ru: 'Заметить версии' },
+    'research.step.discover.body': {
+      en: 'Audited files are grouped into families when the same work appears more than once — two languages, two scripts, two editions, or a recording with its transcription.',
+      ru: 'Проверенные файлы объединяются в группы, когда одно произведение встречается несколько раз: два языка, две графики, два издания или запись вместе с расшифровкой.'
+    },
+    'research.step.route.title': { en: 'Route, never merge', ru: 'Направить, но не сливать' },
+    'research.step.route.body': {
+      en: 'Each file is routed to a private candidate layer with its rights state attached. Nothing is merged into the corpus, and a duplicate is only ever linked as corroboration.',
+      ru: 'Каждый файл направляется в закрытый слой кандидатов вместе со статусом прав. Ничего не сливается с корпусом, а дубликат лишь связывается как подтверждение.'
+    },
+    'research.step.pair.title': { en: 'Human pairing', ru: 'Сопоставление человеком' },
+    'research.step.pair.body': {
+      en: 'A person decides which passages actually correspond. Proximity of filenames is not evidence of sentence equivalence, so no automatic alignment is trusted.',
+      ru: 'Человек решает, какие отрывки действительно соответствуют друг другу. Похожие имена файлов не доказывают равенство предложений, поэтому автоматическому сопоставлению не доверяют.'
+    },
+    'research.step.review.title': { en: 'Expert review and rights', ru: 'Экспертная проверка и права' },
+    'research.step.review.body': {
+      en: 'A pair becomes usable only after an expert approves it and the rights holder has cleared the source. Only then can it reach a public surface.',
+      ru: 'Пара становится пригодной только после утверждения экспертом и разрешения правообладателя. Лишь тогда она может попасть на публичные страницы.'
+    },
+    'research.families.h2': { en: 'Strongest alignment opportunities', ru: 'Наиболее перспективные группы для сопоставления' },
+    'research.families.intro': {
+      en: 'These are the source families most likely to yield aligned Lak–Russian material once permission and review are settled. Each card shows <strong>metadata only</strong> — how many files the family holds, how the versions were spotted, and what still has to happen. No passage, title page or extracted line from these materials appears on any public page.',
+      ru: 'Это группы источников, которые скорее всего дадут сопоставленный лакско-русский материал, когда будут получены разрешения и пройдена проверка. Каждая карточка показывает <strong>только метаданные</strong>: сколько файлов в группе, как были замечены версии и что ещё предстоит сделать. Ни отрывок, ни титульный лист, ни извлечённая строка из этих материалов не публикуются.'
+    },
+    'research.families.empty.title': { en: 'No source families to show yet', ru: 'Пока нет групп источников' },
+    'research.families.empty.body': { en: 'Families appear here once a package has been verified.', ru: 'Группы появятся здесь после проверки пакета.' },
+    'research.family.lak_russian_epics': { en: 'Lak and Russian epic versions', ru: 'Эпос: лакские и русские версии' },
+    'research.family.ttul_daghustan': { en: 'Gamzatov — Ttul Daghustan versions', ru: 'Гамзатов — версии «Ттул Дагъусттан»' },
+    'research.family.authier_tales': { en: 'Authier — Lak tales in Cyrillic and Latin', ru: 'Отье — лакские сказки кириллицей и латиницей' },
+    'research.family.tolstoy_versions': { en: 'Tolstoy in Lak — Cyrillic and Latin versions', ru: 'Толстой на лакском — версии кириллицей и латиницей' },
+    'research.family.lorca': { en: 'García Lorca — Lak and Russian versions', ru: 'Гарсиа Лорка — лакская и русская версии' },
+    'research.family.eleonora_materials': { en: 'Eleonora — transcription and translation material', ru: 'Материалы Элеоноры — расшифровки и переводы' },
+    'research.family.war_pilot': { en: 'War — Russian/Lak pilot set', ru: '«Война» — пилотный русско-лакский набор' },
+    'research.familyKind.parallel_language_versions': { en: 'Two languages, one work', ru: 'Два языка, одно произведение' },
+    'research.familyKind.edition_versions': { en: 'Several editions of one work', ru: 'Несколько изданий одного произведения' },
+    'research.familyKind.script_versions': { en: 'Two scripts, one text', ru: 'Две графики, один текст' },
+    'research.familyKind.translated_work_versions': { en: 'Translated work in several versions', ru: 'Переводное произведение в нескольких версиях' },
+    'research.familyKind.fieldwork_transcription': { en: 'Fieldwork material with transcription', ru: 'Полевой материал с расшифровкой' },
+    'research.method.paired_language_files': { en: 'Spotted as paired language files', ru: 'Замечено как парные языковые файлы' },
+    'research.method.multiple_editions_of_one_work': { en: 'Spotted as repeated editions', ru: 'Замечено как повторяющиеся издания' },
+    'research.method.cyrillic_latin_script_pair': { en: 'Spotted as a Cyrillic/Latin pair', ru: 'Замечено как пара кириллица/латиница' },
+    'research.method.translated_work_version_set': { en: 'Spotted as versions of a translated work', ru: 'Замечено как версии переводного произведения' },
+    'research.method.transcription_translation_pair': { en: 'Spotted as transcription with translation', ru: 'Замечено как расшифровка с переводом' },
+    'research.route.private_text_segments': { en: 'Held as private text candidates', ru: 'Хранится как закрытые текстовые кандидаты' },
+    'research.status.unreviewed_alignment_candidate': { en: 'Alignment candidate — unreviewed', ru: 'Кандидат на сопоставление — не проверено' },
+    'research.rights.permission_pending': { en: 'Permission pending', ru: 'Разрешение ожидается' },
+    'research.access.private_research': { en: 'Private research', ru: 'Закрытое исследование' },
+    'research.family.files': { en: '{count} files in this family', ru: '{count} файлов в этой группе' },
+    'research.family.candidateFiles': { en: '{count} produced candidates', ru: '{count} дали кандидатов' },
+    'research.family.countsPending': { en: 'File counts pending verification', ru: 'Подсчёт файлов ждёт проверки' },
+    'research.family.before': { en: 'Before anything here becomes public', ru: 'Прежде чем это станет публичным' },
+    'research.family.noContent': {
+      en: 'Metadata only — no passage, page image or extracted line from this family is published.',
+      ru: 'Только метаданные: ни отрывок, ни изображение страницы, ни извлечённая строка из этой группы не публикуются.'
+    },
+    'research.blocking.rights_clearance': { en: 'Rights clearance', ru: 'Урегулирование прав' },
+    'research.blocking.human_pairing_map': { en: 'Human pairing map', ru: 'Сопоставление, сделанное человеком' },
+    'research.blocking.expert_review': { en: 'Expert review', ru: 'Экспертная проверка' },
+    'research.blockingBody.rights_clearance': {
+      en: '— the rights holder has to agree, in writing, to publication and reuse.',
+      ru: '— правообладатель должен письменно согласиться на публикацию и повторное использование.'
+    },
+    'research.blockingBody.human_pairing_map': {
+      en: '— a person has to record which passages correspond, passage by passage.',
+      ru: '— человек должен зафиксировать, какие отрывки соответствуют друг другу, отрывок за отрывком.'
+    },
+    'research.blockingBody.expert_review': {
+      en: '— an expert has to approve each pair before it counts as evidence.',
+      ru: '— эксперт должен утвердить каждую пару, прежде чем она станет доказательством.'
+    },
+    'research.gate.h2': { en: 'Before any of this could become public', ru: 'Прежде чем что-либо из этого станет публичным' },
+    'research.gate.footer': {
+      en: 'Until every step is complete for a given source, its material stays private: not searchable, not published, not exported, and not used for training. The public corpus grows only through material that is already clear to publish.',
+      ru: 'Пока для источника не пройдены все шаги, его материал остаётся закрытым: не ищется, не публикуется, не выгружается и не используется для обучения. Публичный корпус пополняется только тем, что уже разрешено публиковать.'
+    },
+    'research.error.title': { en: 'The research summary could not be loaded', ru: 'Не удалось загрузить сводку исследования' },
+    'research.error.body': {
+      en: 'Nothing is missing from the corpus — only this summary is unavailable. Please try again later.',
+      ru: 'С корпусом всё в порядке — недоступна только эта сводка. Пожалуйста, попробуйте позже.'
+    },
 
     /* ── about.html ──────────────────────────────────────────── */
     'about.meta.title': { en: 'About & Research — Lak Corpus Explorer', ru: 'О проекте и исследованиях — Обозреватель лакского корпуса' },
@@ -869,6 +1019,36 @@
     'search.col.source': { en: 'Source', ru: 'Источник' },
     'search.col.variety': { en: 'Lak variety', ru: 'Вариант лакского' },
     'search.action.review': { en: 'Check translation', ru: 'Проверить перевод' },
+    'search.col.evidence': { en: 'Evidence', ru: 'Основания' },
+    /* Why a record appeared: the field the query actually matched. */
+    'search.match.lak': { en: 'Matched in the Lak text', ru: 'Совпадение в лакском тексте' },
+    'search.match.translation': { en: 'Matched in the translation', ru: 'Совпадение в переводе' },
+    'search.match.translationOrDocument': { en: 'Matched in the translation or document title', ru: 'Совпадение в переводе или названии документа' },
+    'search.match.source': { en: 'Matched in the source name', ru: 'Совпадение в названии источника' },
+    'search.match.variety': { en: 'Matched in the Lak variety', ru: 'Совпадение в варианте лакского' },
+    'search.match.record_id': { en: 'Matched in the record ID', ru: 'Совпадение в идентификаторе записи' },
+    'search.match.alias': { en: 'Matched through a dictionary form', ru: 'Совпадение через словарную форму' },
+    /* Public evidence shown on a result card. */
+    'search.evidence.loading': { en: 'Checking evidence…', ru: 'Проверка оснований…' },
+    'search.evidence.unavailable': { en: 'Evidence check unavailable', ru: 'Проверка оснований недоступна' },
+    'search.evidence.none.title': { en: 'Not enough evidence', ru: 'Недостаточно оснований' },
+    'search.evidence.none.body': {
+      en: 'No dictionary entry, reviewed pair or public example backs this record yet.',
+      ru: 'Пока нет ни словарной статьи, ни проверенной пары, ни публичного примера, подтверждающих эту запись.'
+    },
+    'search.evidence.confidence.high': { en: 'Reviewed evidence', ru: 'Проверенные основания' },
+    'search.evidence.confidence.medium': { en: 'Published evidence', ru: 'Опубликованные основания' },
+    'search.evidence.confidence.low': { en: 'Weak evidence', ru: 'Слабые основания' },
+    'search.evidence.confidence.none': { en: 'Not enough evidence', ru: 'Недостаточно оснований' },
+    'search.evidence.review.expert_approved': { en: 'Expert-approved', ru: 'Утверждено экспертом' },
+    'search.evidence.review.published_source': { en: 'Published source', ru: 'Опубликованный источник' },
+    'search.evidence.review.unreviewed_usage': { en: 'Unreviewed usage', ru: 'Непроверенное употребление' },
+    'search.evidence.review.no_public_evidence': { en: 'No public evidence', ru: 'Публичных оснований нет' },
+    'search.evidence.class.approved_parallel_pair': { en: 'Approved pair', ru: 'Утверждённая пара' },
+    'search.evidence.class.direct_dictionary': { en: 'Dictionary translation', ru: 'Словарный перевод' },
+    'search.evidence.class.attested_public_example': { en: 'Attested phrase pair', ru: 'Засвидетельствованная пара фраз' },
+    'search.evidence.class.usage_support_only': { en: 'Public corpus example', ru: 'Пример из публичного корпуса' },
+    'search.evidence.usageOnly': { en: 'context only — not proof of a translation', ru: 'только контекст — не доказательство перевода' },
     'search.review.heading': { en: 'Check translation', ru: 'Проверить перевод' },
     'search.review.correctionLabel': { en: 'Correction (optional)', ru: 'Исправление (необязательно)' },
     'search.review.correctionPlaceholder': { en: 'Corrected Lak text or translation…', ru: 'Исправленный лакский текст или перевод…' },
@@ -1561,6 +1741,14 @@
     'help.privateResearchLayer': {
       en: 'Some materials are kept aside as private research leads instead of being added to the corpus. They are not searchable, not published, and not used to train anything until a person has checked them and the rights are clear. This panel shows the counts and the current state, never the material itself.',
       ru: 'Часть материалов хранится отдельно как закрытые исследовательские наводки и не добавляется в корпус. Они не участвуют в поиске, не публикуются и не используются для обучения, пока их не проверит человек и не будут урегулированы права. Здесь показаны только количества и текущее состояние, но не сами материалы.'
+    },
+    'help.researchUpdate': {
+      en: 'This page reports what the latest source audit found: how many files were checked and what could be extracted from them. The materials themselves stay private until the rights are clear and a person has reviewed them, so only counts and states are shown here.',
+      ru: 'На этой странице показано, что нашла последняя проверка источников: сколько файлов проверено и что удалось из них извлечь. Сами материалы остаются закрытыми, пока не урегулированы права и их не проверил человек, поэтому здесь показаны только количества и состояния.'
+    },
+    'help.publicEvidence': {
+      en: 'Evidence shows what publicly backs a record: a dictionary translation, a pair an expert approved, or an example from the public corpus. Corpus examples give context but do not prove a translation, and when nothing qualifies the card says there is not enough evidence.',
+      ru: '«Основания» показывают, что публично подтверждает запись: словарный перевод, пара, утверждённая экспертом, или пример из публичного корпуса. Примеры из корпуса дают контекст, но не доказывают перевод; если ничего не подходит, карточка прямо сообщает, что оснований недостаточно.'
     }
   };
 
