@@ -24,6 +24,7 @@ let CORPUS_ALIASES = {};
 function loadCorpus() {
   const dataPath = path.join(__dirname, 'data/corpus-data.json');
   const metaPath = path.join(__dirname, 'data/corpus-meta.json');
+  const pcmlbeParallelPath = path.join(__dirname, 'public/data/pcmlbe-parallel.json');
 
   // Data files are generated (gitignored). If missing, rebuild them from
   // the canonical index.html via the extraction script.
@@ -47,6 +48,27 @@ function loadCorpus() {
     const meta  = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
     CORPUS_STATS   = meta.stats;
     CORPUS_ALIASES = meta.aliases;
+    // Restore fields that the original flat export discarded. The first seven
+    // columns stay backward compatible; appended columns are:
+    // [7] Lak Cyrillic parallel, [8] English translation, [9] license,
+    // [10] persistent collection identifier.
+    if (fs.existsSync(pcmlbeParallelPath)) {
+      const parallels = JSON.parse(fs.readFileSync(pcmlbeParallelPath, 'utf-8'));
+      const byId = new Map(parallels.map(item => [item.record_id, item]));
+      let enriched = 0;
+      CORPUS_DATA = CORPUS_DATA.map(row => {
+        const item = byId.get(row[5]);
+        if (!item) return row;
+        enriched += 1;
+        return [...row.slice(0, 7), item.lak_cyrillic, item.translation_en,
+          item.license, item.persistent_id];
+      });
+      if (enriched !== parallels.length) {
+        throw new Error(`PCMLBE parallel overlay matched ${enriched}/${parallels.length} records`);
+      }
+      CORPUS_STATS.pcmlbe_parallel_en = enriched;
+      CORPUS_STATS.pcmlbe_parallel_cyrillic = parallels.filter(item => item.lak_cyrillic).length;
+    }
     console.log(`Corpus loaded: ${CORPUS_DATA.length} records`);
   } catch (err) {
     console.error('FATAL: failed to load corpus data:', err.message);
@@ -453,7 +475,10 @@ app.get('/api/research/update', (req, res) => {
 // ── Corpus search ─────────────────────────────────────────────
 // Canonical names for the searchable fields, so a client can say WHERE a
 // record matched. The values are language-neutral; the UI localises them.
-const MATCH_FIELD_NAMES = { 1: 'lak', 2: 'translation', 3: 'source', 4: 'variety', 5: 'record_id' };
+const MATCH_FIELD_NAMES = {
+  1: 'lak', 2: 'translation', 3: 'source', 4: 'variety', 5: 'record_id',
+  7: 'lak_cyrillic', 8: 'translation',
+};
 
 // Explain a hit whose Lak text carries no visible highlight: the match was in
 // the translation, the source, the variety or the identifier — or the query
@@ -464,8 +489,8 @@ function explainMatch(record, { currentQ, queryTokens, normForms, lakSpans }) {
   const fields = normForms.length ? META_FIELDS : QUERY_FIELDS;
   for (const index of fields) {
     if (fieldMatchTier(record[index], currentQ, queryTokens) === NO_MATCH) continue;
-    const spans = index === 2
-      ? highlightSpansFor(record[2], { phrase: currentQ, queryTokens, aliasForms: [] })
+    const spans = index === 2 || index === 7 || index === 8
+      ? highlightSpansFor(record[index], { phrase: currentQ, queryTokens, aliasForms: [] })
       : [];
     return { field: MATCH_FIELD_NAMES[index], spans };
   }

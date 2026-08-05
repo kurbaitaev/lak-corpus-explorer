@@ -492,7 +492,8 @@ async function main() {
   check('every source family is reported as private and unreviewed',
     update.families.length === update.family_count && update.families.length >= 7 &&
     update.families.every(f => f.is_public === false && f.access_status === 'private_research' &&
-      f.review_status === 'unreviewed_alignment_candidate' && f.blocking_steps.length === 3),
+      f.rights_status === 'permission_granted' &&
+      f.review_status === 'unreviewed_alignment_candidate' && f.blocking_steps.length === 2),
     update.families.map(f => [f.id, f.is_public, f.files]));
 
   console.log(`\n=== ${passed} passed, ${failed} failed ===`);
