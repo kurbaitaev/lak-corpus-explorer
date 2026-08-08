@@ -127,7 +127,8 @@ module.exports = function createCorpusV2Router({ pool }) {
            JOIN corpus_sources s ON s.id=d.source_id
           WHERE ${PUBLIC_SOURCE} ${predicate}
           GROUP BY l.id
-          ORDER BY l.normalized_form, l.id
+          ORDER BY CASE WHEN l.normalized_form ~ '[A-Za-zА-Яа-яЁёӀӏ]' THEN 0 ELSE 1 END,
+                   l.normalized_form, l.id
           LIMIT ${limitParam} OFFSET ${offsetParam}`,
         params);
       const total = result.rows[0]?.total || 0;
