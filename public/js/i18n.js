@@ -2596,7 +2596,7 @@
       en: 'Word forms are being derived from the research batch — {done} of {total} steps are done. Reload in a moment.',
       ru: 'Словоформы выводятся из исследовательской подборки — готово {done} из {total} шагов. Обновите страницу чуть позже.'
     },
-    'wf.stat.forms': { en: 'Published word forms', ru: 'Опубликованных словоформ' },
+    'wf.stat.forms': { en: 'Searchable word forms', ru: 'Словоформ в поиске' },
     'wf.stat.threshold': { en: 'Sources needed to publish a form', ru: 'Источников нужно для публикации формы' },
     'wf.stat.thresholdValue': { en: '2+', ru: '2+' },
     'wf.detail.kicker': { en: 'Word-form evidence', ru: 'Сведения о словоформе' },
