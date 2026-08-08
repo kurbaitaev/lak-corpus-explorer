@@ -239,7 +239,10 @@ async function search(page = 1) {
     const endpoint = currentMode === 'general'
       ? '/api/corpus/search'
       : browseLemmas ? '/api/corpus/v2/lemmas' : '/api/corpus/v2/search';
-    const res  = await fetch(`${endpoint}?${params}`, controller ? { signal: controller.signal } : undefined);
+    const res  = await fetch(`${endpoint}?${params}`, {
+      cache: 'no-store',
+      ...(controller ? { signal: controller.signal } : {}),
+    });
     if (!res.ok) throw new Error(t('search.error.failed', 'Search failed'));
     const data = await res.json();
     // A newer search started while this one was resolving — discard it whole.
