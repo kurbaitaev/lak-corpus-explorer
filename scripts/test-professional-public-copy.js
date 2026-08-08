@@ -41,4 +41,8 @@ assert(!research.includes('research.permission.credit'), 'personal acknowledgeme
 const nav = read('public/js/nav.js');
 assert(nav.includes("var primaryOrder = ['/', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];"), 'primary navigation order changed');
 
+const i18n = read('public/js/i18n.js');
+assert(i18n.includes("'nav.brand.name': { en: 'Lak Corpus', ru: 'Корпус лакского языка' }"), 'Russian brand label changed');
+assert(!i18n.includes("ru: 'Обозреватель'"), 'awkward Russian brand label returned');
+
 console.log('professional public copy and navigation checks passed');
