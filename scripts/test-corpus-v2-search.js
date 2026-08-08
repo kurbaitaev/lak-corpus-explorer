@@ -22,7 +22,7 @@ assert(routeSource.includes("p.access_status='authenticated'"), 'proposal queue 
 assert(routeSource.includes("router.get('/api/corpus/v2/lemmas'"), 'public lemma index endpoint missing');
 assert(routeSource.includes('attested_forms') && routeSource.includes('corpus_wordform_lemma_relations'), 'lemma index must report source-backed and corpus forms');
 assert(routeSource.includes('${PUBLIC_SOURCE}') && routeSource.includes('${PUBLIC_SOURCE_SRC}'), 'public corpus and dictionary queries must enforce source rights');
-assert(routeSource.includes("l.normalized_form ~ '^[А-Яа-яЁёӀӏ]'"), 'Cyrillic Lak lemmas must be prioritized in public browse');
+assert(routeSource.includes("normalized_form ~ '^[А-Яа-яЁёӀӏ]'"), 'Cyrillic Lak lemmas must be prioritized in public browse');
 assert(routeSource.includes("version: 'lemma-index-v2'") && routeSource.includes("res.set('Cache-Control', 'no-store')"),
   'lemma index must expose its release and disable stale caching');
 
