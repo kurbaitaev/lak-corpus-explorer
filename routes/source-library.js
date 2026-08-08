@@ -137,6 +137,15 @@ function concordanceQuality(snippet, form, knownRussian) {
   return score;
 }
 
+function containsKnownRussianContext(text, terms, form) {
+  const wanted = String(form || '').toLowerCase().replace(/ё/g, 'е');
+  const words = String(text || '').toLowerCase().match(/[а-яё]+/g) || [];
+  return words.some(word => {
+    const normalized = word.replace(/ё/g, 'е');
+    return normalized !== wanted && terms.has(normalized);
+  });
+}
+
 function concordanceSnippets(text, form, max = 4, options = {}) {
   const source = String(text || '').replace(/\s+/g, ' ').trim();
   const query = String(form || '').normalize('NFKC').toLowerCase();
@@ -162,6 +171,18 @@ function concordanceSnippets(text, form, max = 4, options = {}) {
         if (rightCandidates.length) {
           const boundary = Math.min(...rightCandidates);
           if (boundary - at <= 130) end = boundary;
+        }
+        if (options.stopTerms && end > at + query.length) {
+          const tail = source.slice(at + query.length, end);
+          const words = tail.matchAll(/[А-Яа-яЁё]+/g);
+          for (const match of words) {
+            const normalized = match[0].toLowerCase().replace(/ё/g, 'е');
+            const between = tail.slice(0, match.index);
+            if (options.stopTerms.has(normalized) && /[А-Яа-яЁё]/.test(between)) {
+              end = at + query.length + match.index;
+              break;
+            }
+          }
         }
       }
       let snippet = source.slice(start, end).trim();
@@ -456,7 +477,9 @@ module.exports = ({ pool, packageDir, knownRussianTerms = new Set() }) => {
         [sequences, derivation.FORM_SOURCE_LAYERS, form]) : { rows: [] };
 
       const contextsBySource = new Map();
-      const knownRussian = knownRussianTerms.has(form);
+      const knownRussian = knownRussianTerms.has(form) || candidates.rows.some(candidate =>
+        candidate.layer === 'private_lexicon_lines' &&
+        containsKnownRussianContext(candidate.text, knownRussianTerms, form));
       for (const candidate of candidates.rows) {
         const seq = Number(candidate.source_sequence);
         if (!contextsBySource.has(seq)) contextsBySource.set(seq, []);
@@ -470,6 +493,7 @@ module.exports = ({ pool, packageDir, knownRussianTerms = new Set() }) => {
           // Apply the stricter OCR checks to that local context only. This
           // avoids pretending that every plain-Cyrillic Lak form is Russian.
           knownRussian: knownRussian || (dictionary && !/[Ӏӏ]/u.test(form)),
+          stopTerms: knownRussian ? knownRussianTerms : null,
         })) {
           const snippet = result.snippet;
           try {
