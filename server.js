@@ -178,10 +178,6 @@ const LAB_CURATED_ALIASES = {
   'месяц': ['барз (шинал)'],
 };
 
-// Ensure reviewer_verified column exists
-pool.query('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS reviewer_verified BOOLEAN NOT NULL DEFAULT FALSE')
-  .catch(err => console.error('Migration failed:', err.message));
-
 // ── Private source-import layer (audited v1.2 and v1.3 packages) ──
 // The packages themselves are gitignored, so their archives live in
 // persistent private storage and `private/` is only a cache. On boot the
@@ -455,6 +451,10 @@ app.use(require('./routes/source-intelligence')({
   publicForms: () => PUBLIC_LEXICAL_FORMS,
   scanState: () => PRIVATE_STATE.intel,
 }));
+
+// Structured morphology APIs. Every route is hidden unless the release flag
+// is explicitly enabled; the legacy search endpoint remains unchanged.
+app.use(require('./routes/corpus-v2')({ pool }));
 
 function sendPage(res, html) {
   // Revalidate HTML on every navigation so markup never goes stale,
