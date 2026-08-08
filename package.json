@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test:pcmlbe": "node scripts/test-pcmlbe-public.js"
+    "test:pcmlbe": "node scripts/test-pcmlbe-public.js",
+    "migrate": "node scripts/migrate.js",
+    "corpus:v2:import": "node scripts/import-pcmlbe-v14.js",
+    "corpus:v2:reconcile": "node scripts/reconcile-corpus-v2.js",
+    "test:corpus-v2": "node scripts/release-gate-v2.js",
+    "release:gate": "node scripts/release-gate.js"
   },
   "engines": {
     "node": ">=20"

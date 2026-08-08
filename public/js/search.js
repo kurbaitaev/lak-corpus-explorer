@@ -89,6 +89,8 @@ let searchSeq     = 0;
 // AbortController of the in-flight search, so a superseded request is dropped at
 // the network level as well as ignored on resolution.
 let searchAbort   = null;
+let currentMode = 'general';
+let v2Ready = false;
 
 // ── DOM refs ─────────────────────────────────────────────────
 const $q       = document.getElementById('q');
@@ -96,6 +98,9 @@ const $kind    = document.getElementById('kind');
 const $source  = document.getElementById('source');
 const $variety = document.getElementById('variety');
 const $concept = document.getElementById('concept-card');
+const $modeBar = document.getElementById('v2-mode-bar');
+const $grammarWrap = document.getElementById('grammar-feature-wrap');
+const $grammar = document.getElementById('grammar-feature');
 const $tbody   = document.getElementById('tbody');
 const $count   = document.getElementById('count-label');
 const $page    = document.getElementById('page-label');
@@ -129,6 +134,28 @@ function renderStats() {
   ).join('');
 }
 
+async function loadV2() {
+  try {
+    const status = await fetch('/api/corpus/v2/status', { headers: { Accept: 'application/json' } });
+    if (!status.ok) return;
+    const data = await status.json();
+    if (!data.ready) return;
+    v2Ready = true;
+    $modeBar.hidden = false;
+    const facets = await fetch('/api/corpus/v2/facets').then(response => response.ok ? response.json() : null);
+    if (facets) {
+      const groups = [
+        [t('search.grammar.tags', 'Source tags'), facets.tags || []],
+        [t('search.grammar.pos', 'Parts of speech'), facets.parts_of_speech || []],
+        [t('search.grammar.features', 'Features'), facets.features || []],
+      ];
+      $grammar.innerHTML = `<option value="">${esc(t('search.grammarChoose', 'Choose a source tag…'))}</option>` + groups.map(([label, rows]) =>
+        `<optgroup label="${esc(label)}">${rows.map(item => `<option value="${esc(item.value)}">${esc(item.value)} (${fmt(item.count)})</option>`).join('')}</optgroup>`
+      ).join('');
+    }
+  } catch { /* v2 remains hidden and legacy search remains unchanged */ }
+}
+
 // ── Search (calls server API) ─────────────────────────────────
 async function search(page = 1) {
   // Supersede any search already in flight: the newest user action always wins.
@@ -139,23 +166,40 @@ async function search(page = 1) {
 
   hasSearchIntent = true;
   document.querySelectorAll('.results-only').forEach(el => el.hidden = false);
+  currentPage = page;
 
   const q       = $q.value.trim();
   const kind    = $kind.value;
   const source  = $source.value;
   const variety = $variety.value;
+  const morphologyQuery = currentMode === 'grammar' ? (q || $grammar.value) : q;
 
-  const params = new URLSearchParams({ page, limit: 50 });
+  if (currentMode !== 'general' && !morphologyQuery) {
+    currentTotal = 0; currentPages = 1; currentPage = 1;
+    const modeLabel = t(`search.mode.${currentMode}`, currentMode);
+    $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">⌨</div><h3>${esc(t('search.morph.exactPromptTitle', `Enter an exact ${modeLabel} query`, { mode: modeLabel }))}</h3><p>${esc(t('search.morph.exactPromptBody', 'Morphology search does not silently fall back to substring matching.'))}</p></div></td></tr>`;
+    renderPagination();
+    searchAbort = null;
+    return;
+  }
+
+  const params = new URLSearchParams({ page, limit: currentMode === 'general' ? 50 : 25 });
   if (q)       params.set('q', q);
-  if (kind)    params.set('kind', kind);
-  if (source)  params.set('source', source);
-  if (variety) params.set('variety', variety);
+  if (currentMode === 'general') {
+    if (kind)    params.set('kind', kind);
+    if (source)  params.set('source', source);
+    if (variety) params.set('variety', variety);
+  } else {
+    params.set('mode', currentMode);
+    if (currentMode === 'grammar' && !q && $grammar.value) params.set('q', $grammar.value);
+  }
 
   $tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
-    const res  = await fetch(`/api/corpus/search?${params}`, controller ? { signal: controller.signal } : undefined);
+    const endpoint = currentMode === 'general' ? '/api/corpus/search' : '/api/corpus/v2/search';
+    const res  = await fetch(`${endpoint}?${params}`, controller ? { signal: controller.signal } : undefined);
     if (!res.ok) throw new Error(t('search.error.failed', 'Search failed'));
     const data = await res.json();
     // A newer search started while this one was resolving — discard it whole.
@@ -164,21 +208,22 @@ async function search(page = 1) {
     currentTotal    = data.total;
     currentPages    = data.pages;
     currentPage     = data.page;
-    currentExpanded = data.expanded || [];
-    currentSenses   = data.senses   || [];
+    currentExpanded = currentMode === 'general' ? (data.expanded || []) : [];
+    currentSenses   = currentMode === 'general' ? (data.senses || []) : [];
     currentQuery    = q;
-    currentOcrSenses = data.ocrSenses || [];
+    currentOcrSenses = currentMode === 'general' ? (data.ocrSenses || []) : [];
     currentRows     = data.rows || [];
-    currentMatches  = data.matches || [];
-    currentExplain  = data.explain || [];
+    currentMatches  = currentMode === 'general' ? (data.matches || []) : [];
+    currentExplain  = currentMode === 'general' ? (data.explain || []) : [];
 
-    currentCollections = data.collections || null;
+    currentCollections = currentMode === 'general' ? (data.collections || null) : null;
 
     renderConceptCard(q, currentExpanded, currentSenses, currentOcrSenses);
     renderCollections(currentQuery, currentCollections);
-    renderResults(currentRows, currentMatches, currentExplain);
+    if (currentMode === 'general') renderResults(currentRows, currentMatches, currentExplain);
+    else renderMorphResults(currentRows);
     renderPagination();
-    loadEvidence(seq, currentRows, currentExpanded);
+    if (currentMode === 'general') loadEvidence(seq, currentRows, currentExpanded);
 
   } catch (err) {
     // Superseded requests (aborted or simply late) must not touch the DOM: the
@@ -218,7 +263,7 @@ function renderConceptCard(q, expanded, senses, ocrSenses = []) {
 }
 
 function renderPagination() {
-  const prefix = currentExpanded.length && $kind.value !== 'lexicon' ? t('search.count.corpusPrefix', 'Corpus occurrences · ') : '';
+  const prefix = currentMode === 'general' && currentExpanded.length && $kind.value !== 'lexicon' ? t('search.count.corpusPrefix', 'Corpus occurrences · ') : '';
   $count.innerHTML = tp('search.count.records', currentTotal,
     `${prefix}<b>${currentTotal.toLocaleString(localeTag())}</b> records`,
     { prefix, count: `<b>${currentTotal.toLocaleString(localeTag())}</b>` });
@@ -226,6 +271,34 @@ function renderPagination() {
   $page.textContent = $page2.textContent = text;
   [$prev,$prev2].forEach(b => b.disabled = currentPage <= 1);
   [$next,$next2].forEach(b => b.disabled = currentPage >= currentPages);
+}
+
+function renderMorphResults(rows) {
+  if (!rows.length) {
+    $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">🔍</div><h3>${esc(t('search.morph.noMatchesTitle', 'No source annotations match'))}</h3><p>${esc(t('search.morph.noMatchesBody', 'Try an exact wordform, lemma, or source tag. Predictions are never shown in public search.'))}</p></div></td></tr>`;
+    return;
+  }
+  $tbody.innerHTML = rows.map(row => {
+    const badgeText = row.analysis_id
+      ? t('search.badge.sourceAnnotation', 'Source annotation')
+      : t('search.badge.noSourceAnalysis', 'No source analysis');
+    const badgeClass = row.analysis_id ? 'q-approved' : 'q-unreviewed';
+    const details = row.analysis_id ? [
+      row.lemma ? `${esc(t('search.morph.lemma', 'Lemma'))}: <b>${esc(row.lemma)}</b>` : '',
+      row.raw_tag ? `${esc(t('search.morph.tag', 'Tag'))}: <b>${esc(row.raw_tag)}</b>` : '',
+      row.definition ? `${esc(t('search.morph.definition', 'Definition'))}: ${esc(row.definition)}` : '',
+    ].filter(Boolean).join('<span>·</span>') : '';
+    return `<tr data-record="${esc(row.legacy_record_id)}">
+      <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}"><span class="tag tag-text">${esc(t(`search.mode.${currentMode}`, currentMode))}</span></td>
+      <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${esc(row.matched_surface)}</span>${details ? `<div class="morph-details">${details}</div>` : ''}</td>
+      <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${esc(row.definition || t('search.results.translationMissing', 'Translation not added yet'))}</td>
+      <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}"><span lang="lbe">${esc(row.context)}</span>${row.document_title ? `<span class="record-meta">${esc(row.document_title)}</span>` : ''}<span class="record-meta">${esc(row.legacy_record_id)}</span></td>
+      <td data-label="${esc(t('search.col.source', 'Source'))}"><a href="${esc(row.persistent_id)}" class="source-link" target="_blank" rel="noreferrer">${esc(row.source_title)}</a><span class="source-license">${esc(row.license)}</span></td>
+      <td data-label="${esc(t('search.col.variety', 'Variety'))}">—</td>
+      <td class="td-evidence" data-label="${esc(t('search.col.evidence', 'Evidence'))}"><span class="quality-badge ${badgeClass}">${esc(badgeText)}</span></td>
+      <td class="td-actions"><a class="btn btn-sm btn-primary" href="/validate.html?record=${encodeURIComponent(row.legacy_record_id)}">${esc(t('search.morph.review', 'Review'))}</a></td>
+    </tr>`;
+  }).join('');
 }
 
 // Wrap matched spans ([start, end) offsets) in <mark class="hl">
@@ -568,17 +641,33 @@ $next.onclick = $next2.onclick = nextPage;
 
 // ── Search wiring ─────────────────────────────────────────────
 [$kind, $source, $variety].forEach(el => el.addEventListener('change', () => search(1)));
+$grammar?.addEventListener('change', () => {
+  if (currentMode === 'grammar') {
+    $q.value = $grammar.value;
+    search(1);
+  }
+});
+$modeBar?.addEventListener('click', event => {
+  const button = event.target.closest('[data-mode]');
+  if (!button || !v2Ready) return;
+  currentMode = button.dataset.mode;
+  $modeBar.querySelectorAll('[data-mode]').forEach(item => item.classList.toggle('active', item === button));
+  document.querySelectorAll('.legacy-filter').forEach(item => { item.hidden = currentMode !== 'general'; });
+  $grammarWrap.hidden = currentMode !== 'grammar';
+  $concept.classList.remove('visible');
+  search(1);
+});
 
 // ── Re-render on language change ──────────────────────────────
 function relocalize() {
   renderStats();
-    if (hasSearchIntent) {
+  if (v2Ready) loadV2();
+  if (hasSearchIntent) {
     renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
     renderCollections(currentQuery, currentCollections);
-    renderResults(currentRows, currentMatches, currentExplain);
+    if (currentMode === 'general') renderResults(currentRows, currentMatches, currentExplain);
+    else renderMorphResults(currentRows);
     renderPagination();
-    const ids = currentRows.map(r => r[5]).filter(Boolean);
-    if (ids.length) updateBadges(currentRows, reviewCache);
   }
 }
 (function () {
@@ -587,10 +676,11 @@ function relocalize() {
 })();
 
 // ── Init ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadStats();
   document.querySelectorAll('.results-only').forEach(el => el.hidden = true);
   const form = document.getElementById('search-form');
   form?.addEventListener('submit', e => { e.preventDefault(); search(1); });
   document.getElementById('browse-all')?.addEventListener('click', () => { $q.value = ''; search(1); });
+  await loadV2();
 });
