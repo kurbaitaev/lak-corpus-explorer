@@ -857,6 +857,26 @@ app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Lak Corpus Explorer running on port ${PORT}`);
-});
+// ── Corpus v2 fail-closed deployment bootstrap ───────────────
+// Only when CORPUS_V2_AUTO_IMPORT and CORPUS_V2_ENABLED are both set
+// (production rollout), the versioned migration, the checksummed PCMLBE
+// import, and the exact database reconciliation must all succeed before the
+// server listens. A failure exits without listening so the platform keeps
+// the previous healthy deployment serving. With the flag off this resolves
+// immediately and start-up is unchanged.
+const { runCorpusV2Bootstrap } = require('./lib/corpus-v2-bootstrap');
+
+runCorpusV2Bootstrap()
+  .then(result => {
+    if (result.ran) {
+      console.log(`Corpus v2 bootstrap: batch ${result.batchId} reconciled` +
+        (result.idempotent ? ' (already imported — idempotent)' : ''));
+    }
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Lak Corpus Explorer running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error(`Corpus v2 bootstrap failed — refusing to start: ${err.message}`);
+    process.exit(1);
+  });

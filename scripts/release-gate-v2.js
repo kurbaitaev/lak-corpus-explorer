@@ -9,6 +9,7 @@ const commands = [
   ['node', ['scripts/test-corpus-v2-search.js']],
   ['node', ['scripts/test-morphology-review.js']],
   ['node', ['scripts/test-i18n-v2.js']],
+  ['node', ['scripts/test-corpus-v2-autostart.js']],
 ];
 for (const [command, args] of commands) {
   const result = spawnSync(command, args, { cwd: root, stdio: 'inherit', env: process.env });
