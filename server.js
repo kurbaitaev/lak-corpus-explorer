@@ -424,7 +424,18 @@ const PUBLIC_EVIDENCE = require('./lib/public-evidence').createPublicEvidence({
 
 // Public Source Library and derived word-form index. Anonymous by design:
 // everything it serves has already passed the public projection allowlist.
-app.use(sourceLibrary({ pool, packageDir: () => researchUpdate.packageDir() }));
+const KNOWN_RUSSIAN_TERMS = new Set(Object.keys(CORPUS_ALIASES));
+for (const row of CORPUS_DATA) {
+  if (row[0] !== 'lexicon' || !row[2]) continue;
+  for (const token of String(row[2]).normalize('NFKC').toLowerCase().match(/[а-яё]+/g) || []) {
+    KNOWN_RUSSIAN_TERMS.add(token.replace(/ё/g, 'е'));
+  }
+}
+app.use(sourceLibrary({
+  pool,
+  packageDir: () => researchUpdate.packageDir(),
+  knownRussianTerms: KNOWN_RUSSIAN_TERMS,
+}));
 
 // Expert-validation & gamification API
 app.use(require('./routes/validation')({ pool }));
