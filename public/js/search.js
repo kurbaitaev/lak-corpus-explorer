@@ -99,6 +99,7 @@ const $source  = document.getElementById('source');
 const $variety = document.getElementById('variety');
 const $concept = document.getElementById('concept-card');
 const $modeBar = document.getElementById('v2-mode-bar');
+const $v2Spotlight = document.getElementById('v2-spotlight');
 const $grammarWrap = document.getElementById('grammar-feature-wrap');
 const $grammar = document.getElementById('grammar-feature');
 const $tbody   = document.getElementById('tbody');
@@ -141,7 +142,13 @@ async function loadV2() {
     const data = await status.json();
     if (!data.ready) return;
     v2Ready = true;
+    $v2Spotlight.hidden = false;
     $modeBar.hidden = false;
+    const counts = data.batch?.observed_counts || {};
+    document.querySelectorAll('[data-v2-count]').forEach(item => {
+      const value = counts[item.dataset.v2Count];
+      if (Number.isFinite(value)) item.textContent = fmt(value);
+    });
     const facets = await fetch('/api/corpus/v2/facets').then(response => response.ok ? response.json() : null);
     if (facets) {
       const groups = [
@@ -154,6 +161,25 @@ async function loadV2() {
       ).join('');
     }
   } catch { /* v2 remains hidden and legacy search remains unchanged */ }
+}
+
+function setSearchMode(mode) {
+  const button = $modeBar?.querySelector(`[data-mode="${mode}"]`);
+  if (!button || !v2Ready) return false;
+  currentMode = mode;
+  $modeBar.querySelectorAll('[data-mode]').forEach(item => item.classList.toggle('active', item === button));
+  document.querySelectorAll('.legacy-filter').forEach(item => { item.hidden = currentMode !== 'general'; });
+  $grammarWrap.hidden = currentMode !== 'grammar';
+  $concept.classList.remove('visible');
+  return true;
+}
+
+function runV2Example(mode, query) {
+  if (!setSearchMode(mode)) return;
+  $q.value = query;
+  if (mode === 'grammar' && $grammar) $grammar.value = query;
+  search(1);
+  document.getElementById('search-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── Search (calls server API) ─────────────────────────────────
@@ -650,12 +676,10 @@ $grammar?.addEventListener('change', () => {
 $modeBar?.addEventListener('click', event => {
   const button = event.target.closest('[data-mode]');
   if (!button || !v2Ready) return;
-  currentMode = button.dataset.mode;
-  $modeBar.querySelectorAll('[data-mode]').forEach(item => item.classList.toggle('active', item === button));
-  document.querySelectorAll('.legacy-filter').forEach(item => { item.hidden = currentMode !== 'general'; });
-  $grammarWrap.hidden = currentMode !== 'grammar';
-  $concept.classList.remove('visible');
-  search(1);
+  if (setSearchMode(button.dataset.mode)) search(1);
+});
+document.querySelectorAll('[data-example-mode]').forEach(button => {
+  button.addEventListener('click', () => runV2Example(button.dataset.exampleMode, button.dataset.exampleQuery));
 });
 
 // ── Re-render on language change ──────────────────────────────
@@ -683,4 +707,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   form?.addEventListener('submit', e => { e.preventDefault(); search(1); });
   document.getElementById('browse-all')?.addEventListener('click', () => { $q.value = ''; search(1); });
   await loadV2();
+  const initial = new URLSearchParams(location.search);
+  const initialMode = initial.get('mode');
+  const initialQuery = initial.get('q');
+  if (initialQuery && ['wordform', 'lemma', 'grammar'].includes(initialMode)) runV2Example(initialMode, initialQuery);
 });

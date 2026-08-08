@@ -31,11 +31,36 @@
     <div class="container">
       <div class="obs-kicker" data-i18n="research.kicker">Research update · what changed</div>
       <h1><span data-i18n="research.h1">What changed in this research round</span><span class="help-marker" data-help="help.researchUpdate" data-help-fallback="This page reports what the latest source audit found. The materials themselves stay private until rights and review are settled."></span></h1>
-      <p data-i18n-html="research.intro">A new batch of source materials was audited and routed for review. Permission to use the supplied research materials has been confirmed. The licensed PCMLBE source has also yielded <strong>25 searchable Lak–English pairs</strong>, including 21 with a Cyrillic Lak parallel.</p>
+      <p data-i18n-html="research.intro">The Explorer now has a public, structured PCMLBE layer with <strong>87,266 tokens</strong>, <strong>20,606 source analyses</strong>, and <strong>1,234 source lemmas</strong>. People can search exact wordforms, lemmas, and grammatical tags while every result remains linked to its source.</p>
       <div class="obs-stats" id="research-stats" aria-label="Audited research aggregates" data-i18n-aria="research.statsLabel"></div>
       <div class="obs-method" data-i18n-html="research.method"><strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.</div>
     </div>
   </header>
+
+  <section class="research-section research-v2" aria-label="Structured corpus search" data-i18n-aria="research.v2.aria">
+    <div class="container">
+      <div class="research-v2-head">
+        <div>
+          <div class="v2-spotlight-kicker" data-i18n="research.v2.kicker">Live now</div>
+          <h2 data-i18n="research.v2.h2">The corpus can now search inside Lak words</h2>
+          <p class="research-lede" data-i18n="research.v2.body">A search is no longer limited to a flat text match. The structured PCMLBE layer connects attested wordforms to source lemmas and grammatical analyses. This makes it possible to find related forms and grammatical constructions without presenting machine guesses as facts.</p>
+        </div>
+        <a class="btn btn-primary" href="/?mode=lemma&amp;q=дакӀ" data-i18n="research.v2.cta">Try lemma search</a>
+      </div>
+      <div class="v2-stat-grid research-v2-stats">
+        <div class="v2-stat"><b>87,266</b><span data-i18n="search.smart.tokens">structured tokens</span></div>
+        <div class="v2-stat"><b>20,606</b><span data-i18n="search.smart.analyses">source analyses</span></div>
+        <div class="v2-stat"><b>1,234</b><span data-i18n="search.smart.lemmas">source lemmas</span></div>
+        <div class="v2-stat"><b>71</b><span data-i18n="search.smart.tags">grammar tags</span></div>
+      </div>
+      <div class="research-v2-modes">
+        <a href="/?mode=wordform&amp;q=яру"><strong data-i18n="search.mode.wordform">Wordform</strong><span data-i18n="research.v2.wordform">Find an exact form as it appears in a text</span></a>
+        <a href="/?mode=lemma&amp;q=дакӀ"><strong data-i18n="search.mode.lemma">Lemma</strong><span data-i18n="research.v2.lemma">Collect attested forms under a source lemma</span></a>
+        <a href="/?mode=grammar&amp;q=N-GEN"><strong data-i18n="search.mode.grammar">Grammar</strong><span data-i18n="research.v2.grammar">Find tokens carrying a source grammatical tag</span></a>
+      </div>
+      <p class="v2-trust" data-i18n="research.v2.trust">The 3,193 machine-generated lemma proposals are not public facts. They stay in an authenticated review workflow and never enter public search automatically.</p>
+    </div>
+  </section>
 
   <section class="research-section research-whatsnew" aria-label="What is new" data-i18n-aria="research.whatsnew.aria">
     <div class="container">
