@@ -50,8 +50,8 @@
   /* ── Centralized dictionary ──────────────────────────────────── */
   var DICT = {
     /* Shared navigation */
-    'nav.brand.name': { en: 'Lak Corpus', ru: 'Лакский корпус' },
-    'nav.brand.explorer': { en: 'Explorer', ru: 'Обозреватель' },
+    'nav.brand.name': { en: 'Lak Corpus', ru: 'Корпус лакского языка' },
+    'nav.brand.explorer': { en: 'Explorer', ru: '' },
     'nav.search': { en: 'Search', ru: 'Поиск' },
     'nav.sourceLibrary': { en: 'Sources', ru: 'Источники' },
     // "Ресурсы" (outside resources) against "Источники" (our own holdings) —
@@ -105,7 +105,7 @@
     'auth.registrationFailed': { en: 'Registration failed', ru: 'Не удалось зарегистрироваться' },
 
     /* ── index.html (Search) ─────────────────────────────────── */
-    'index.title': { en: 'Lak Corpus Explorer', ru: 'Обозреватель лакского корпуса' },
+    'index.title': { en: 'Lak Corpus Explorer', ru: 'Корпус лакского языка' },
     'index.h1': { en: 'Lak Language Corpus', ru: 'Корпус лакского языка' },
     'index.subtitle': {
       en: 'Search Russian or Lak · every result shows its source and whether it has been checked',
