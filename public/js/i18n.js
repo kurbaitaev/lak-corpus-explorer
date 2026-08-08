@@ -116,6 +116,32 @@
       en: 'e.g. луна, земля, спасибо, с днем рождения…',
       ru: 'напр. луна, земля, спасибо, с днем рождения…'
     },
+    'search.mode.general': { en: 'General', ru: 'Общий' },
+    'search.mode.wordform': { en: 'Wordform', ru: 'Словоформа' },
+    'search.mode.lemma': { en: 'Lemma', ru: 'Лемма' },
+    'search.mode.grammar': { en: 'Grammar', ru: 'Грамматика' },
+    'search.mode.label': { en: 'Search mode', ru: 'Режим поиска' },
+    'search.grammarFeature': { en: 'Grammatical tag or feature', ru: 'Грамматический тег или признак' },
+    'search.grammarChoose': { en: 'Choose a source tag…', ru: 'Выберите тег источника…' },
+    'search.grammar.tags': { en: 'Source tags', ru: 'Теги источника' },
+    'search.grammar.pos': { en: 'Parts of speech', ru: 'Части речи' },
+    'search.grammar.features': { en: 'Features', ru: 'Признаки' },
+    'search.badge.sourceAnnotation': { en: 'Source annotation', ru: 'Аннотация источника' },
+    'search.badge.noSourceAnalysis': { en: 'No source analysis', ru: 'Нет анализа источника' },
+    'search.morph.exactPromptTitle': { en: 'Enter an exact {mode} query', ru: 'Введите точный запрос: {mode}' },
+    'search.morph.exactPromptBody': {
+      en: 'Morphology search does not silently fall back to substring matching.',
+      ru: 'Морфологический поиск не переключается незаметно на поиск по подстроке.'
+    },
+    'search.morph.noMatchesTitle': { en: 'No source annotations match', ru: 'Подходящих аннотаций источника нет' },
+    'search.morph.noMatchesBody': {
+      en: 'Try an exact wordform, lemma, or source tag. Predictions are never shown in public search.',
+      ru: 'Попробуйте точную словоформу, лемму или тег источника. Предсказания не показываются в публичном поиске.'
+    },
+    'search.morph.lemma': { en: 'Lemma', ru: 'Лемма' },
+    'search.morph.tag': { en: 'Tag', ru: 'Тег' },
+    'search.morph.definition': { en: 'Definition', ru: 'Определение' },
+    'search.morph.review': { en: 'Review', ru: 'Проверить' },
     'index.recordType': { en: 'Record type', ru: 'Тип записи' },
     'index.type.both': { en: 'Texts + lexicon', ru: 'Тексты + лексикон' },
     'index.type.text': { en: 'Texts only', ru: 'Только тексты' },
@@ -748,6 +774,26 @@
     'validate.empty.p': {
       en: 'There are no open tasks for you right now. New material is added regularly — thank you for helping preserve Lak.',
       ru: 'Сейчас для вас нет открытых задач. Новый материал добавляется регулярно — спасибо, что помогаете сохранять лакский язык.'
+    },
+    'validate.morph.warning': {
+      en: 'Proposal only — not a source annotation. A vote does not assign this analysis to every occurrence.',
+      ru: 'Это только предложение, а не аннотация источника. Голос не присваивает этот анализ каждому употреблению формы.'
+    },
+    'validate.morph.lemma': { en: 'Lemma:', ru: 'Лемма:' },
+    'validate.morph.tag': { en: 'Tag:', ru: 'Тег:' },
+    'validate.morph.method': { en: 'Method:', ru: 'Метод:' },
+    'validate.morph.confidence': { en: 'Confidence:', ru: 'Уверенность:' },
+    'validate.morph.occurrences': { en: 'Occurrences:', ru: 'Употребления:' },
+    'validate.morph.sources': { en: 'Supporting source labels:', ru: 'Подтверждающие источники:' },
+    'validate.morph.correctedLemma.label': { en: 'Corrected lemma', ru: 'Исправленная лемма' },
+    'validate.morph.correctedLemma.placeholder': {
+      en: 'Required when choosing Correct',
+      ru: 'Обязательно при выборе «Исправить»'
+    },
+    'validate.morph.correctedTag.label': { en: 'Corrected source tag (optional)', ru: 'Исправленный тег источника (необязательно)' },
+    'validate.morph.correctedTag.placeholder': {
+      en: 'Preserve the source-style tag if known',
+      ru: 'Сохраните формат тега источника, если он известен'
     },
 
     /* ── queue.html ──────────────────────────────────────────── */
@@ -1603,6 +1649,7 @@
     'validate.kind.ocr_quality': { en: 'OCR quality', ru: 'Качество OCR' },
     'validate.kind.example_usefulness': { en: 'Example usefulness', ru: 'Полезность примера' },
     'validate.kind.source_reliability': { en: 'Source reliability', ru: 'Надёжность источника' },
+    'validate.kind.lemma_analysis': { en: 'Lemma analysis proposal', ru: 'Предложение лемматического разбора' },
 
     /* Per-kind questions (validate.js kindQuestion). */
     'validate.question.translation_correctness': { en: 'Is this Russian→Lak translation correct?', ru: 'Верен ли этот перевод русский→лакский?' },
@@ -1613,6 +1660,7 @@
     'validate.question.ocr_quality': { en: 'How clean is this OCR-scanned text?', ru: 'Насколько чист этот отсканированный текст OCR?' },
     'validate.question.example_usefulness': { en: 'Is this example sentence useful for learners and researchers?', ru: 'Полезно ли это примерное предложение для учащихся и исследователей?' },
     'validate.question.source_reliability': { en: 'How reliable is this source for this record?', ru: 'Насколько надёжен этот источник для данной записи?' },
+    'validate.question.lemma_analysis': { en: 'Does this proposed lemma and tag fit the wordform?', ru: 'Подходят ли предложенные лемма и тег к этой словоформе?' },
 
     /* Validation task statuses (validation_tasks.status — dashboard.js taskStatusLabel). */
     'validate.taskStatus.pending': { en: 'pending', ru: 'ожидает' },
@@ -1709,6 +1757,10 @@
     'validate.option.reliable_with_caution': { en: 'reliable with caution', ru: 'надёжно с осторожностью' },
     'validate.option.partially_reliable': { en: 'partially reliable', ru: 'частично надёжно' },
     'validate.option.unreliable_until_verified': { en: 'unreliable until verified', ru: 'ненадёжно до проверки' },
+    'validate.morph.option.accept': { en: 'Accept the proposal', ru: 'Принять предложение' },
+    'validate.morph.option.reject': { en: 'Reject the proposal', ru: 'Отклонить предложение' },
+    'validate.morph.option.uncertain': { en: 'Not sure', ru: 'Не уверен(а)' },
+    'validate.morph.option.correct': { en: 'Propose a correction', ru: 'Предложить исправление' },
 
     /* ── Search landing / results (purpose-led states) ──────────── */
     'search.landing.purpose': {

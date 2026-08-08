@@ -60,6 +60,16 @@
             <label for="f-correction" data-i18n="validate.correction.label">Proposed correction</label>
             <input id="f-correction" type="text" maxlength="500" placeholder="The corrected Lak text, sense, or spelling" data-i18n-placeholder="validate.correction.placeholder">
           </div>
+          <div id="morph-correction-fields" style="display:none;">
+            <div class="field-wrap">
+              <label for="f-corrected-lemma" data-i18n="validate.morph.correctedLemma.label">Corrected lemma</label>
+              <input id="f-corrected-lemma" type="text" maxlength="200" placeholder="Required when choosing Correct" data-i18n-placeholder="validate.morph.correctedLemma.placeholder">
+            </div>
+            <div class="field-wrap">
+              <label for="f-corrected-tag" data-i18n="validate.morph.correctedTag.label">Corrected source tag (optional)</label>
+              <input id="f-corrected-tag" type="text" maxlength="100" placeholder="Preserve the source-style tag if known" data-i18n-placeholder="validate.morph.correctedTag.placeholder">
+            </div>
+          </div>
           <div class="field-wrap">
             <label for="f-evidence" data-i18n="validate.evidence.label">Evidence note</label>
             <textarea id="f-evidence" rows="2" maxlength="1000" placeholder="Why is this your answer? Context, dialect knowledge, comparison…" data-i18n-placeholder="validate.evidence.placeholder"></textarea>

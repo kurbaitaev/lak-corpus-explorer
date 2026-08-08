@@ -40,11 +40,17 @@
 <div class="controls-bar search-controls">
   <div class="container">
     <form id="search-form" class="controls-grid" novalidate>
+      <div class="search-mode-bar" id="v2-mode-bar" hidden data-i18n-aria="search.mode.label" aria-label="Search mode">
+        <button class="search-mode active" type="button" data-mode="general" data-i18n="search.mode.general">General</button>
+        <button class="search-mode" type="button" data-mode="wordform" data-i18n="search.mode.wordform">Wordform</button>
+        <button class="search-mode" type="button" data-mode="lemma" data-i18n="search.mode.lemma">Lemma</button>
+        <button class="search-mode" type="button" data-mode="grammar" data-i18n="search.mode.grammar">Grammar</button>
+      </div>
       <div class="field-wrap">
         <label for="q" data-i18n="index.searchLabel">Search (Russian or Lak)</label>
         <input id="q" type="search" data-i18n-placeholder="index.searchPlaceholder" placeholder="e.g. луна, земля, спасибо, с днем рождения…" autocomplete="off" spellcheck="false">
       </div>
-      <div class="field-wrap">
+      <div class="field-wrap legacy-filter">
         <label for="kind" data-i18n="index.recordType">Record type</label>
         <div class="select-wrap">
           <select id="kind">
@@ -54,7 +60,7 @@
           </select>
         </div>
       </div>
-      <div class="field-wrap">
+      <div class="field-wrap legacy-filter">
         <label for="source" data-i18n="index.source">Source</label>
         <div class="select-wrap">
           <select id="source">
@@ -67,7 +73,7 @@
           </select>
         </div>
       </div>
-      <div class="field-wrap">
+      <div class="field-wrap legacy-filter">
         <label for="variety" data-i18n="index.variety">Variety</label>
         <div class="select-wrap">
           <select id="variety">
@@ -80,6 +86,10 @@
             <option value="unspecified" data-i18n="variety.unspecified">Unspecified</option>
           </select>
         </div>
+      </div>
+      <div class="field-wrap" id="grammar-feature-wrap" hidden>
+        <label for="grammar-feature" data-i18n="search.grammarFeature">Grammatical tag or feature</label>
+        <div class="select-wrap"><select id="grammar-feature"><option value="" data-i18n="search.grammarChoose">Choose a source tag…</option></select></div>
       </div>
       <div class="search-submit-wrap">
         <button class="btn btn-primary search-submit" type="submit" data-i18n="search.landing.searchAction">Search</button>

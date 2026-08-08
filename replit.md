@@ -8,6 +8,9 @@ A publicly accessible, source-aware research corpus of the Lak language (лак�
 - **Database**: Replit PostgreSQL — `reviews` table (record_id, state, correction, note, reviewer_name, timestamps)
 - **Corpus data**: `data/corpus-data.json` + `data/corpus-meta.json` — **generated files, gitignored**. Rebuilt from the canonical `index.html` (project root) with `python3 scripts/extract-corpus.py`. `server.js` auto-runs the script at startup if the files are missing, and aborts with a clear error if regeneration fails. `public/data/` holds a static copy for download; keep the two in sync when regenerating. The meta file carries a `licenses` block: **PCMLBE is confirmed CC BY-SA 4.0** (credit Erwin Komen, Radboud University; ShareAlike applies), displayed consistently in the Observatory, About page, search results and research page — the release gate checks all four surfaces.
 - **Frontend**: Vanilla JS, multi-page (`public/index.html`, `public/about.html`, `public/queue.html`)
+- **Structured corpus v2**: additive PostgreSQL tables populated only by the
+  explicit checksummed PCMLBE importer. Disabled unless
+  `CORPUS_V2_ENABLED=true`; deployment never auto-imports corpus rows.
 
 ## How to run
 
@@ -26,6 +29,8 @@ Workflow: "Start application" → `node server.js` on port 5000.
 - **Inline review panel**: Approve, Flag, Unreviewed — with correction text, note, reviewer name
 - **Review queue page**: all reviews, filter by state, JSON/CSV export
 - **About/Research page**: methodology, sources, quality ladder, statistics, collaboration invitation
+- **Optional structured modes**: exact Wordform, Lemma, and Grammar searches;
+  source annotations remain separate from authenticated review-only proposals
 
 ## Private source-import layer (audited v1.2 and v1.3 research packages)
 
@@ -181,8 +186,22 @@ Each `CORPUS_DATA` row: `[type, lak_text, meaning, source, variety, record_id, u
 | GET | `/api/source-library/:ref` | One source with its duplicate siblings |
 | GET | `/api/word-forms` | Derived Lak word-form index (2+ sources per form) |
 
+When v2 is explicitly enabled after a reconciled import:
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/corpus/v2/status` | Import readiness and public source policy |
+| GET | `/api/corpus/v2/facets` | Source tag, POS, and feature facets |
+| GET | `/api/corpus/v2/search?mode=wordform\|lemma\|grammar&q=` | Exact morphology search |
+| GET | `/api/corpus/v2/lemmas/:id` | Lemma and attested forms |
+| GET | `/api/corpus/v2/wordforms/:id` | Wordform occurrence summary |
+| GET | `/api/morphology/proposals` | Authenticated proposal queue |
+| GET | `/api/morphology/proposals/:id` | Authenticated evidence and contexts |
+| POST | `/api/morphology/proposals/:id/adjudicate` | Expert-only structured decision |
+
 ## User preferences
 
 - Do not publish until the user reviews the working preview.
 - Keep Uslar 1890 OCR text verbatim — no silent modernisation.
-- Commit completed work to the connected GitHub repository.
+- Do not run the production importer or publish until the user reviews the
+  working preview and the production database is backed up.

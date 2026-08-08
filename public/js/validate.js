@@ -32,6 +32,7 @@ const KIND_LABELS_FALLBACK = {
   ocr_quality: 'OCR quality',
   example_usefulness: 'Example usefulness',
   source_reliability: 'Source reliability',
+  lemma_analysis: 'Lemma analysis proposal',
 };
 const KIND_QUESTIONS_FALLBACK = {
   translation_correctness: 'Is this Russian→Lak translation correct?',
@@ -42,6 +43,7 @@ const KIND_QUESTIONS_FALLBACK = {
   ocr_quality: 'How clean is this OCR-scanned text?',
   example_usefulness: 'Is this example sentence useful for learners and researchers?',
   source_reliability: 'How reliable is this source for this record?',
+  lemma_analysis: 'Does this proposed lemma and tag fit the wordform?',
 };
 function kindLabel(kind) {
   return t('validate.kind.' + kind, KIND_LABELS_FALLBACK[kind] || kind);
@@ -51,6 +53,11 @@ function kindQuestion(kind) {
 }
 // Localized display for vote option values. The submitted value stays canonical.
 function optionLabel(value) {
+  if (currentTask?.subject_type === 'morphology_proposal' || currentTask?.context?.morphology_proposal) {
+    const morphKey = 'validate.morph.option.' + String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    const translated = t(morphKey, '');
+    if (translated) return translated;
+  }
   const key = 'validate.option.' + String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
   return t(key, String(value));
 }
@@ -132,11 +139,28 @@ function renderTaskCard() {
   document.getElementById('task-id').textContent = t('validate.taskId', 'task ' + currentTask.id, { id: currentTask.id });
   document.getElementById('task-question').textContent = kindQuestion(currentTask.kind);
   const ctx = currentTask.context || {};
+  const isMorphology = currentTask.subject_type === 'morphology_proposal' || ctx.morphology_proposal;
+  document.getElementById('morph-correction-fields').style.display = isMorphology ? '' : 'none';
   document.getElementById('task-prompt').innerHTML = `
     ${currentTask.prompt_ru ? `<div class="val-prompt"><span class="val-lang">${esc(t('validate.lang.russian', 'Russian'))}</span> ${esc(currentTask.prompt_ru)}</div>` : ''}
     ${currentTask.lak_text ? `<div class="val-prompt lak"><span class="val-lang">${esc(t('validate.lang.lak', 'Lak'))}</span> ${esc(currentTask.lak_text)}</div>` : ''}
     ${ctx.note ? `<div style="color:var(--text3); font-size:12px; margin-top:6px;">${esc(ctx.note)}</div>` : ''}
     ${ctx.source ? `<div style="color:var(--text3); font-size:12px;">${esc(t('validate.sourceLabel', 'Source:'))} ${esc(ctx.source)}</div>` : ''}`;
+  if (isMorphology) {
+    const examples = Array.isArray(ctx.examples) ? ctx.examples : [];
+    document.getElementById('task-question').textContent = kindQuestion('lemma_analysis');
+    document.getElementById('task-prompt').insertAdjacentHTML('beforeend', `
+      <div class="morph-warning">${esc(t('validate.morph.warning', 'Proposal only — not a source annotation. A vote does not assign this analysis to every occurrence.'))}</div>
+      <div class="morph-facts">
+        <span>${esc(t('validate.morph.lemma', 'Lemma:'))} <b>${esc(ctx.proposed_lemma || '—')}</b></span>
+        <span>${esc(t('validate.morph.tag', 'Tag:'))} <b>${esc(ctx.proposed_tag || '—')}</b></span>
+        <span>${esc(t('validate.morph.method', 'Method:'))} ${esc(ctx.method || '—')}</span>
+        <span>${esc(t('validate.morph.confidence', 'Confidence:'))} ${Math.round(Number(ctx.confidence || 0) * 100)}%</span>
+        <span>${esc(t('validate.morph.occurrences', 'Occurrences:'))} ${esc(ctx.frequency || 0)}</span>
+      </div>
+      ${examples.map(item => `<blockquote class="morph-context"><span>${esc(item.legacy_record_id)}</span>${esc(item.text)}</blockquote>`).join('')}
+      ${(ctx.evidence_source_labels || []).length ? `<div class="morph-sources">${esc(t('validate.morph.sources', 'Supporting source labels:'))} ${(ctx.evidence_source_labels || []).map(esc).join(' · ')}</div>` : ''}`);
+  }
   const options = Array.isArray(currentTask.options) && currentTask.options.length
     ? currentTask.options : ['correct', 'incorrect', 'uncertain'];
   document.getElementById('options').innerHTML = options.map(o => `
@@ -209,6 +233,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify({
           value: chosen.value,
           correction: document.getElementById('f-correction').value.trim() || undefined,
+          corrected_lemma: document.getElementById('f-corrected-lemma').value.trim() || undefined,
+          corrected_tag: document.getElementById('f-corrected-tag').value.trim() || undefined,
           evidence_note: document.getElementById('f-evidence').value.trim() || undefined,
           source_ref: document.getElementById('f-source').value.trim() || undefined,
           time_to_vote_ms: Date.now() - taskShownAt,

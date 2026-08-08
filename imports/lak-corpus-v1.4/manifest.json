@@ -1,0 +1,57 @@
+{
+  "artifacts": {
+    "documents.jsonl.gz": {
+      "records": 41,
+      "sha256": "c648c46f22618526016af276117ade9cf0a44ffa1d97b4f59bc0ac65dc67fa35"
+    },
+    "lemma-proposals.jsonl.gz": {
+      "records": 3193,
+      "sha256": "eafe54ec4de4ea9988a520affe9895a1d7dadbd7e408883919dba80d611a1523"
+    },
+    "segments.jsonl.gz": {
+      "records": 8788,
+      "sha256": "d219c5c0d93d66cf59697c514834e278ae822273a0705db5f6e1477fca97814e"
+    },
+    "source-analyses.jsonl.gz": {
+      "records": 20606,
+      "sha256": "5b8546f6cb744a617288bc480095fb63a4510b0a984cfbf438503644d627d080"
+    },
+    "tokens.jsonl.gz": {
+      "records": 87266,
+      "sha256": "fbd7e9ab8954bb29a43f7208806cd92aa2538a424e12816147ec62b8f21d2684"
+    }
+  },
+  "counts": {
+    "annotated_lemma_keys": 1234,
+    "documents": 41,
+    "legacy_segment_ids": 8788,
+    "proposal_methods": {
+      "exact_dictionary_headword": 1878,
+      "learned_suffix_transformation": 1315
+    },
+    "proposal_occurrences": 21716,
+    "proposals": 3193,
+    "raw_tags": 71,
+    "segments": 8788,
+    "source_analyses": 20606,
+    "tokens": 87266,
+    "wordforms": 20821,
+    "x_tokens": 66660
+  },
+  "generated_at": "2026-08-07T00:00:00Z",
+  "generator_version": "export_pcmlbe_v2.py/1",
+  "normalization_version": "lak-search-v1",
+  "schema_version": "2.0.0",
+  "source": {
+    "access_status": "public",
+    "id": "pcmlbe",
+    "license": "CC-BY-SA-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "persistent_id": "http://hdl.handle.net/21.11114/COLL-0000-0021-959C-3",
+    "public_search_allowed": true,
+    "rights_status": "open_license",
+    "syntax_archive_sha256": "ddb288d7c87e9649ec7b6b94556e11db0d0ad1e1d972b10ede8522ff25b1ca25",
+    "title": "Parsed Corpus of Modern Lak (PCMLBE)",
+    "training_allowed": false
+  }
+}

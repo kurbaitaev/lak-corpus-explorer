@@ -11,6 +11,7 @@ const express = require('express');
 const crypto = require('crypto');
 const auth = require('../lib/auth');
 const gam = require('../lib/gamification');
+const morphologyReview = require('../lib/morphology-review');
 
 const MIN_VOTES = 3;
 const AGREEMENT = 0.67;       // weighted share needed for community consensus
@@ -202,6 +203,7 @@ module.exports = function createValidationRouter({ pool }) {
   const taskPublic = (t) => ({
     id: t.id, kind: t.kind, prompt_ru: t.prompt_ru, lak_text: t.lak_text,
     context: t.context, options: t.options, priority: t.priority, version: t.version,
+    subject_type: t.subject_type, subject_id: t.subject_id,
     // Deliberately NO votes, consensus, status resolution or gold answer here.
   });
 
@@ -259,6 +261,7 @@ module.exports = function createValidationRouter({ pool }) {
         `UPDATE validation_tasks SET status='community_consensus', consensus_value=$2,
            consensus_confidence=$3, version=version+1, updated_at=now() WHERE id=$1`,
         [task.id, top.value, top.share]);
+      await morphologyReview.applyCommunityConsensus(pool, task, top.value);
       await audit(req, 'status_change', 'validation_task', task.id,
         { from: task.status, to: 'community_consensus', value: top.value, confidence: top.share, task_version: task.version + 1 });
       await settleVoters(req, task, top.value, 'consensus');
@@ -312,7 +315,7 @@ module.exports = function createValidationRouter({ pool }) {
   router.post('/api/validation/tasks/:id/vote', requireAccount, async (req, res) => {
     try {
       const cid = req.identity.id;
-      const { value, correction, evidence_note, source_ref, time_to_vote_ms } = req.body || {};
+      const { value, correction, corrected_lemma, corrected_tag, evidence_note, source_ref, time_to_vote_ms } = req.body || {};
       const cleanValue = String(value || '').trim().slice(0, 200);
       if (!cleanValue) return res.status(400).json({ error: 'A value is required.' });
 
@@ -323,6 +326,14 @@ module.exports = function createValidationRouter({ pool }) {
         return res.status(409).json({ error: 'This task is already closed.' });
       if (Array.isArray(task.options) && task.options.length && !task.options.includes(cleanValue))
         return res.status(400).json({ error: 'Value must be one of the offered options.' });
+      const structuredResponse = task.subject_type === 'morphology_proposal'
+        ? {
+            corrected_lemma: corrected_lemma ? String(corrected_lemma).normalize('NFC').trim().slice(0, 200) : null,
+            corrected_tag: corrected_tag ? String(corrected_tag).trim().slice(0, 100) : null,
+          }
+        : null;
+      if (task.subject_type === 'morphology_proposal' && cleanValue === 'correct' && !structuredResponse.corrected_lemma)
+        return res.status(400).json({ error: 'A corrected lemma is required when proposing a correction.' });
 
       // Duplicate prevention
       const dup = await pool.query(
@@ -353,15 +364,15 @@ module.exports = function createValidationRouter({ pool }) {
       try {
         const vr = await pool.query(
           `INSERT INTO validation_votes
-             (task_id, task_version, contributor_id, value, correction, evidence_note, source_ref, time_to_vote_ms, flagged_spam)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+             (task_id, task_version, contributor_id, value, correction, evidence_note, source_ref, time_to_vote_ms, flagged_spam, response)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
            RETURNING id, created_at`,
           [task.id, task.version, cid, cleanValue,
            correction ? String(correction).slice(0, 500) : null,
            evidence_note ? String(evidence_note).slice(0, 1000) : null,
            source_ref ? String(source_ref).slice(0, 300) : null,
            typeof time_to_vote_ms === 'number' ? Math.round(time_to_vote_ms) : null,
-           flagged]);
+           flagged, structuredResponse ? JSON.stringify(structuredResponse) : null]);
         vote = vr.rows[0];
       } catch (e) {
         if (e.code === '23505') return res.status(409).json({ error: 'You have already voted on this task.' });
@@ -443,6 +454,21 @@ module.exports = function createValidationRouter({ pool }) {
       if (!task) return res.status(404).json({ error: 'Task not found.' });
 
       const isExpert = auth.EXPERT_PLUS.includes(req.identity.role);
+      if (task.subject_type === 'morphology_proposal' && isExpert) {
+        await morphologyReview.applyExpertDecision(pool, {
+          proposalId: task.subject_id,
+          task,
+          identity: req.identity,
+          body: {
+            verdict: cleanDecision,
+            corrected_lemma: req.body?.corrected_lemma,
+            corrected_tag: req.body?.corrected_tag,
+            evidence_note: note,
+          },
+        });
+      } else if (task.subject_type === 'morphology_proposal') {
+        await morphologyReview.applyCommunityConsensus(pool, task, cleanDecision);
+      }
       const newStatus = cleanDecision === 'reject'
         ? 'rejected'
         : (isExpert ? 'expert_verified' : 'community_consensus');
@@ -701,7 +727,8 @@ module.exports = function createValidationRouter({ pool }) {
   router.post('/api/admin/tasks', requireRole(['administrator']), async (req, res) => {
     const { id, kind, prompt_ru, lak_text, context, options, is_gold, gold_answer, priority } = req.body || {};
     const KINDS = ['translation_correctness', 'sense_choice', 'moon_vs_month', 'dialect',
-                   'spelling', 'ocr_quality', 'example_usefulness', 'source_reliability'];
+                   'spelling', 'ocr_quality', 'example_usefulness', 'source_reliability',
+                   'lemma_analysis'];
     if (!KINDS.includes(kind)) return res.status(400).json({ error: `kind must be one of: ${KINDS.join(', ')}` });
     if (is_gold && !gold_answer) return res.status(400).json({ error: 'Gold tasks require gold_answer.' });
     const taskId = String(id || 't_' + crypto.randomUUID()).slice(0, 100);
