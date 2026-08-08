@@ -51,6 +51,11 @@ const concatenatedDictionary = concordanceSnippets(
 assert.strictEqual(concatenatedDictionary.length, 1);
 assert.strictEqual(concatenatedDictionary[0].snippet, 'мольба миннат…');
 
+const cleanProse = concordanceSnippets(
+  'Там было все: и скорбь, и любовь, и мольба, и обида, и надежда.', 'мольба', 4,
+  { knownRussian: true });
+assert.strictEqual(cleanProse.length, 1, 'valid Russian prose with consonant-heavy words must remain');
+
 const wordFormsHtml = fs.readFileSync(require.resolve('../public/word-forms.html'), 'utf8');
 const wordFormsJs = fs.readFileSync(require.resolve('../public/js/word-forms.js'), 'utf8');
 const appCss = fs.readFileSync(require.resolve('../public/css/app.css'), 'utf8');

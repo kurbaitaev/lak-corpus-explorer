@@ -108,10 +108,10 @@ function cleanQuery(value) {
   return String(value || '').trim().slice(0, 80);
 }
 
-const CYRILLIC_VOWELS = /[аеёиоуыэюя]/gi;
 const LATIN_LETTERS = /[A-Za-z]/;
 const CYRILLIC_LETTERS = /[А-Яа-яЁё]/;
 const INTERNAL_CAPITAL = /[а-яё][А-ЯЁ]/;
+const IMPROBABLE_CYRILLIC_CLUSTER = /[бвгджзйклмнпрстфхцчшщъь]{4,}/i;
 
 function concordanceQuality(snippet, form, knownRussian) {
   let score = 5;
@@ -128,8 +128,7 @@ function concordanceQuality(snippet, form, knownRussian) {
     const words = text.match(/[А-Яа-яЁё]+/g) || [];
     for (const word of words) {
       if (word.length < 6 || word.toLowerCase() === String(form).toLowerCase()) continue;
-      const vowels = (word.match(CYRILLIC_VOWELS) || []).length;
-      if (vowels <= 1) score -= 4;
+      if (IMPROBABLE_CYRILLIC_CLUSTER.test(word)) score -= 5;
     }
   }
   const withoutMatch = at >= 0 ? text.slice(0, at) + text.slice(at + String(form).length) : text;
