@@ -350,6 +350,45 @@ module.exports = ({ pool, packageDir }) => {
     }
   });
 
+  // The index promises a source count, so its drill-down must be backed by the
+  // same per-source tallies that produced that count. Source catalogue fields
+  // are public; source text and private paths remain outside this response.
+  router.get('/api/word-forms/:form/sources', async (req, res) => {
+    try {
+      const form = cleanQuery(req.params.form).toLowerCase();
+      if (!form) return res.status(404).json({ error: 'Word form not found' });
+
+      const published = await pool.query(
+        `SELECT form, occurrences, sources, script_profile, lak_marker, confidence
+           FROM public_word_forms WHERE form = $1`, [form]);
+      if (!published.rows.length) {
+        return res.status(404).json({ error: 'Word form not found' });
+      }
+
+      const rows = await pool.query(
+        `SELECT ${SOURCE_COLUMNS}, t.occurrences AS form_occurrences
+           FROM public_word_form_tallies t
+           JOIN public_sources s ON s.source_sequence = t.source_sequence
+          WHERE t.form = $1
+          ORDER BY t.occurrences DESC, (s.title IS NULL), s.title NULLS LAST, s.source_sequence`,
+        [form]);
+      const summary = toPublicForm(published.rows[0]);
+      const items = rows.rows.map(row => ({
+        ...toPublicSource(row),
+        form_occurrences: Number(row.form_occurrences),
+      }));
+
+      res.set('Cache-Control', 'no-store');
+      res.json(P.assertPublicSafe({
+        status: 'ok', form: summary.form, occurrences: summary.occurrences,
+        sources: summary.sources, items,
+      }, 'word-form-sources'));
+    } catch (err) {
+      console.error('Word form source detail failed:', err.message);
+      res.status(500).json({ error: 'Word form sources unavailable' });
+    }
+  });
+
   return router;
 };
 

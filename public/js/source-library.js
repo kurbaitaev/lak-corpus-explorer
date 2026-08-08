@@ -361,7 +361,8 @@
   }
 
   function boot() {
-    var ref = new URLSearchParams(window.location.search).get('source');
+    var urlParams = new URLSearchParams(window.location.search);
+    var ref = urlParams.get('source');
     if (ref) {
       state.detailRef = ref;
       fetch('/api/source-library/' + encodeURIComponent(ref))
@@ -380,6 +381,9 @@
         });
       return;
     }
+
+    var initialQuery = urlParams.get('q');
+    if (initialQuery) document.getElementById('lib-search').value = initialQuery;
 
     load();
     loadFacets();

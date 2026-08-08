@@ -1,11 +1,4 @@
-/* Public Lak word-form index.
- *
- * A list of word forms and counts, and deliberately nothing more. There is no
- * context, no example sentence and no line reference here, because those would
- * be the restricted text itself rather than a fact about it. Every form shown
- * is attested by at least two independent sources; the server enforces that,
- * and this page explains it.
- */
+/* Public Lak word-form index and source-level attestation detail. */
 (function () {
   'use strict';
 
@@ -35,13 +28,21 @@
     return t('lib.' + group + '.' + value, value.replace(/_/g, ' '));
   }
 
+  function sourceName(source) {
+    if (source.title) return source.title;
+    return tp('wf.source.untitled', '{type} · {ref}', {
+      type: label('materialType', source.material_type), ref: source.ref,
+    });
+  }
+
   var SCRIPTS = ['cyrillic', 'latin', 'mixed'];
   var CONFIDENCES = ['high', 'medium', 'low'];
   var state = { page: 1, seq: 0, last: null, total: null };
 
   function row(f) {
+    var detailHref = '/word-forms.html?form=' + encodeURIComponent(f.form);
     return '<tr>' +
-      '<td class="wf-form" lang="lbe">' + esc(f.form) +
+      '<td class="wf-form" lang="lbe"><a href="' + detailHref + '">' + esc(f.form) + '</a>' +
         (f.lak_marker ? ' <span class="wf-marker" title="' + esc(t('wf.markerTitle', 'Contains a Lak-specific letter')) + '">' +
           esc(t('wf.markerShort', 'Lak')) + '</span>' : '') + '</td>' +
       '<td class="wf-num">' + esc(num(f.occurrences)) + '</td>' +
@@ -49,9 +50,58 @@
       '<td><span class="obs-tag">' + esc(label('scriptProfile', f.script_profile)) + '</span></td>' +
       '<td><span class="wf-confidence ' + esc(f.confidence) + '">' +
         esc(label('confidence', f.confidence)) + '</span></td>' +
-      '<td><a href="/source-library.html?q=' + encodeURIComponent(f.form) + '">' +
+      '<td><a href="' + detailHref + '">' +
         esc(t('wf.findSources', 'Sources')) + '</a></td>' +
       '</tr>';
+  }
+
+  function renderDetail(payload) {
+    state.detail = payload;
+    var host = document.getElementById('wf-detail');
+    var sourceCards = payload.items.map(function (source) {
+      var original = source.urls && source.urls.length
+        ? '<a href="' + esc(source.urls[0]) + '" target="_blank" rel="noopener noreferrer">' +
+            esc(t('wf.source.openOriginal', 'Open original')) + '</a>'
+        : '';
+      return '<article class="wf-source-card">' +
+        '<div><h3>' + esc(sourceName(source)) + '</h3>' +
+          '<p>' + esc(label('materialType', source.material_type)) +
+          (source.document_year ? ' · ' + esc(source.document_year) : '') + '</p></div>' +
+        '<div class="wf-source-count"><b>' + esc(num(source.form_occurrences)) + '</b><span>' +
+          esc(t('wf.detail.inThisSource', 'occurrences in this source')) + '</span></div>' +
+        '<div class="wf-source-actions"><a href="/source-library.html?source=' + encodeURIComponent(source.ref) + '">' +
+          esc(t('wf.source.openRecord', 'Source record')) + '</a>' + original + '</div>' +
+      '</article>';
+    }).join('');
+
+    host.innerHTML = '<a class="lib-back" href="/word-forms.html?q=' + encodeURIComponent(payload.form) + '">' +
+      esc(t('wf.detail.back', 'Back to word forms')) + '</a>' +
+      '<header class="wf-detail-head"><div><div class="obs-kicker">' + esc(t('wf.detail.kicker', 'Word-form evidence')) + '</div>' +
+      '<h2 lang="lbe">' + esc(payload.form) + '</h2><p>' +
+      esc(tp('wf.detail.summary', '{occurrences} occurrences across {sources} sources', {
+        occurrences: num(payload.occurrences), sources: num(payload.sources),
+      })) + '</p></div></header>' +
+      '<div class="wf-source-list">' + sourceCards + '</div>' +
+      '<p class="wf-detail-note">' + esc(t('wf.detail.contextNote',
+        'This view identifies each source and its occurrence count. Exact passages are shown only when that source text is cleared for public display.')) + '</p>';
+    host.hidden = false;
+    document.getElementById('wf-browse').hidden = true;
+  }
+
+  function loadDetail(form) {
+    var host = document.getElementById('wf-detail');
+    host.hidden = false;
+    host.innerHTML = '<div class="obs-grid" aria-label="' + esc(t('wf.detail.loading', 'Loading source evidence')) + '">' +
+      '<div class="obs-skeleton"></div></div>';
+    document.getElementById('wf-browse').hidden = true;
+    fetch('/api/word-forms/' + encodeURIComponent(form) + '/sources', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('not found'); return r.json(); })
+      .then(renderDetail)
+      .catch(function () {
+        host.innerHTML = '<a class="lib-back" href="/word-forms.html">' + esc(t('wf.detail.back', 'Back to word forms')) + '</a>' +
+          '<div class="obs-error"><h2>' + esc(t('wf.detail.errorTitle', 'Source evidence could not be loaded')) +
+          '</h2><p>' + esc(t('wf.detail.errorBody', 'Return to the index and try again.')) + '</p></div>';
+      });
   }
 
   function render(payload) {
@@ -173,6 +223,11 @@
   }
 
   function boot() {
+    var detailForm = new URLSearchParams(window.location.search).get('form');
+    if (detailForm) {
+      loadDetail(detailForm);
+      return;
+    }
     fillSelects();
     var initial = new URLSearchParams(window.location.search).get('q');
     if (initial) document.getElementById('wf-search').value = initial;
@@ -198,6 +253,7 @@
   if (I18n && I18n.onChange) {
     I18n.onChange(function () {
       relocalizeSelects();
+      if (state.detail) { renderDetail(state.detail); return; }
       if (state.last) { render(state.last); renderStats(state.last); }
     });
   }

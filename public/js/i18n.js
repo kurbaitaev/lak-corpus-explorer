@@ -2599,6 +2599,23 @@
     'wf.stat.forms': { en: 'Published word forms', ru: 'Опубликованных словоформ' },
     'wf.stat.threshold': { en: 'Sources needed to publish a form', ru: 'Источников нужно для публикации формы' },
     'wf.stat.thresholdValue': { en: '2+', ru: '2+' },
+    'wf.detail.kicker': { en: 'Word-form evidence', ru: 'Сведения о словоформе' },
+    'wf.detail.summary': {
+      en: '{occurrences} occurrences across {sources} sources',
+      ru: '{occurrences} вхождений в {sources} источниках'
+    },
+    'wf.detail.inThisSource': { en: 'occurrences in this source', ru: 'вхождений в этом источнике' },
+    'wf.detail.back': { en: 'Back to word forms', ru: 'Назад к словоформам' },
+    'wf.detail.loading': { en: 'Loading source evidence', ru: 'Загрузка сведений об источниках' },
+    'wf.detail.errorTitle': { en: 'Source evidence could not be loaded', ru: 'Не удалось загрузить сведения об источниках' },
+    'wf.detail.errorBody': { en: 'Return to the index and try again.', ru: 'Вернитесь к указателю и повторите попытку.' },
+    'wf.detail.contextNote': {
+      en: 'This view identifies each source and its occurrence count. Exact passages are shown only when that source text is cleared for public display.',
+      ru: 'Здесь указаны каждый источник и число вхождений. Точные фрагменты показываются только для текстов, разрешённых к публичному показу.'
+    },
+    'wf.source.untitled': { en: '{type} · {ref}', ru: '{type} · {ref}' },
+    'wf.source.openRecord': { en: 'Source record', ru: 'Карточка источника' },
+    'wf.source.openOriginal': { en: 'Open original', ru: 'Открыть оригинал' },
 
     /* Search-page collections */
     'search.collections.sources': { en: 'Sources matching “{q}”', ru: 'Источники по запросу «{q}»' },
