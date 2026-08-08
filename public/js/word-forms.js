@@ -173,13 +173,24 @@
   }
 
   function renderStats(payload) {
-    if (!state.total) state.total = payload.total;
+    var search = document.getElementById('wf-search');
+    if (state.total == null && search && !search.value.trim()) state.total = payload.total;
+    var total = state.total == null ? payload.total : state.total;
     var host = document.getElementById('wf-stats');
     host.innerHTML =
-      '<div class="obs-stat"><b>' + esc(num(state.total)) + '</b><span>' +
-        esc(t('wf.stat.forms', 'Published word forms')) + '</span></div>' +
-      '<div class="obs-stat"><b>' + esc(t('wf.stat.thresholdValue', '2+')) + '</b><span>' +
-        esc(t('wf.stat.threshold', 'Sources needed to publish a form')) + '</span></div>';
+      '<div class="obs-stat"><b>' + esc(num(total)) + '</b><span>' +
+        esc(t('wf.stat.forms', 'Searchable word forms')) + '</span></div>';
+  }
+
+  function loadIndexTotal() {
+    fetch('/api/word-forms?limit=1&sort=alphabetical', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (payload) {
+        if (typeof payload.total !== 'number') return;
+        state.total = payload.total;
+        renderStats(payload);
+      })
+      .catch(function () {});
   }
 
   function currentQuery() {
@@ -244,6 +255,7 @@
   }
 
   function boot() {
+    loadIndexTotal();
     var detailForm = new URLSearchParams(window.location.search).get('form');
     if (detailForm) {
       loadDetail(detailForm);
