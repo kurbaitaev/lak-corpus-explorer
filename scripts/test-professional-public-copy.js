@@ -45,4 +45,10 @@ const i18n = read('public/js/i18n.js');
 assert(i18n.includes("'nav.brand.name': { en: 'Lak Corpus', ru: 'Корпус лакского языка' }"), 'Russian brand label changed');
 assert(!i18n.includes("ru: 'Обозреватель'"), 'awkward Russian brand label returned');
 
+const sourceLibrary = read('public/js/source-library.js');
+assert(!sourceLibrary.includes("stat(t('lib.stat.receipts'"), 'system receipt count should not appear publicly');
+assert(!sourceLibrary.includes('loadReceipts()'), 'system receipt request should stay removed');
+assert(!i18n.includes('Preserve document structure and align Lak'), 'verbose source-use copy returned');
+assert(!i18n.includes('Сохранять структуру документа и сопоставлять'), 'verbose Russian source-use copy returned');
+
 console.log('professional public copy and navigation checks passed');

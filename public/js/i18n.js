@@ -2483,52 +2483,52 @@
     /* One recommendation per material type; the API carries the same sentence
      * in English and this is its Russian counterpart. */
     'lib.use.translation_or_parallel_text': {
-      en: 'Preserve document structure and align Lak with the corresponding Russian/Latin/English version after human verification.',
-      ru: 'Сохранять структуру документа и сопоставлять лакский текст с соответствующей русской, латинской или английской версией после проверки человеком.'
+      en: 'Align reviewed Lak text with its corresponding translation.',
+      ru: 'Выравнивать проверенный лакский текст с соответствующим переводом.'
     },
     'lib.use.academic_reference': {
-      en: 'Index metadata, citations and any reviewed Lak examples; do not ingest article prose as Lak corpus data.',
-      ru: 'Индексировать метаданные, ссылки и проверенные лакские примеры; текст самих статей в лакский корпус не включать.'
+      en: 'Index citations and reviewed Lak examples.',
+      ru: 'Индексировать ссылки и проверенные лакские примеры.'
     },
     'lib.use.grammar_or_linguistic_analysis': {
-      en: 'Extract cited Lak examples and grammatical analyses for lemma/morphology rules and expert benchmarks; keep prose out of the sentence corpus.',
-      ru: 'Извлекать приведённые лакские примеры и грамматические разборы для правил лемматизации и морфологии и для экспертных эталонов; авторский текст в корпус предложений не включать.'
+      en: 'Extract reviewed examples and grammatical analyses.',
+      ru: 'Извлекать проверенные примеры и грамматические разборы.'
     },
     'lib.use.primary_text_or_folklore': {
-      en: 'Segment into documents, paragraphs and sentences for concordance and genre coverage; retain author, translator and edition metadata.',
-      ru: 'Разбивать на документы, абзацы и предложения для конкорданса и охвата жанров; сохранять сведения об авторе, переводчике и издании.'
+      en: 'Segment for concordance and retain publication metadata.',
+      ru: 'Сегментировать для конкорданса и сохранять данные издания.'
     },
     'lib.use.educational_material': {
-      en: 'Use privately for orthography, graded vocabulary and benchmark design; extract examples only after rights review.',
-      ru: 'Использовать закрыто для орфографии, лексики по уровням и подготовки эталонов; примеры извлекать только после проверки прав.'
+      en: 'Support orthography, graded vocabulary, and evaluation after rights review.',
+      ru: 'Использовать для орфографии, уровневой лексики и оценки после проверки прав.'
     },
     'lib.use.dictionary_or_lexicon': {
-      en: 'Segment headwords, translations, examples and morphology; reconcile against existing Khaydakov, Dzhidalaev, Gadzhiyev and Digiev layers.',
-      ru: 'Выделять заголовочные слова, переводы, примеры и морфологию; сверять со слоями Хайдакова, Джидалаева, Гаджиева и Дигиева.'
+      en: 'Extract headwords, senses, examples, and morphology.',
+      ru: 'Извлекать заголовочные слова, значения, примеры и морфологию.'
     },
     'lib.use.non_lak_comparative': {
-      en: 'Index metadata and relevant comparisons; exclude non-Lak sentences from the Lak corpus.',
-      ru: 'Индексировать метаданные и уместные сопоставления; нелакские предложения в лакский корпус не включать.'
+      en: 'Index comparative metadata; exclude non-Lak sentences.',
+      ru: 'Индексировать сравнительные данные; исключать нелакские предложения.'
     },
     'lib.use.historical_cultural_reference': {
-      en: 'Index people, places, dates and Lak cultural context; do not mix Russian historical prose into the Lak sentence corpus.',
-      ru: 'Индексировать людей, места, даты и лакский культурный контекст; русскую историческую прозу в лакский корпус предложений не добавлять.'
+      en: 'Index cultural entities and context; exclude non-Lak prose.',
+      ru: 'Индексировать культурные сущности и контекст; исключать нелакскую прозу.'
     },
     'lib.use.research_administration': {
-      en: 'Preserve names, dates and project context; exclude administrative prose from linguistic candidate layers.',
-      ru: 'Сохранять имена, даты и контекст проекта; служебные тексты в лингвистические слои не включать.'
+      en: 'Retain project provenance; exclude administrative text from linguistic data.',
+      ru: 'Сохранять происхождение проекта; исключать служебный текст из лингвистических данных.'
     },
     'lib.use.fieldwork_transcript': {
-      en: 'Preserve speaker/session cues and align Lak transcription with supplied translations; require speaker-consent and encoding review before any release.',
-      ru: 'Сохранять пометы о говорящем и сеансе и сопоставлять лакскую расшифровку с приложенными переводами; до любой публикации требуется согласие говорящих и проверка кодировки.'
+      en: 'Align transcription and translation after consent and encoding review.',
+      ru: 'Выравнивать расшифровку и перевод после проверки согласия и кодировки.'
     },
     'lib.use.elicitation_questionnaire': {
-      en: 'Convert prompts into a reviewed elicitation and morphology benchmark; do not treat prompt prose as attested Lak usage.',
-      ru: 'Превращать вопросы в проверенный эталон по сбору данных и морфологии; сами формулировки вопросов не считать засвидетельствованным лакским употреблением.'
+      en: 'Build reviewed elicitation and morphology benchmarks.',
+      ru: 'Создавать проверенные эталоны для сбора данных и морфологии.'
     },
     'lib.use.archive_container': {
-      en: 'Retain unchanged; reconcile members against separately received files before extraction.',
-      ru: 'Хранить без изменений; перед извлечением сверить вложения с отдельно полученными файлами.'
+      en: 'Inventory archive members before extraction.',
+      ru: 'Инвентаризировать содержимое архива до извлечения.'
     },
 
     /* ── Public word-form index ─────────────────────────────── */
