@@ -323,6 +323,24 @@ async function main() {
     const res = await api('/api/word-forms?limit=100000');
     assert(res.data.items.length <= 100, `returned ${res.data.items.length} rows`);
   });
+  await it('a published form opens the exact sources behind its counts', async () => {
+    const forms = await api('/api/word-forms?limit=1&sort=sources');
+    const summary = forms.data.items[0];
+    assert(summary, 'no published form available for detail test');
+    const detail = await api(`/api/word-forms/${encodeURIComponent(summary.form)}/sources`);
+    assert.strictEqual(detail.status, 200);
+    assert.strictEqual(detail.data.form, summary.form);
+    assert.strictEqual(detail.data.occurrences, summary.occurrences);
+    assert.strictEqual(detail.data.sources, summary.sources);
+    assert.strictEqual(detail.data.items.length, summary.sources);
+    assert.strictEqual(detail.data.items.reduce((n, row) => n + row.form_occurrences, 0), summary.occurrences);
+    for (const source of detail.data.items) {
+      assert.match(source.ref, /^s\d{1,6}$/);
+      assert(source.form_occurrences > 0);
+      assert(!Object.prototype.hasOwnProperty.call(source, 'text'));
+      assert(!Object.prototype.hasOwnProperty.call(source, 'source_path'));
+    }
+  });
 
   group('the catalogue and the index agree with each other');
   await it('only sources that contribute word forms have a non-zero form count', () => {

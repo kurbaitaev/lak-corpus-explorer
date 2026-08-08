@@ -6,7 +6,7 @@
 <title data-i18n="wf.meta.title">Lak word forms · Lak Corpus Explorer</title>
 <meta name="description" content="A public index of Lak word forms derived from the research batch: how often each form is attested and how many independent sources agree on it.">
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="/css/app.css?v=3">
+<link rel="stylesheet" href="/css/app.css?v=4">
 </head>
 <body>
 <nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
@@ -38,6 +38,8 @@
 
   <section class="obs-main" aria-label="Word form index" data-i18n-aria="wf.indexLabel">
     <div class="container">
+      <div id="wf-detail" hidden aria-live="polite"></div>
+      <div id="wf-browse">
       <div class="obs-toolbar">
         <div class="obs-controls">
           <div class="field-wrap"><label for="wf-search" data-i18n="wf.searchLabel">Find a form</label><input id="wf-search" type="search" placeholder="Start typing a Lak word…" data-i18n-placeholder="wf.searchPlaceholder" autocomplete="off"></div>
@@ -55,12 +57,13 @@
         <div class="obs-grid" aria-label="Loading word forms" data-i18n-aria="wf.loading"><div class="obs-skeleton"></div><div class="obs-skeleton"></div></div>
       </div>
       <nav class="lib-pager" id="wf-pager" aria-label="Index pages" data-i18n-aria="wf.pagerLabel" hidden></nav>
+      </div>
     </div>
   </section>
 </main>
 <script src="/js/i18n.js?v=2"></script>
 <script src="/js/nav.js?v=4"></script>
 <script src="/js/auth.js?v=2"></script>
-<script src="/js/word-forms.js?v=1"></script>
+<script src="/js/word-forms.js?v=2"></script>
 </body>
 </html>
