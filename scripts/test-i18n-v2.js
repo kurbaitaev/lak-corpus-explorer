@@ -23,11 +23,14 @@ const en = runtime('en');
 const ru = runtime('ru');
 for (const key of [
   'search.mode.general','search.mode.wordform','search.mode.lemma','search.mode.grammar',
+  'search.smart.kicker','search.smart.title','search.smart.body','search.smart.tokens',
+  'search.smart.analyses','search.smart.lemmas','search.smart.tags','search.smart.trust',
   'search.grammarFeature','search.badge.sourceAnnotation','search.badge.noSourceAnalysis',
   'search.morph.noMatchesTitle','search.morph.exactPromptTitle',
   'validate.kind.lemma_analysis','validate.question.lemma_analysis',
   'validate.morph.option.accept','validate.morph.option.reject',
   'validate.morph.option.uncertain','validate.morph.option.correct',
+  'research.v2.h2','research.v2.body','research.v2.cta','research.v2.trust',
 ]) {
   assert(en._dict[key]?.en, `${key} missing English`);
   assert(en._dict[key]?.ru, `${key} missing Russian`);

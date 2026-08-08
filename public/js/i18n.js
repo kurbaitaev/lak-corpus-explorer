@@ -121,6 +121,23 @@
     'search.mode.lemma': { en: 'Lemma', ru: 'Лемма' },
     'search.mode.grammar': { en: 'Grammar', ru: 'Грамматика' },
     'search.mode.label': { en: 'Search mode', ru: 'Режим поиска' },
+    'search.smart.kicker': { en: 'New structured corpus', ru: 'Новый структурированный корпус' },
+    'search.smart.title': { en: 'Search Lak by wordform, lemma, or grammar', ru: 'Ищите по словоформе, лемме или грамматике' },
+    'search.smart.body': {
+      en: 'The Explorer now searches inside 87,266 PCMLBE tokens and 20,606 source annotations. Find a written form, collect attested forms under one lemma, or search a grammatical tag.',
+      ru: 'Теперь поиск работает внутри 87 266 токенов PCMLBE и 20 606 аннотаций источника. Находите конкретную словоформу, собирайте засвидетельствованные формы одной леммы или ищите по грамматическому тегу.'
+    },
+    'search.smart.statsLabel': { en: 'Structured corpus statistics', ru: 'Статистика структурированного корпуса' },
+    'search.smart.tokens': { en: 'structured tokens', ru: 'структурированных токенов' },
+    'search.smart.analyses': { en: 'source analyses', ru: 'разборов из источника' },
+    'search.smart.lemmas': { en: 'source lemmas', ru: 'леммы из источника' },
+    'search.smart.tags': { en: 'grammar tags', ru: 'грамматический тег' },
+    'search.smart.examplesLabel': { en: 'Try the new search', ru: 'Примеры нового поиска' },
+    'search.smart.try': { en: 'Try it:', ru: 'Попробуйте:' },
+    'search.smart.trust': {
+      en: 'Public results show source annotations only. Machine predictions remain in the review queue until a person approves them.',
+      ru: 'В публичных результатах показываются только аннотации источника. Машинные прогнозы остаются в очереди проверки до подтверждения человеком.'
+    },
     'search.grammarFeature': { en: 'Grammatical tag or feature', ru: 'Грамматический тег или признак' },
     'search.grammarChoose': { en: 'Choose a source tag…', ru: 'Выберите тег источника…' },
     'search.grammar.tags': { en: 'Source tags', ru: 'Теги источника' },
@@ -167,12 +184,12 @@
     'index.col.evidence': { en: 'Evidence', ru: 'Основания' },
     'index.research.kicker': { en: 'Research update', ru: 'Ход исследования' },
     'index.research.title': {
-      en: 'A new batch of sources was audited — and none of it was added to this corpus',
-      ru: 'Новая партия источников прошла проверку — и ничего из неё не добавлено в корпус'
+      en: 'The corpus now understands source lemmas and grammar',
+      ru: 'Корпус теперь понимает леммы и грамматику источника'
     },
     'index.research.body': {
-      en: 'See what the audit counted, how parallel Lak and Russian versions of the same work are found, and what has to happen before any of it can become public.',
-      ru: 'Посмотрите, что подсчитал аудит, как находят параллельные лакские и русские версии одного произведения и что должно произойти, прежде чем это станет публичным.'
+      en: 'See how 87,266 PCMLBE tokens became a structured search layer, what is verified source evidence, and what still needs human review.',
+      ru: 'Посмотрите, как 87 266 токенов PCMLBE стали структурированным поисковым слоем, что подтверждено источником, а что ещё требует проверки человеком.'
     },
     'index.research.cta': { en: 'Read the research update →', ru: 'Читать обновление исследования →' },
 
@@ -319,8 +336,23 @@
     'research.kicker': { en: 'Research update · what changed', ru: 'Ход исследования · что изменилось' },
     'research.h1': { en: 'What changed in this research round', ru: 'Что изменилось в этом этапе исследования' },
     'research.intro': {
-      en: 'A new batch of source materials was audited and routed for review. Permission to use the supplied research materials has been confirmed. The licensed PCMLBE source has also yielded <strong>25 searchable Lak–English pairs</strong>, including 21 with a Cyrillic Lak parallel.',
-      ru: 'Новая партия исходных материалов прошла аудит и была направлена на проверку. Разрешение на использование переданных исследовательских материалов подтверждено. Лицензированный источник PCMLBE также дал <strong>25 доступных для поиска лакско-английских пар</strong>, из них 21 содержит лакскую строку кириллицей.'
+      en: 'The Explorer now has a public, structured PCMLBE layer with <strong>87,266 tokens</strong>, <strong>20,606 source analyses</strong>, and <strong>1,234 source lemmas</strong>. People can search exact wordforms, lemmas, and grammatical tags while every result remains linked to its source.',
+      ru: 'Теперь в Explorer есть публичный структурированный слой PCMLBE: <strong>87 266 токенов</strong>, <strong>20 606 разборов из источника</strong> и <strong>1 234 леммы</strong>. Можно искать точные словоформы, леммы и грамматические теги, сохраняя связь каждого результата с источником.'
+    },
+    'research.v2.aria': { en: 'Structured corpus search', ru: 'Структурированный поиск по корпусу' },
+    'research.v2.kicker': { en: 'Live now', ru: 'Уже доступно' },
+    'research.v2.h2': { en: 'The corpus can now search inside Lak words', ru: 'Корпус теперь умеет искать внутри лакских слов' },
+    'research.v2.body': {
+      en: 'A search is no longer limited to a flat text match. The structured PCMLBE layer connects attested wordforms to source lemmas and grammatical analyses. This makes it possible to find related forms and grammatical constructions without presenting machine guesses as facts.',
+      ru: 'Поиск больше не ограничен простым совпадением текста. Структурированный слой PCMLBE связывает засвидетельствованные словоформы с леммами и грамматическими разборами источника. Так можно находить связанные формы и грамматические конструкции, не выдавая машинные догадки за факты.'
+    },
+    'research.v2.cta': { en: 'Try lemma search', ru: 'Попробовать поиск по лемме' },
+    'research.v2.wordform': { en: 'Find an exact form as it appears in a text', ru: 'Найти точную форму в тексте' },
+    'research.v2.lemma': { en: 'Collect attested forms under a source lemma', ru: 'Собрать засвидетельствованные формы одной леммы' },
+    'research.v2.grammar': { en: 'Find tokens carrying a source grammatical tag', ru: 'Найти токены с грамматическим тегом источника' },
+    'research.v2.trust': {
+      en: 'The 3,193 machine-generated lemma proposals are not public facts. They stay in an authenticated review workflow and never enter public search automatically.',
+      ru: '3 193 машинных предложения по леммам не считаются публичными фактами. Они остаются в закрытом процессе проверки и никогда не попадают в публичный поиск автоматически.'
     },
     'research.method': {
       en: '<strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.',
