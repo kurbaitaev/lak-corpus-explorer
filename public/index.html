@@ -116,6 +116,7 @@
       </div>
     </form>
     <div class="search-actions">
+      <button class="btn btn-secondary" id="browse-lemmas" type="button" hidden data-i18n="search.lemma.browseAll">All lemmas</button>
       <a class="btn btn-secondary" href="/validate.html" data-i18n="search.landing.validateAction">Check translations</a>
       <a class="btn btn-secondary" href="/observatory.html" data-i18n="search.landing.resourcesAction">Explore resources</a>
       <button class="btn btn-quiet" id="browse-all" type="button" data-i18n="search.landing.browseAll">Browse all examples</button>
@@ -142,7 +143,7 @@
 
   <div class="table-wrap results-only" id="table-wrap">
     <table>
-      <thead>
+      <thead id="results-head">
         <tr>
           <th class="td-type" data-i18n="index.col.type">Type / Quality</th>
           <th class="td-lak" data-i18n="index.col.lak">Lak text / form</th>

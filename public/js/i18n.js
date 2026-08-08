@@ -159,6 +159,21 @@
     'search.morph.tag': { en: 'Tag', ru: 'Тег' },
     'search.morph.definition': { en: 'Definition', ru: 'Определение' },
     'search.morph.review': { en: 'Review', ru: 'Проверить' },
+    'search.lemma.browseAll': { en: 'All lemmas', ru: 'Все леммы' },
+    'search.lemma.placeholder': {
+      en: 'Enter a lemma, or leave blank to browse all',
+      ru: 'Введите лемму или оставьте поле пустым, чтобы увидеть все'
+    },
+    'search.lemma.loading': { en: 'Loading lemmas…', ru: 'Загрузка лемм…' },
+    'search.lemma.empty': { en: 'No source lemmas found', ru: 'Леммы источника не найдены' },
+    'search.lemma.summary': {
+      en: 'Forms: {forms} · occurrences: {occurrences}',
+      ru: 'Форм: {forms} · вхождений: {occurrences}'
+    },
+    'search.lemma.count': {
+      en: { one: '{count} lemma', other: '{count} lemmas' },
+      ru: { one: '{count} лемма', few: '{count} леммы', many: '{count} лемм', other: '{count} леммы' }
+    },
     'index.recordType': { en: 'Record type', ru: 'Тип записи' },
     'index.type.both': { en: 'Texts + lexicon', ru: 'Тексты + лексикон' },
     'index.type.text': { en: 'Texts only', ru: 'Только тексты' },
