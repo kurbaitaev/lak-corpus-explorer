@@ -11,6 +11,7 @@ const researchUpdate = require('./lib/research-update');
 const v13 = require('./lib/source-import-v13');
 const publicDerivation = require('./lib/public-derivation');
 const sourceLibrary = require('./routes/source-library');
+const { createAliasResolver } = require('./lib/russian-morphology');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -342,6 +343,7 @@ const {
   norm, normalizeQuery, tokenize, tokenHas, recordMatchTier, fieldMatchTier,
   findMatchSpans, highlightSpansFor,
 } = require('./lib/search');
+const resolveSearchAlias = createAliasResolver([CURATED_ALIASES, CORPUS_ALIASES], norm);
 
 // ── Reviewer session helpers (signed cookie, no extra deps) ──
 const SESSION_SECRET      = process.env.SESSION_SECRET;
@@ -585,7 +587,10 @@ app.get('/api/corpus/search', async (req, res) => {
   const currentQ = normalizeQuery(q);
   const queryTokens = tokenize(currentQ);
   // Curated overlay takes precedence over extracted aliases for known gaps
-  const expanded = currentQ ? (CURATED_ALIASES[currentQ] || CORPUS_ALIASES[currentQ] || []) : [];
+  const aliasResolution = currentQ
+    ? resolveSearchAlias(currentQ)
+    : { aliases: [], matchedQuery: null, match: 'none' };
+  const expanded = aliasResolution.aliases;
 
   // Rank tier per matched record:
   //   0 — the query occurs verbatim inside one field (exact word order), or

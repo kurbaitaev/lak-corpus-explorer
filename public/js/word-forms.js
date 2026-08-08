@@ -35,6 +35,26 @@
     });
   }
 
+  function highlightedSnippet(snippet, form) {
+    var text = String(snippet || '');
+    var wanted = String(form || '').toLocaleLowerCase();
+    var lower = text.toLocaleLowerCase();
+    var out = '';
+    var from = 0;
+    var at;
+    while (wanted && (at = lower.indexOf(wanted, from)) !== -1) {
+      out += esc(text.slice(from, at)) + '<mark>' + esc(text.slice(at, at + wanted.length)) + '</mark>';
+      from = at + wanted.length;
+    }
+    return out + esc(text.slice(from));
+  }
+
+  function contextLocation(context) {
+    if (context.page != null) return tp('wf.context.page', 'Page {number}', { number: context.page });
+    if (context.line != null) return tp('wf.context.line', 'Line {number}', { number: context.line });
+    return '';
+  }
+
   var SCRIPTS = ['cyrillic', 'latin', 'mixed'];
   var CONFIDENCES = ['high', 'medium', 'low'];
   var state = { page: 1, seq: 0, last: null, total: null };
@@ -59,18 +79,19 @@
     state.detail = payload;
     var host = document.getElementById('wf-detail');
     var sourceCards = payload.items.map(function (source) {
-      var original = source.urls && source.urls.length
-        ? '<a href="' + esc(source.urls[0]) + '" target="_blank" rel="noopener noreferrer">' +
-            esc(t('wf.source.openOriginal', 'Open original')) + '</a>'
-        : '';
+      var contexts = (source.contexts || []).map(function (context) {
+        var location = contextLocation(context);
+        return '<li>' + (location ? '<span class="wf-context-location">' + esc(location) + '</span>' : '') +
+          '<p>' + highlightedSnippet(context.snippet, payload.form) + '</p></li>';
+      }).join('');
       return '<article class="wf-source-card">' +
-        '<div><h3>' + esc(sourceName(source)) + '</h3>' +
+        '<div class="wf-source-main"><h3>' + esc(sourceName(source)) + '</h3>' +
           '<p>' + esc(label('materialType', source.material_type)) +
           (source.document_year ? ' · ' + esc(source.document_year) : '') + '</p></div>' +
         '<div class="wf-source-count"><b>' + esc(num(source.form_occurrences)) + '</b><span>' +
           esc(t('wf.detail.inThisSource', 'occurrences in this source')) + '</span></div>' +
-        '<div class="wf-source-actions"><a href="/source-library.html?source=' + encodeURIComponent(source.ref) + '">' +
-          esc(t('wf.source.openRecord', 'Source record')) + '</a>' + original + '</div>' +
+        (contexts ? '<ol class="wf-contexts">' + contexts + '</ol>' :
+          '<p class="wf-context-empty">' + esc(t('wf.context.unavailable', 'Context is not available for this occurrence.')) + '</p>') +
       '</article>';
     }).join('');
 
@@ -83,7 +104,7 @@
       })) + '</p></div></header>' +
       '<div class="wf-source-list">' + sourceCards + '</div>' +
       '<p class="wf-detail-note">' + esc(t('wf.detail.contextNote',
-        'This view identifies each source and its occurrence count. Exact passages are shown only when that source text is cleared for public display.')) + '</p>';
+        'Each excerpt shows the form in its surrounding context.')) + '</p>';
     host.hidden = false;
     document.getElementById('wf-browse').hidden = true;
   }

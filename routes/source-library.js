@@ -60,7 +60,6 @@ function toPublicSource(row) {
     file_format: row.file_format,
     script_profile: row.script_profile,
     contribution: row.contribution,
-    urls: Array.isArray(row.urls) ? row.urls : [],
     pages: row.pages === null ? null : Number(row.pages),
     word_count: row.word_count === null ? null : Number(row.word_count),
     text_chars: row.text_chars === null ? null : Number(row.text_chars),
@@ -107,6 +106,37 @@ function intParam(value, fallback, min, max) {
 // only from strings that are already published on the card.
 function cleanQuery(value) {
   return String(value || '').trim().slice(0, 80);
+}
+
+function concordanceSnippets(text, form, max = 4) {
+  const source = String(text || '').replace(/\s+/g, ' ').trim();
+  const query = String(form || '').normalize('NFKC').toLowerCase();
+  const searchable = source.normalize('NFKC').toLowerCase();
+  if (!source || !query) return [];
+  const out = [];
+  let from = 0;
+  while (out.length < max) {
+    const at = searchable.indexOf(query, from);
+    if (at < 0) break;
+    const before = at === 0 ? '' : searchable[at - 1];
+    const after = searchable[at + query.length] || '';
+    if ((!before || !/[\p{L}\p{N}]/u.test(before)) &&
+        (!after || !/[\p{L}\p{N}]/u.test(after) || /[\u0300-\u036f]/u.test(after))) {
+      const start = Math.max(0, at - 105);
+      const end = Math.min(source.length, at + query.length + 145);
+      let snippet = source.slice(start, end).trim();
+      if (start > 0) snippet = '…' + snippet;
+      if (end < source.length) snippet += '…';
+      if (!out.includes(snippet)) out.push(snippet);
+    }
+    from = at + query.length;
+  }
+  return out;
+}
+
+function contextPage(text) {
+  const match = String(text || '').match(/\[(?:OCR\s+)?PAGE\s+(\d{1,5})\]/i);
+  return match ? Number(match[1]) : null;
 }
 
 module.exports = ({ pool, packageDir }) => {
@@ -350,9 +380,8 @@ module.exports = ({ pool, packageDir }) => {
     }
   });
 
-  // The index promises a source count, so its drill-down must be backed by the
-  // same per-source tallies that produced that count. Source catalogue fields
-  // are public; source text and private paths remain outside this response.
+  // The drill-down returns bounded concordance windows, not files or complete
+  // source rows. This lets a reader verify where a form occurred directly.
   router.get('/api/word-forms/:form/sources', async (req, res) => {
     try {
       const form = cleanQuery(req.params.form).toLowerCase();
@@ -366,16 +395,55 @@ module.exports = ({ pool, packageDir }) => {
       }
 
       const rows = await pool.query(
-        `SELECT ${SOURCE_COLUMNS}, t.occurrences AS form_occurrences
+        `SELECT ${SOURCE_COLUMNS}, s.source_sequence, t.occurrences AS form_occurrences
            FROM public_word_form_tallies t
            JOIN public_sources s ON s.source_sequence = t.source_sequence
           WHERE t.form = $1
           ORDER BY t.occurrences DESC, (s.title IS NULL), s.title NULLS LAST, s.source_sequence`,
         [form]);
       const summary = toPublicForm(published.rows[0]);
+      const sequences = rows.rows.map(row => Number(row.source_sequence));
+      const candidates = sequences.length ? await pool.query(
+        `SELECT source_sequence, text, source_line
+           FROM v13_candidates
+          WHERE source_sequence = ANY($1::int[])
+            AND layer = ANY($2::text[])
+            AND text IS NOT NULL
+            AND lower(text) LIKE '%' || $3 || '%'
+          ORDER BY source_sequence, source_line NULLS LAST, candidate_ref
+          LIMIT 750`,
+        [sequences, derivation.FORM_SOURCE_LAYERS, form]) : { rows: [] };
+
+      const contextsBySource = new Map();
+      for (const candidate of candidates.rows) {
+        const seq = Number(candidate.source_sequence);
+        if (!contextsBySource.has(seq)) contextsBySource.set(seq, []);
+        const contexts = contextsBySource.get(seq);
+        if (contexts.length >= 5) continue;
+        const page = contextPage(candidate.text);
+        for (const snippet of concordanceSnippets(candidate.text, form, 5 - contexts.length)) {
+          try {
+            P.assertPublicSafe({ snippet }, 'word-form-context');
+          } catch {
+            continue;
+          }
+          const context = { snippet };
+          if (page !== null) context.page = page;
+          else if (candidate.source_line !== null && Number(candidate.source_line) >= 0) {
+            context.line = Number(candidate.source_line);
+          }
+          contexts.push(context);
+          if (contexts.length >= 5) break;
+        }
+      }
+
       const items = rows.rows.map(row => ({
-        ...toPublicSource(row),
+        ref: row.ref,
+        title: row.title,
+        document_year: row.document_year === null ? null : Number(row.document_year),
+        material_type: row.material_type,
         form_occurrences: Number(row.form_occurrences),
+        contexts: contextsBySource.get(Number(row.source_sequence)) || [],
       }));
 
       res.set('Cache-Control', 'no-store');
@@ -423,3 +491,5 @@ module.exports.lookup = async function lookup(pool, query, { sourceLimit = 3, fo
     forms: { total: formTotal.rows[0].n, items: forms.rows.map(toPublicForm) },
   }, 'search-collections');
 };
+
+module.exports.concordanceSnippets = concordanceSnippets;
