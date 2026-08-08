@@ -1,0 +1,48 @@
+{
+  "schema_version": "lexicon-synthesis-v1",
+  "generator_version": "build-lexicon-synthesis.js/1",
+  "normalization_version": "lak-search-v1",
+  "artifacts": {
+    "sources.jsonl.gz": {
+      "records": 7,
+      "sha256": "022a9f798ac3c036d97f7ab70e656b5d92ad5d7b0b1230baaf0387dd45a9678b"
+    },
+    "entries.jsonl.gz": {
+      "records": 39803,
+      "sha256": "27b616f95f14aa4ece5ca2b542982dad5bbe32e013e416447d4b66750bc2952d"
+    },
+    "senses.jsonl.gz": {
+      "records": 47489,
+      "sha256": "198013d66712ba49762ee51f89086ca40735cc9052c98ad910b1cd6d40cdf0a6"
+    },
+    "forms.jsonl.gz": {
+      "records": 73978,
+      "sha256": "0dd87eaa6f2f250431f62298b60fd64270af3a72f9b4a008184eae19dd567075"
+    },
+    "relations.jsonl.gz": {
+      "records": 33696,
+      "sha256": "535bd0c60f085314cef128462fad76044ad0724ee63408fa801ee6f6287e59e1"
+    },
+    "search-terms.jsonl.gz": {
+      "records": 162207,
+      "sha256": "2ece60099729820860eedd64221b61785b0ff9f4e23ad3426d54e1bf9fec6ad1"
+    }
+  },
+  "counts": {
+    "sources": 7,
+    "entries": 39803,
+    "senses": 47489,
+    "forms": 73978,
+    "relations": 33696,
+    "search_terms": 162207,
+    "entries_by_source": {
+      "gadzhiev-1958": 14373,
+      "khaydakov-1962": 9294,
+      "lexcauc-lak": 2246,
+      "komen-lakdict": 1881,
+      "ids-lak": 5157,
+      "uslar-1890": 1469,
+      "digiev-2004": 5383
+    }
+  }
+}

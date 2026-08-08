@@ -22,6 +22,7 @@ function recorder(overrides = {}) {
     deps: {
       env: {},
       migrateFiles: async () => { calls.push('migrate'); },
+      importLexiconBundle: async (bundle, options) => { calls.push(`lexicon:${JSON.stringify(options)}`); return { batchId: 'lex1', idempotent: true }; },
       importBundle: async (bundle, options) => { calls.push(`import:${JSON.stringify(options)}`); return { batchId: 'b1', idempotent: true }; },
       reconcile: async () => { calls.push('reconcile'); },
       pool: {
@@ -77,14 +78,14 @@ async function main() {
     assert.deepStrictEqual(r.calls, [], `steps ran without both exact flags: ${JSON.stringify(env)}`);
   }
 
-  // Enabled without auto-import: migrate only. Existing corpus rows are never
-  // rewritten and the importer is not called.
+  // Enabled without PCMLBE auto-import: migrate and reconcile the public
+  // source-backed lexicon, but do not rerun the PCMLBE importer.
   {
     const r = recorder();
     r.deps.env = { CORPUS_V2_ENABLED: 'true' };
     const out = await createCorpusV2Bootstrap(r.deps)();
-    assert.deepStrictEqual(r.calls, ['migrate']);
-    assert.strictEqual(out.ran, false);
+    assert.deepStrictEqual(r.calls, ['migrate','lexicon:{"migrate":false}']);
+    assert.strictEqual(out.ran, true);
     assert.strictEqual(out.migrated, true);
   }
 
@@ -92,7 +93,7 @@ async function main() {
     const r = recorder();
     r.deps.env = { CORPUS_V2_AUTO_IMPORT: '1', CORPUS_V2_ENABLED: 'true' };
     const out = await createCorpusV2Bootstrap(r.deps)();
-    assert.deepStrictEqual(r.calls, ['migrate']);
+    assert.deepStrictEqual(r.calls, ['migrate','lexicon:{"migrate":false}']);
     assert.strictEqual(out.migrated, true);
   }
 
@@ -110,7 +111,7 @@ async function main() {
     });
     r.deps.env = BOTH_TRUE;
     const out = await createCorpusV2Bootstrap(r.deps)({ before });
-    assert.deepStrictEqual(r.calls, ['migrate', 'import:{"migrate":false}', 'reconcile', 'release']);
+    assert.deepStrictEqual(r.calls, ['migrate','lexicon:{"migrate":false}', 'import:{"migrate":false}', 'reconcile', 'release']);
     assert.strictEqual(out.ran, true);
     assert(!r.calls.includes('POOL_END'), 'server must never end the shared pool');
   }
@@ -120,6 +121,7 @@ async function main() {
   for (const [step, overrides, options, pattern] of [
     ['startup migration', {}, { before: Promise.reject(new Error('legacy ddl failed')) }, /legacy ddl failed/],
     ['migration', { migrateFiles: async () => { throw new Error('ddl failed'); } }, {}, /ddl failed/],
+    ['lexicon', { importLexiconBundle: async () => { throw new Error('lexicon mismatch'); } }, {}, /lexicon mismatch/],
     ['import', { importBundle: async () => { throw new Error('bundle hash mismatch'); } }, {}, /bundle hash mismatch/],
     ['reconcile', { reconcile: async () => { throw new Error('count mismatch'); } }, {}, /count mismatch/],
   ]) {

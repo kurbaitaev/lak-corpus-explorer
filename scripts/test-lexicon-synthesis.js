@@ -1,0 +1,31 @@
+'use strict';
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const zlib = require('zlib');
+const { verifyBundle, canonicalHash } = require('./import-lexicon-synthesis');
+const bundle = path.join(__dirname,'..','imports','lak-lexicon-v1');
+function read(name) { return zlib.gunzipSync(fs.readFileSync(path.join(bundle,`${name}.jsonl.gz`))).toString('utf8').trim().split('\n').filter(Boolean).map(JSON.parse); }
+(async()=>{
+  const verified=await verifyBundle(bundle), counts=verified.manifest.counts;
+  assert.deepStrictEqual(counts.entries_by_source,{ 'gadzhiev-1958':14373,'khaydakov-1962':9294,'lexcauc-lak':2246,'komen-lakdict':1881,'ids-lak':5157,'uslar-1890':1469,'digiev-2004':5383 });
+  const entries=read('entries'),forms=read('forms'),relations=read('relations'),terms=read('search-terms');
+  assert.strictEqual(entries.length,39803);
+  for(const row of [...entries,...forms,...terms]) assert.strictEqual(row.content_hash,canonicalHash(row));
+  assert(forms.every(row=>row.form_original.length<=500),'structured form contains malformed nested HTML');
+  const word=entries.find(row=>row.source_id==='gadzhiev-1958'&&row.headword_normalized==='слово');
+  assert(word&&word.raw_entry.includes('мн. слова')&&word.raw_entry.includes('махъ, калима'));
+  const wordForms=forms.filter(row=>row.entry_id===word.id);
+  assert(wordForms.some(row=>row.language_code==='ru'&&row.form_normalized==='слова'&&row.feature_atoms.includes('PL')));
+  assert(wordForms.some(row=>row.language_code==='lbe'&&row.form_normalized==='махъ'));
+  assert(wordForms.some(row=>row.language_code==='lbe'&&row.form_normalized==='калима'));
+  assert(terms.some(row=>row.entry_id===word.id&&row.term_normalized==='слова'&&row.stem_key==='слов'));
+  const kh=entries.filter(row=>row.source_id==='khaydakov-1962'&&row.headword_normalized==='махъ');
+  assert(kh.some(row=>row.homonym_number===1)&&kh.some(row=>row.homonym_number===2),'Khaydakov homonyms were merged');
+  const wordSense=kh.find(row=>row.homonym_number===2);
+  const paradigms=forms.filter(row=>row.entry_id===wordSense.id).map(row=>row.form_normalized);
+  assert(paradigms.includes('махъру'),'explicit Khaydakov plural missing');
+  assert(relations.some(row=>row.entry_id===wordSense.id&&row.lemma_normalized==='махъ'));
+  assert(forms.every(row=>row.source_explicit===true),'generated form entered source-backed bundle');
+  console.log(`lexicon synthesis: ${counts.entries.toLocaleString()} entries, all seven sources, Russian inflection, Lak paradigm, homonym, hash, and no-generated-form checks passed`);
+})().catch(error=>{console.error(error.stack||error.message);process.exit(1);});

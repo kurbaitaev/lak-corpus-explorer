@@ -5,6 +5,7 @@ const path = require('path');
 
 const root = path.join(__dirname, '..');
 const commands = [
+  ['node', ['scripts/test-lexicon-synthesis.js']],
   ['node', ['scripts/test-corpus-v2-import.js']],
   ['node', ['scripts/test-corpus-v2-search.js']],
   ['node', ['scripts/test-morphology-review.js']],

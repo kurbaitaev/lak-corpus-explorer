@@ -20,9 +20,9 @@ assert(!routeSource.includes('morphology_proposals p JOIN corpus_tokens'), 'publ
 assert(routeSource.includes('public_search_allowed = TRUE'), 'public queries must enforce source rights');
 assert(routeSource.includes("p.access_status='authenticated'"), 'proposal queue must require authenticated records');
 assert(routeSource.includes("router.get('/api/corpus/v2/lemmas'"), 'public lemma index endpoint missing');
-assert(routeSource.includes('COUNT(DISTINCT t.wordform_id)::int AS attested_forms'), 'lemma index must report attested forms');
-assert(routeSource.includes('WHERE ${PUBLIC_SOURCE} ${predicate}'), 'lemma index must enforce source rights');
-assert(routeSource.includes("l.normalized_form ~ '[A-Za-zА-Яа-яЁё]'"), 'lexical lemmas must require a letter beyond palochka');
+assert(routeSource.includes('attested_forms') && routeSource.includes('corpus_wordform_lemma_relations'), 'lemma index must report source-backed and corpus forms');
+assert(routeSource.includes('${PUBLIC_SOURCE}') && routeSource.includes('${PUBLIC_SOURCE_SRC}'), 'public corpus and dictionary queries must enforce source rights');
+assert(routeSource.includes("l.normalized_form ~ '^[А-Яа-яЁёӀӏ]'"), 'Cyrillic Lak lemmas must be prioritized in public browse');
 assert(routeSource.includes("version: 'lemma-index-v2'") && routeSource.includes("res.set('Cache-Control', 'no-store')"),
   'lemma index must expose its release and disable stale caching');
 
