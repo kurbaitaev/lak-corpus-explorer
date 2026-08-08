@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="lemmas.meta.title">Lak lemma dictionary · Lak Corpus Explorer</title>
+<meta name="description" content="Browse PCMLBE lemmas, attested forms, source analyses, and sentence occurrences.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/app.css?v=5">
+</head>
+<body>
+<nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link active" href="/lemmas.html" data-i18n="nav.lemmas">Dictionary</a>
+      <a class="nav-link" href="/source-library.html" data-i18n="nav.sourceLibrary">Sources</a>
+      <a class="nav-link" href="/research.html" data-i18n="nav.research">Research</a>
+      <a class="nav-link" href="/lab.html" data-i18n="nav.lab">Translate</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Contribute</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="lemma-explorer">
+  <header class="obs-hero lemma-hero">
+    <div class="container">
+      <h1 data-i18n="lemmas.h1">Lak lemma dictionary</h1>
+      <p data-i18n="lemmas.intro">Browse every lemma annotated in PCMLBE and open its attested forms and sentence occurrences.</p>
+    </div>
+  </header>
+
+  <section class="lemma-main" aria-label="Lak lemma dictionary">
+    <div class="container">
+      <div id="lemma-detail" hidden aria-live="polite"></div>
+      <div id="lemma-browse">
+        <div class="lemma-toolbar">
+          <div class="field-wrap">
+            <label for="lemma-search" data-i18n="lemmas.searchLabel">Find a lemma</label>
+            <input id="lemma-search" type="search" data-i18n-placeholder="lemmas.searchPlaceholder" placeholder="Enter the beginning of a lemma…" autocomplete="off" spellcheck="false">
+          </div>
+          <div id="lemma-total" class="lemma-total" role="status" aria-live="polite"></div>
+        </div>
+        <div id="lemma-grid" class="lemma-dictionary-grid" aria-live="polite" aria-busy="true">
+          <div class="obs-skeleton"></div><div class="obs-skeleton"></div><div class="obs-skeleton"></div>
+        </div>
+        <nav id="lemma-pager" class="lib-pager" aria-label="Lemma pages" hidden></nav>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/js/i18n.js?v=3"></script>
+<script src="/js/nav.js?v=5"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/lemmas.js?v=1"></script>
+</body>
+</html>

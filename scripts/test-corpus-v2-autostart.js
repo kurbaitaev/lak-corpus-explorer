@@ -64,18 +64,36 @@ async function main() {
     assert.deepStrictEqual(r.calls, [], 'no step may run without the opt-in flags');
   }
 
-  // Opt-in gating: neither flag alone nor non-"true" values arm the bootstrap.
+  // Feature gating: auto-import alone does nothing. Enabling corpus v2 always
+  // applies additive migrations, but non-exact values do not arm anything.
   for (const env of [
     { CORPUS_V2_AUTO_IMPORT: 'true' },
-    { CORPUS_V2_ENABLED: 'true' },
     { CORPUS_V2_AUTO_IMPORT: 'yes', CORPUS_V2_ENABLED: 'yes' },
-    { CORPUS_V2_AUTO_IMPORT: '1', CORPUS_V2_ENABLED: 'true' },
   ]) {
     const r = recorder();
     r.deps.env = env;
     const out = await createCorpusV2Bootstrap(r.deps)();
     assert.strictEqual(out.ran, false, JSON.stringify(env));
     assert.deepStrictEqual(r.calls, [], `steps ran without both exact flags: ${JSON.stringify(env)}`);
+  }
+
+  // Enabled without auto-import: migrate only. Existing corpus rows are never
+  // rewritten and the importer is not called.
+  {
+    const r = recorder();
+    r.deps.env = { CORPUS_V2_ENABLED: 'true' };
+    const out = await createCorpusV2Bootstrap(r.deps)();
+    assert.deepStrictEqual(r.calls, ['migrate']);
+    assert.strictEqual(out.ran, false);
+    assert.strictEqual(out.migrated, true);
+  }
+
+  {
+    const r = recorder();
+    r.deps.env = { CORPUS_V2_AUTO_IMPORT: '1', CORPUS_V2_ENABLED: 'true' };
+    const out = await createCorpusV2Bootstrap(r.deps)();
+    assert.deepStrictEqual(r.calls, ['migrate']);
+    assert.strictEqual(out.migrated, true);
   }
 
   // Both flags: the legacy startup migration (`before`) finishes first, then
@@ -123,16 +141,18 @@ async function main() {
   // Integration, success path: with both flags against the already-imported
   // development database, the bootstrap reconciles idempotently and only then
   // does the server listen.
-  {
+  if (process.env.DATABASE_URL) {
     const { output } = await bootServer({ PORT: '5192', ...BOTH_TRUE }, 'running on port 5192');
     const bootstrapAt = output.indexOf('Corpus v2 bootstrap: batch');
     const listenAt = output.indexOf('running on port 5192');
     assert(bootstrapAt !== -1, `bootstrap did not run; output:\n${output.slice(-1500)}`);
     assert(output.includes('idempotent'), 'second boot must report the batch already imported');
     assert(bootstrapAt < listenAt, 'server listened before the bootstrap reconciled');
+  } else {
+    console.log('corpus v2 autostart: live database success path skipped (DATABASE_URL is not configured)');
   }
 
-  console.log('corpus v2 autostart: default-off, exact opt-in gating, fail-closed (unit + server boot), startup ordering, and idempotent boot checks passed');
+  console.log('corpus v2 autostart: default-off, additive schema boot, exact import gating, fail-closed startup ordering, and idempotent import checks passed');
 }
 
 main().catch(error => { console.error(error.stack || error.message); process.exit(1); });

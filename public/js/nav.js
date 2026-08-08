@@ -177,6 +177,16 @@
       links.insertBefore(library, firstLink);
     }
 
+    if (!links.querySelector('a[href="/lemmas.html"]')) {
+      var lemmas = document.createElement('a');
+      lemmas.className = 'nav-link';
+      lemmas.href = '/lemmas.html';
+      lemmas.setAttribute('data-i18n', 'nav.lemmas');
+      lemmas.textContent = tr('nav.lemmas', 'Dictionary');
+      var beforeLibrary = links.querySelector('a[href="/source-library.html"]');
+      links.insertBefore(lemmas, beforeLibrary || links.firstChild);
+    }
+
     if (!links.querySelector('a[href="/research.html"]')) {
       var research = document.createElement('a');
       research.className = 'nav-link';
@@ -212,7 +222,7 @@
 
     // Keep the primary navigation task-based and compact. Secondary tools are
     // linked from their relevant pages instead of competing in the main bar.
-    var primaryOrder = ['/', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];
+    var primaryOrder = ['/', '/lemmas.html', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];
     links.querySelectorAll('.nav-link').forEach(function (link) {
       var path = link.getAttribute('href');
       if (path === '/intelligence.html' || link.id === 'auth-link') return;

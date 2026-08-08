@@ -13,6 +13,8 @@ const publicPages = [
   'public/source-library.html',
   'public/validate.html',
   'public/word-forms.html',
+  'public/lemmas.html',
+  'public/occurrence.html',
 ];
 const combined = publicPages.map(read).join('\n') + read('public/js/i18n.js');
 
@@ -39,7 +41,7 @@ assert(!research.includes('id="research-public"'), 'removed research summary sho
 assert(!research.includes('research.permission.credit'), 'personal acknowledgement should not appear in public research copy');
 
 const nav = read('public/js/nav.js');
-assert(nav.includes("var primaryOrder = ['/', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];"), 'primary navigation order changed');
+assert(nav.includes("var primaryOrder = ['/', '/lemmas.html', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];"), 'primary navigation order changed');
 
 const i18n = read('public/js/i18n.js');
 assert(i18n.includes("'nav.brand.name': { en: 'Lak Corpus', ru: 'Корпус лакского языка' }"), 'Russian brand label changed');

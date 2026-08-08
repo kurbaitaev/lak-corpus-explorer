@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="occ.meta.title">Corpus occurrence · Lak Corpus Explorer</title>
+<meta name="description" content="Inspect one Lak corpus sentence, its token analyses, and its source citation.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/app.css?v=5">
+</head>
+<body>
+<nav class="nav" aria-label="Primary navigation" data-i18n-aria="nav.primaryLabel">
+  <div class="container nav-inner">
+    <a class="nav-brand" href="/"><span data-i18n="nav.brand.name">Lak Corpus</span> <span data-i18n="nav.brand.explorer">Explorer</span></a>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link active" href="/" data-i18n="nav.search">Search</a>
+      <a class="nav-link" href="/lemmas.html" data-i18n="nav.lemmas">Dictionary</a>
+      <a class="nav-link" href="/source-library.html" data-i18n="nav.sourceLibrary">Sources</a>
+      <a class="nav-link" href="/research.html" data-i18n="nav.research">Research</a>
+      <a class="nav-link" href="/lab.html" data-i18n="nav.lab">Translate</a>
+      <a class="nav-link" href="/validate.html" data-i18n="nav.validate">Contribute</a>
+      <a class="nav-link" href="/about.html" data-i18n="nav.about">About</a>
+      <a class="nav-link" id="auth-link" href="/login.html" data-i18n="nav.login">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="occurrence-page">
+  <header class="obs-hero occurrence-hero">
+    <div class="container">
+      <h1 data-i18n="occ.h1">Corpus occurrence</h1>
+      <p data-i18n="occ.intro">Full sentence, token analysis, and source citation.</p>
+    </div>
+  </header>
+  <section class="occurrence-main">
+    <div class="container">
+      <div id="occurrence-content" aria-live="polite" aria-busy="true">
+        <div class="obs-grid" aria-label="Loading occurrence" data-i18n-aria="occ.loading"><div class="obs-skeleton"></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/js/i18n.js?v=3"></script>
+<script src="/js/nav.js?v=5"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/occurrence.js?v=1"></script>
+</body>
+</html>

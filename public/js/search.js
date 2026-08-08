@@ -333,7 +333,7 @@ function renderLemmaIndex(rows) {
   $tbody.innerHTML = `<tr><td colspan="8" class="lemma-index-cell"><div class="lemma-index-grid">${rows.map(row => {
     const definitions = (row.definitions || []).filter(Boolean).slice(0, 2);
     const parts = (row.parts_of_speech || []).filter(Boolean).slice(0, 3);
-    return `<a class="lemma-index-card" href="/?mode=lemma&amp;q=${encodeURIComponent(row.lemma)}">
+    return `<a class="lemma-index-card" href="/lemmas.html?id=${encodeURIComponent(row.lemma_id)}">
       <span class="lemma-index-form" lang="lbe">${esc(row.lemma)}</span>
       ${definitions.length ? `<span class="lemma-index-definition">${esc(definitions.join('; '))}</span>` : ''}
       ${parts.length ? `<span class="lemma-index-pos">${parts.map(esc).join(' · ')}</span>` : ''}
@@ -363,7 +363,7 @@ function renderMorphResults(rows) {
       <td class="td-type" data-label="${esc(t('search.col.typeQuality', 'Type / quality'))}"><span class="tag tag-text">${esc(t(`search.mode.${currentMode}`, currentMode))}</span></td>
       <td class="td-lak" data-label="${esc(t('search.col.lak', 'Lak'))}"><span class="lak-text" lang="lbe">${esc(row.matched_surface)}</span>${details ? `<div class="morph-details">${details}</div>` : ''}</td>
       <td class="td-meaning" data-label="${esc(t('search.results.translation', 'Translation'))}">${esc(row.definition || t('search.results.translationMissing', 'Translation not added yet'))}</td>
-      <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}"><span lang="lbe">${esc(row.context)}</span>${row.document_title ? `<span class="record-meta">${esc(row.document_title)}</span>` : ''}<span class="record-meta">${esc(row.legacy_record_id)}</span></td>
+      <td class="td-document" data-label="${esc(t('search.results.sourceDocument', 'Source document'))}"><a class="occurrence-link" href="/occurrence.html?id=${encodeURIComponent(row.segment_id)}&amp;token=${encodeURIComponent(row.token_id)}"><span lang="lbe">${esc(row.context)}</span><span class="record-meta">${esc(t('search.morph.openOccurrence', 'Open occurrence'))}</span></a>${row.document_title ? `<span class="record-meta">${esc(row.document_title)}</span>` : ''}<span class="record-meta">${esc(row.legacy_record_id)}</span></td>
       <td data-label="${esc(t('search.col.source', 'Source'))}"><a href="${esc(row.persistent_id)}" class="source-link" target="_blank" rel="noreferrer">${esc(row.source_title)}</a><span class="source-license">${esc(row.license)}</span></td>
       <td data-label="${esc(t('search.col.variety', 'Variety'))}">—</td>
       <td class="td-evidence" data-label="${esc(t('search.col.evidence', 'Evidence'))}"><span class="quality-badge ${badgeClass}">${esc(badgeText)}</span></td>

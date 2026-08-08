@@ -93,21 +93,8 @@ async function main() {
       await page.goto(BASE + '/', { waitUntil: 'networkidle' });
       assert.strictEqual(searchRequests, 0, `${language}: searched before user intent`);
       assert.strictEqual(await page.locator('#table-wrap').isVisible(), false, `${language}: raw table visible initially`);
-      assert.strictEqual(await page.locator('.search-guidance').isVisible(), true);
-      assert.strictEqual(await page.locator('.search-actions .btn').count(), 3);
-
-      const help = page.locator('.search-guidance .help-trigger');
-      await help.hover();
-      assert.strictEqual(await page.locator('.help-popover:not([hidden])').count(), 1, `${language}: hover did not open help`);
-      await page.mouse.click(5, 780);
-      assert.strictEqual(await page.locator('.help-popover:not([hidden])').count(), 0, `${language}: outside click did not close help`);
-      await help.focus();
-      await page.keyboard.press('Enter');
-      if ((await help.getAttribute('aria-expanded')) !== 'true') await page.keyboard.press('Enter');
-      assert.strictEqual(await help.getAttribute('aria-expanded'), 'true');
-      await page.keyboard.press('Escape');
-      assert.strictEqual(await help.getAttribute('aria-expanded'), 'false');
-      assert.strictEqual(await help.evaluate(el => el === document.activeElement), true);
+      assert.strictEqual(await page.locator('.search-guidance').count(), 0, `${language}: removed guidance copy returned`);
+      assert.strictEqual(await page.locator('.search-actions .btn').count(), 4);
 
       await page.locator('#source').selectOption({ label: 'PCMLBE' });
       await page.waitForResponse(response => response.url().includes('/api/corpus/search') && response.ok());

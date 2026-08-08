@@ -115,6 +115,14 @@ const withoutObservatoryReviews = rows => rows.filter(row => !OBSERVATORY_IDS.ha
 // inventory only — counts, layer and provenance — and the private screens
 // never write to the public corpus.
 function buildPublicSourceIndex(rows) {
+  // Public visibility and reuse rights are separate. Only sources whose
+  // rights are explicitly represented here receive a reusable-rights label;
+  // every other legacy layer stays unknown instead of being called public
+  // domain merely because the Explorer can display it.
+  const SOURCE_RIGHTS = {
+    PCMLBE: 'open_license',
+    'Uslar 1890': 'public_domain',
+  };
   const groups = new Map();
   for (const row of rows) {
     const kind = row[0];
@@ -133,7 +141,7 @@ function buildPublicSourceIndex(rows) {
         family_key: 'public:' + source.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         extraction_quality: 'published_public_corpus',
         extraction_status: 'published',
-        rights_status: 'public_domain',
+        rights_status: SOURCE_RIGHTS[source] || 'unknown',
         review_state: 'accepted_candidate',
         access_status: 'public',
         training_ready: false,
@@ -395,7 +403,8 @@ for (const f of ['index.html', 'about.html', 'queue.html', 'login.html',
                  'register.html', 'profile.html', 'validate.html', 'leaderboard.html',
                    'dashboard.html', 'how-it-works.html', 'lab.html', 'observatory.html',
                    'research.html', 'intelligence.html', 'alignment.html', 'rights.html',
-                   'source-library.html', 'word-forms.html']) {
+                   'source-library.html', 'word-forms.html', 'lemmas.html',
+                   'occurrence.html']) {
   PAGES[f] = stampHtml(f);
 }
 
@@ -875,12 +884,10 @@ app.get('/{*path}', (req, res) => {
 });
 
 // ── Corpus v2 fail-closed deployment bootstrap ───────────────
-// Only when CORPUS_V2_AUTO_IMPORT and CORPUS_V2_ENABLED are both set
-// (production rollout), the versioned migration, the checksummed PCMLBE
-// import, and the exact database reconciliation must all succeed before the
-// server listens. A failure exits without listening so the platform keeps
-// the previous healthy deployment serving. With the flag off this resolves
-// immediately and start-up is unchanged.
+// When CORPUS_V2_ENABLED is set, additive versioned migrations must succeed
+// before the server listens. The checksummed PCMLBE import and reconciliation
+// run only with the separate CORPUS_V2_AUTO_IMPORT opt-in. A failure exits
+// without listening so the platform keeps the previous healthy deployment.
 const { runCorpusV2Bootstrap } = require('./lib/corpus-v2-bootstrap');
 
 // Serialize with the legacy startup migration: when the bootstrap is armed,
@@ -890,6 +897,8 @@ runCorpusV2Bootstrap({ before: startupMigration })
     if (result.ran) {
       console.log(`Corpus v2 bootstrap: batch ${result.batchId} reconciled` +
         (result.idempotent ? ' (already imported — idempotent)' : ''));
+    } else if (result.migrated) {
+      console.log('Corpus v2 bootstrap: additive schema migrations verified');
     }
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Lak Corpus Explorer running on port ${PORT}`);

@@ -28,9 +28,11 @@ npm run corpus:v2:reconcile -- --database
 npm run test:corpus-v2
 ```
 
-The importer verifies every SHA-256 before opening a transaction, rejects
+When structured corpus v2 is enabled, server startup applies checksum-verified
+additive migrations before listening. The corpus importer still runs only when
+its separate exact opt-in is enabled. The importer verifies every SHA-256 before opening a transaction, rejects
 stable-ID content conflicts, reconciles exact counts before commit, and is
-idempotent. It does not run during deployment. `scripts/post-merge.sh` applies
+idempotent. It does not run during deployment by default. `scripts/post-merge.sh` applies
 only additive schema migrations; run the importer as an explicit controlled
 job after inspecting the database backup and migration diff.
 
@@ -41,3 +43,16 @@ Important boundaries:
 - A proposal applies to a wordform type and is not propagated to all tokens.
 - Public search requires both public access and cleared/open rights; training
   permission remains a separate false-by-default field.
+
+## Canonical evidence spine
+
+Release 2 keeps the existing corpus import and adds the addressable structures
+needed for research infrastructure: source assets, page canvases and regions,
+versioned assertions and decisions, translation units and alignments, media
+spans, dataset snapshots, split membership, leakage records, and pipeline runs.
+
+The public Dictionary at `/lemmas.html` browses all 1,234 PCMLBE source lemmas.
+Each lemma opens its attested wordforms and paginated sentence occurrences.
+Every occurrence opens `/occurrence.html`, which shows the full source sentence,
+token-level source analyses, document metadata, persistent source record, and
+license. Review-only model proposals never enter these public endpoints.

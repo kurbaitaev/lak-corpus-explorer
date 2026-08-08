@@ -207,7 +207,7 @@ async function buildMarkers() {
 const HTML_PAGES = ['/', '/index.html', '/about.html', '/queue.html', '/login.html', '/register.html',
   '/profile.html', '/validate.html', '/leaderboard.html', '/dashboard.html', '/how-it-works.html',
   '/lab.html', '/observatory.html', '/research.html', '/intelligence.html', '/alignment.html', '/rights.html',
-  '/source-library.html', '/word-forms.html'];
+  '/source-library.html', '/word-forms.html', '/lemmas.html', '/occurrence.html'];
 
 function staticAssetPaths() {
   const out = [];
@@ -231,6 +231,8 @@ const PUBLIC_APIS = [
   ['GET', '/api/corpus/search?q=%D0%BB%D1%83%D0%BD%D0%B0&limit=100'],
   ['GET', '/api/observatory/resources'],
   ['GET', '/api/research/update'],
+  ['GET', '/api/corpus/v2/status'],
+  ['GET', '/api/corpus/v2/lemmas?limit=100&page=1'],
   ['GET', '/api/source-import/status'],
   ['GET', '/api/reviews?limit=200'],
   ['GET', '/api/stats/reviews'],

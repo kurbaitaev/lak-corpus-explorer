@@ -53,6 +53,7 @@
     'nav.brand.name': { en: 'Lak Corpus', ru: 'Корпус лакского языка' },
     'nav.brand.explorer': { en: 'Explorer', ru: '' },
     'nav.search': { en: 'Search', ru: 'Поиск' },
+    'nav.lemmas': { en: 'Dictionary', ru: 'Словарь' },
     'nav.sourceLibrary': { en: 'Sources', ru: 'Источники' },
     // "Ресурсы" (outside resources) against "Источники" (our own holdings) —
     // the same distinction the English labels draw, and short enough that both
@@ -174,6 +175,59 @@
       en: { one: '{count} lemma', other: '{count} lemmas' },
       ru: { one: '{count} лемма', few: '{count} леммы', many: '{count} лемм', other: '{count} леммы' }
     },
+    'search.morph.openOccurrence': { en: 'Open occurrence', ru: 'Открыть вхождение' },
+
+    /* ── lemmas.html ───────────────────────────────────────── */
+    'lemmas.meta.title': { en: 'Lak lemma dictionary · Lak Corpus Explorer', ru: 'Словарь лемм · Корпус лакского языка' },
+    'lemmas.h1': { en: 'Lak lemma dictionary', ru: 'Словарь лакских лемм' },
+    'lemmas.intro': {
+      en: 'Browse every lemma annotated in PCMLBE and open its attested forms and sentence occurrences.',
+      ru: 'Просматривайте все леммы, размеченные в PCMLBE, их засвидетельствованные формы и вхождения в предложениях.'
+    },
+    'lemmas.searchLabel': { en: 'Find a lemma', ru: 'Найти лемму' },
+    'lemmas.searchPlaceholder': { en: 'Enter the beginning of a lemma…', ru: 'Введите начало леммы…' },
+    'lemmas.total': { en: '{count} annotated lemmas', ru: '{count} размеченных лемм' },
+    'lemmas.loading': { en: 'Loading lemmas', ru: 'Загрузка лемм' },
+    'lemmas.empty.title': { en: 'No lemmas match', ru: 'Подходящих лемм нет' },
+    'lemmas.empty.body': { en: 'Try a shorter beginning or another spelling.', ru: 'Попробуйте более короткое начало или другое написание.' },
+    'lemmas.forms': { en: '{count} forms', ru: '{count} форм' },
+    'lemmas.occurrences': { en: '{count} occurrences', ru: '{count} вхождений' },
+    'lemmas.open': { en: 'Open lemma', ru: 'Открыть лемму' },
+    'lemmas.previous': { en: 'Previous', ru: 'Назад' },
+    'lemmas.next': { en: 'Next', ru: 'Далее' },
+    'lemmas.page': { en: 'Page {page} of {pages}', ru: 'Страница {page} из {pages}' },
+    'lemmas.back': { en: 'Back to all lemmas', ru: 'Ко всем леммам' },
+    'lemmas.sourceEvidence': { en: 'PCMLBE source annotation', ru: 'Аннотация источника PCMLBE' },
+    'lemmas.definitions': { en: 'Source definitions', ru: 'Определения источника' },
+    'lemmas.tags': { en: 'Source tags', ru: 'Теги источника' },
+    'lemmas.attestedForms': { en: 'Attested forms', ru: 'Засвидетельствованные формы' },
+    'lemmas.sentenceOccurrences': { en: 'Sentence occurrences', ru: 'Вхождения в предложениях' },
+    'lemmas.openOccurrence': { en: 'Open full occurrence', ru: 'Открыть полное вхождение' },
+    'lemmas.error.title': { en: 'Lemma data could not be loaded', ru: 'Не удалось загрузить данные леммы' },
+    'lemmas.error.body': { en: 'Reload the page and try again.', ru: 'Перезагрузите страницу и попробуйте снова.' },
+
+    /* ── occurrence.html ───────────────────────────────────── */
+    'occ.meta.title': { en: 'Corpus occurrence · Lak Corpus Explorer', ru: 'Вхождение в корпусе · Корпус лакского языка' },
+    'occ.h1': { en: 'Corpus occurrence', ru: 'Вхождение в корпусе' },
+    'occ.intro': { en: 'Full sentence, token analysis, and source citation.', ru: 'Полное предложение, разбор токенов и ссылка на источник.' },
+    'occ.loading': { en: 'Loading occurrence', ru: 'Загрузка вхождения' },
+    'occ.back': { en: 'Back to search', ru: 'Назад к поиску' },
+    'occ.sentence': { en: 'Attested sentence', ru: 'Засвидетельствованное предложение' },
+    'occ.analysis': { en: 'Token analysis', ru: 'Разбор токенов' },
+    'occ.source': { en: 'Source citation', ru: 'Ссылка на источник' },
+    'occ.form': { en: 'Form', ru: 'Форма' },
+    'occ.lemma': { en: 'Lemma', ru: 'Лемма' },
+    'occ.tag': { en: 'Source tag', ru: 'Тег источника' },
+    'occ.definition': { en: 'Definition', ru: 'Определение' },
+    'occ.noAnalysis': { en: 'No source analysis', ru: 'Нет анализа источника' },
+    'occ.record': { en: 'Corpus record', ru: 'Запись корпуса' },
+    'occ.license': { en: 'License', ru: 'Лицензия' },
+    'occ.evidenceNote': {
+      en: 'Analyses shown here come from the source annotation. They are preserved separately from machine proposals and expert decisions.',
+      ru: 'Показанные разборы происходят из аннотации источника. Они хранятся отдельно от машинных предложений и решений экспертов.'
+    },
+    'occ.error.title': { en: 'Occurrence not found', ru: 'Вхождение не найдено' },
+    'occ.error.body': { en: 'The record may be unavailable or the structured corpus may still be preparing.', ru: 'Запись может быть недоступна, либо структурированный корпус ещё готовится.' },
     'index.recordType': { en: 'Record type', ru: 'Тип записи' },
     'index.type.both': { en: 'Texts + lexicon', ru: 'Тексты + лексикон' },
     'index.type.text': { en: 'Texts only', ru: 'Только тексты' },

@@ -142,26 +142,55 @@ module.exports = function createCorpusV2Router({ pool }) {
   });
 
   router.get('/api/corpus/v2/lemmas/:id', async (req, res) => {
+    const { page, limit, offset } = parsePagination(req.query);
     try {
       const lemma = (await pool.query(
-        `SELECT l.id, l.display_form, l.normalized_form, COUNT(a.id)::int AS annotated_occurrences,
-                COUNT(DISTINCT t.wordform_id)::int AS attested_forms
+        `SELECT l.id, l.display_form, l.normalized_form,
+                COUNT(DISTINCT a.id)::int AS annotated_occurrences,
+                COUNT(DISTINCT t.wordform_id)::int AS attested_forms,
+                COALESCE(array_agg(DISTINCT a.source_pos) FILTER (WHERE a.source_pos IS NOT NULL), ARRAY[]::text[]) AS parts_of_speech,
+                COALESCE(array_agg(DISTINCT a.raw_tag) FILTER (WHERE NULLIF(a.raw_tag, '') IS NOT NULL), ARRAY[]::text[]) AS source_tags,
+                COALESCE(array_agg(DISTINCT a.definition) FILTER (WHERE NULLIF(a.definition, '') IS NOT NULL), ARRAY[]::text[]) AS definitions
            FROM corpus_lemma_keys l JOIN corpus_token_analyses a ON a.lemma_key_id=l.id
            JOIN corpus_tokens t ON t.id=a.token_id JOIN corpus_segments g ON g.id=t.segment_id
            JOIN corpus_documents d ON d.id=g.document_id JOIN corpus_sources s ON s.id=d.source_id
           WHERE l.id=$1 AND ${PUBLIC_SOURCE} GROUP BY l.id`, [req.params.id])).rows[0];
       if (!lemma) return res.status(404).json({ error: 'Lemma not found.' });
-      const forms = await pool.query(
-        `SELECT w.id, w.display_form, w.normalized_form, COUNT(*)::int AS occurrences
+      const [forms, occurrenceResult] = await Promise.all([
+        pool.query(
+        `SELECT w.id, w.display_form, w.normalized_form, COUNT(DISTINCT t.id)::int AS occurrences
            FROM corpus_token_analyses a JOIN corpus_tokens t ON t.id=a.token_id
            JOIN corpus_wordforms w ON w.id=t.wordform_id JOIN corpus_segments g ON g.id=t.segment_id
            JOIN corpus_documents d ON d.id=g.document_id JOIN corpus_sources s ON s.id=d.source_id
-          WHERE a.lemma_key_id=$1 AND ${PUBLIC_SOURCE} GROUP BY w.id ORDER BY occurrences DESC, w.normalized_form`, [req.params.id]);
-      res.json({ lemma, forms: forms.rows });
+          WHERE a.lemma_key_id=$1 AND ${PUBLIC_SOURCE} GROUP BY w.id ORDER BY occurrences DESC, w.normalized_form`, [req.params.id]),
+        pool.query(
+        `SELECT t.id AS token_id, t.ordinal AS token_ordinal, t.surface_original AS surface,
+                a.id AS analysis_id, a.lemma_original AS lemma, a.raw_tag, a.source_pos,
+                a.source_feature_atoms, a.definition, a.evidence_class, a.review_status,
+                g.id AS segment_id, g.legacy_record_id, g.text_original AS context,
+                g.paragraph, g.section, d.id AS document_id, d.title AS document_title,
+                d.author, d.year, d.genre, d.variety, s.id AS source_id,
+                s.title AS source_title, s.spdx_license AS license, s.license_url,
+                s.persistent_id, COUNT(*) OVER()::int AS total
+           FROM corpus_token_analyses a
+           JOIN corpus_tokens t ON t.id=a.token_id
+           JOIN corpus_segments g ON g.id=t.segment_id
+           JOIN corpus_documents d ON d.id=g.document_id
+           JOIN corpus_sources s ON s.id=d.source_id
+          WHERE a.lemma_key_id=$1 AND ${PUBLIC_SOURCE}
+          ORDER BY d.id, g.ordinal, t.ordinal, a.id LIMIT $2 OFFSET $3`,
+        [req.params.id, limit, offset]),
+      ]);
+      const total = occurrenceResult.rows[0]?.total || 0;
+      const occurrences = occurrenceResult.rows.map(({ total: ignored, ...row }) => row);
+      res.set('Cache-Control', 'no-store');
+      res.json({ lemma, forms: forms.rows, occurrences, total, page,
+        pages: Math.max(1, Math.ceil(total / limit)), limit });
     } catch (error) { res.status(500).json({ error: 'Corpus lookup failed.' }); }
   });
 
   router.get('/api/corpus/v2/wordforms/:id', async (req, res) => {
+    const { page, limit, offset } = parsePagination(req.query);
     try {
       const wordform = (await pool.query(
         `SELECT w.id, w.display_form, w.normalized_form, COUNT(t.id)::int AS occurrences,
@@ -171,8 +200,67 @@ module.exports = function createCorpusV2Router({ pool }) {
            JOIN corpus_documents d ON d.id=g.document_id JOIN corpus_sources s ON s.id=d.source_id
           WHERE w.id=$1 AND ${PUBLIC_SOURCE} GROUP BY w.id`, [req.params.id])).rows[0];
       if (!wordform) return res.status(404).json({ error: 'Wordform not found.' });
-      res.json({ wordform });
+      const occurrenceResult = await pool.query(
+        `SELECT t.id AS token_id, t.ordinal AS token_ordinal, t.surface_original AS surface,
+                a.id AS analysis_id, l.id AS lemma_id, a.lemma_original AS lemma,
+                a.raw_tag, a.source_pos, a.source_feature_atoms, a.definition,
+                a.evidence_class, a.review_status, g.id AS segment_id,
+                g.legacy_record_id, g.text_original AS context, d.id AS document_id,
+                d.title AS document_title, d.author, d.year, d.genre, d.variety,
+                s.id AS source_id, s.title AS source_title, s.spdx_license AS license,
+                s.license_url, s.persistent_id, COUNT(*) OVER()::int AS total
+           FROM corpus_tokens t
+           LEFT JOIN corpus_token_analyses a ON a.token_id=t.id
+           LEFT JOIN corpus_lemma_keys l ON l.id=a.lemma_key_id
+           JOIN corpus_segments g ON g.id=t.segment_id
+           JOIN corpus_documents d ON d.id=g.document_id
+           JOIN corpus_sources s ON s.id=d.source_id
+          WHERE t.wordform_id=$1 AND ${PUBLIC_SOURCE}
+          ORDER BY d.id, g.ordinal, t.ordinal, a.id NULLS LAST LIMIT $2 OFFSET $3`,
+        [req.params.id, limit, offset]);
+      const total = occurrenceResult.rows[0]?.total || 0;
+      const occurrences = occurrenceResult.rows.map(({ total: ignored, ...row }) => row);
+      res.set('Cache-Control', 'no-store');
+      res.json({ wordform, occurrences, total, page,
+        pages: Math.max(1, Math.ceil(total / limit)), limit });
     } catch (error) { res.status(500).json({ error: 'Corpus lookup failed.' }); }
+  });
+
+  router.get('/api/corpus/v2/segments/:id', async (req, res) => {
+    try {
+      const segment = (await pool.query(
+        `SELECT g.id, g.source_segment_ref, g.forest_id, g.legacy_record_id,
+                g.paragraph, g.section, g.ordinal, g.text_original,
+                g.text_diplomatic, g.text_normalized, g.text_parallel_cyrillic,
+                g.translation_en, g.language_code, d.id AS document_id,
+                d.title AS document_title, d.author, d.editor, d.bibliography,
+                d.year, d.genre, d.variety, d.script, s.id AS source_id,
+                s.title AS source_title, s.creator_credit, s.canonical_url,
+                s.persistent_id, s.spdx_license AS license, s.license_url,
+                s.attribution_text
+           FROM corpus_segments g
+           JOIN corpus_documents d ON d.id=g.document_id
+           JOIN corpus_sources s ON s.id=d.source_id
+          WHERE g.id=$1 AND ${PUBLIC_SOURCE}`, [req.params.id])).rows[0];
+      if (!segment) return res.status(404).json({ error: 'Corpus occurrence not found.' });
+      const tokens = await pool.query(
+        `SELECT t.id AS token_id, t.ordinal, t.surface_original AS surface,
+                t.raw_tag AS token_source_tag, w.id AS wordform_id,
+                w.normalized_form AS wordform, a.id AS analysis_id,
+                l.id AS lemma_id, a.lemma_original AS lemma, a.raw_tag,
+                a.source_pos, a.source_feature_atoms, a.definition,
+                a.evidence_class, a.review_status, a.source_reference
+           FROM corpus_tokens t
+           JOIN corpus_wordforms w ON w.id=t.wordform_id
+           LEFT JOIN corpus_token_analyses a ON a.token_id=t.id
+           LEFT JOIN corpus_lemma_keys l ON l.id=a.lemma_key_id
+          WHERE t.segment_id=$1 ORDER BY t.ordinal, a.id NULLS LAST`, [req.params.id]);
+      res.set('Cache-Control', 'no-store');
+      res.json({ segment, tokens: tokens.rows });
+    } catch (error) {
+      console.error('corpus v2 segment:', error.message);
+      res.status(500).json({ error: 'Corpus occurrence lookup failed.' });
+    }
   });
 
   router.get('/api/morphology/proposals', requireAccount, async (req, res) => {

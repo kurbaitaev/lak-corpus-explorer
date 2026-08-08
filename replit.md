@@ -10,7 +10,9 @@ A publicly accessible, source-aware research corpus of the Lak language (лак�
 - **Frontend**: Vanilla JS, multi-page (`public/index.html`, `public/about.html`, `public/queue.html`)
 - **Structured corpus v2**: additive PostgreSQL tables populated only by the
   explicit checksummed PCMLBE importer. Disabled unless
-  `CORPUS_V2_ENABLED=true`; deployment never auto-imports corpus rows.
+  `CORPUS_V2_ENABLED=true`; enabled deployments apply additive versioned
+  migrations before listening but never auto-import corpus rows unless the
+  separate exact `CORPUS_V2_AUTO_IMPORT=true` opt-in is present.
 
 ## How to run
 
@@ -31,6 +33,12 @@ Workflow: "Start application" → `node server.js` on port 5000.
 - **About/Research page**: methodology, sources, quality ladder, statistics, collaboration invitation
 - **Optional structured modes**: exact Wordform, Lemma, and Grammar searches;
   source annotations remain separate from authenticated review-only proposals
+- **Public lemma dictionary and occurrence evidence**: `/lemmas.html` lists every
+  imported source lemma and opens its attested forms and sentence contexts;
+  `/occurrence.html` shows the addressable sentence, token analyses, source
+  record and license. The additive evidence-spine migration also prepares
+  page regions, assertion history, aligned media, versioned datasets and model
+  runs without changing existing corpus IDs.
 
 ## Private source-import layer (audited v1.2 and v1.3 research packages)
 
