@@ -23,6 +23,8 @@ assert(routeSource.includes("router.get('/api/corpus/v2/lemmas'"), 'public lemma
 assert(routeSource.includes('COUNT(DISTINCT t.wordform_id)::int AS attested_forms'), 'lemma index must report attested forms');
 assert(routeSource.includes('WHERE ${PUBLIC_SOURCE} ${predicate}'), 'lemma index must enforce source rights');
 assert(routeSource.includes("l.normalized_form ~ '[A-Za-zА-Яа-яЁё]'"), 'lexical lemmas must require a letter beyond palochka');
+assert(routeSource.includes("version: 'lemma-index-v2'") && routeSource.includes("res.set('Cache-Control', 'no-store')"),
+  'lemma index must expose its release and disable stale caching');
 
 for (const file of ['public/js/search.js', 'public/js/i18n.js']) {
   const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
@@ -44,4 +46,5 @@ assert(searchUi.includes('runV2Example') && searchUi.includes("new URLSearchPara
   'clickable and deep-linked structured search wiring missing');
 assert(ui.includes('id="browse-lemmas"') && searchUi.includes("'/api/corpus/v2/lemmas'") && searchUi.includes('renderLemmaIndex'),
   'browse-all lemma UI and endpoint wiring missing');
+assert(searchUi.includes("cache: 'no-store'"), 'structured search requests must bypass stale browser responses');
 console.log('corpus v2 search semantics, fail-closed rights, UI modes, and newest-request-wins checks passed');

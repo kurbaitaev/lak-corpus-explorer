@@ -133,7 +133,8 @@ module.exports = function createCorpusV2Router({ pool }) {
         params);
       const total = result.rows[0]?.total || 0;
       const rows = result.rows.map(({ total: ignored, ...row }) => row);
-      res.json({ mode: 'lemmas', query: req.query.q || '', total, page, pages: Math.max(1, Math.ceil(total / limit)), limit, rows });
+      res.set('Cache-Control', 'no-store');
+      res.json({ mode: 'lemmas', version: 'lemma-index-v2', query: req.query.q || '', total, page, pages: Math.max(1, Math.ceil(total / limit)), limit, rows });
     } catch (error) {
       console.error('corpus v2 lemmas:', error.message);
       res.status(500).json({ error: 'Lemma index failed.' });
