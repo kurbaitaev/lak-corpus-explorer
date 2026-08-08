@@ -144,7 +144,7 @@ async function main() {
   // development database, the server listens first and the bootstrap then
   // reconciles idempotently before corpus-v2 routes become ready.
   if (process.env.DATABASE_URL) {
-    const { output } = await bootServer({ PORT: '5192', ...BOTH_TRUE }, 'running on port 5192');
+    const { output } = await bootServer({ PORT: '5192', ...BOTH_TRUE }, 'Corpus v2 bootstrap: batch');
     const bootstrapAt = output.indexOf('Corpus v2 bootstrap: batch');
     const listenAt = output.indexOf('running on port 5192');
     assert(bootstrapAt !== -1, `bootstrap did not run; output:\n${output.slice(-1500)}`);
