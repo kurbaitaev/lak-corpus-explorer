@@ -22,7 +22,7 @@ assert(routeSource.includes("p.access_status='authenticated'"), 'proposal queue 
 assert(routeSource.includes("router.get('/api/corpus/v2/lemmas'"), 'public lemma index endpoint missing');
 assert(routeSource.includes('COUNT(DISTINCT t.wordform_id)::int AS attested_forms'), 'lemma index must report attested forms');
 assert(routeSource.includes('WHERE ${PUBLIC_SOURCE} ${predicate}'), 'lemma index must enforce source rights');
-assert(routeSource.includes("l.normalized_form ~ '[A-Za-zА-Яа-яЁёӀӏ]'"), 'lexical lemmas must sort before punctuation and numbers');
+assert(routeSource.includes("l.normalized_form ~ '[A-Za-zА-Яа-яЁё]'"), 'lexical lemmas must require a letter beyond palochka');
 
 for (const file of ['public/js/search.js', 'public/js/i18n.js']) {
   const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
