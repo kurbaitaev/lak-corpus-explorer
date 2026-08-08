@@ -242,7 +242,8 @@ async function refreshResearchSummary(report) {
 // the database as soon as the schema is ready and again after every layer
 // lands. The page then shows real progress instead of an indefinite
 // "preparing", and picks up where it left off on the next boot.
-migrate()
+const startupMigration = migrate();
+startupMigration
   .then(() => refreshResearchSummary(null).catch(err =>
     console.error('Research summary: initial publish failed:', err.message)))
   .then(() => preparePrivatePackages(pool, {
@@ -866,7 +867,9 @@ app.get('/{*path}', (req, res) => {
 // immediately and start-up is unchanged.
 const { runCorpusV2Bootstrap } = require('./lib/corpus-v2-bootstrap');
 
-runCorpusV2Bootstrap()
+// Serialize with the legacy startup migration: when the bootstrap is armed,
+// no DDL may run concurrently with the versioned migration and import.
+runCorpusV2Bootstrap({ before: startupMigration })
   .then(result => {
     if (result.ran) {
       console.log(`Corpus v2 bootstrap: batch ${result.batchId} reconciled` +
