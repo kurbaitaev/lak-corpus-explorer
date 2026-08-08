@@ -2610,8 +2610,14 @@
     'wf.detail.errorTitle': { en: 'Source evidence could not be loaded', ru: 'Не удалось загрузить сведения об источниках' },
     'wf.detail.errorBody': { en: 'Return to the index and try again.', ru: 'Вернитесь к указателю и повторите попытку.' },
     'wf.detail.contextNote': {
-      en: 'This view identifies each source and its occurrence count. Exact passages are shown only when that source text is cleared for public display.',
-      ru: 'Здесь указаны каждый источник и число вхождений. Точные фрагменты показываются только для текстов, разрешённых к публичному показу.'
+      en: 'Each excerpt shows the form in its surrounding context.',
+      ru: 'В каждом фрагменте словоформа показана в контексте.'
+    },
+    'wf.context.page': { en: 'Page {number}', ru: 'Страница {number}' },
+    'wf.context.line': { en: 'Line {number}', ru: 'Строка {number}' },
+    'wf.context.unavailable': {
+      en: 'Context is not available for this occurrence.',
+      ru: 'Контекст этого вхождения недоступен.'
     },
     'wf.source.untitled': { en: '{type} · {ref}', ru: '{type} · {ref}' },
     'wf.source.openRecord': { en: 'Source record', ru: 'Карточка источника' },

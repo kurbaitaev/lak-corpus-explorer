@@ -339,6 +339,11 @@ async function main() {
       assert(source.form_occurrences > 0);
       assert(!Object.prototype.hasOwnProperty.call(source, 'text'));
       assert(!Object.prototype.hasOwnProperty.call(source, 'source_path'));
+      assert(!Object.prototype.hasOwnProperty.call(source, 'urls'));
+      assert(Array.isArray(source.contexts));
+      for (const context of source.contexts) {
+        assert(context.snippet.length > 0 && context.snippet.length <= 360);
+      }
     }
   });
 

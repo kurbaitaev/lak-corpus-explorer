@@ -80,18 +80,6 @@
     return t('lib.unknown', 'Not recorded');
   }
 
-  function linkBlock(s) {
-    if (s.urls && s.urls.length) {
-      return s.urls.slice(0, 3).map(function (url) {
-        return '<a class="obs-source-button" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' +
-          esc(t('lib.openOriginal', 'Open the original')) +
-          ' <span class="obs-external-indicator" aria-hidden="true">↗</span>' +
-          '<span class="sr-only"> ' + esc(t('obs.opensNewTab', '(opens in a new tab)')) + '</span></a>';
-      }).join('');
-    }
-    return '<span class="obs-local">' + esc(t('lib.noPublicLink', 'No public link recorded for this source')) + '</span>';
-  }
-
   function tags(s) {
     var out = '<span class="obs-tag">' + esc(label('materialType', s.material_type)) + '</span>' +
       '<span class="obs-tag status">' + esc(label('languageScope', s.language_scope)) + '</span>' +
@@ -139,8 +127,7 @@
       '</dl>' +
       '<div class="obs-action"><strong>' + esc(t('lib.howUsed', 'How this source is used')) + '</strong>' +
         esc(t('lib.use.' + s.material_type, s.recommended_use || '')) + '</div>' +
-      '<div class="obs-source">' + linkBlock(s) +
-        '<a class="lib-detail-link" href="?source=' + esc(s.ref) + '">' + esc(t('lib.viewDetail', 'Full entry →')) + '</a>' +
+      '<div class="obs-source"><a class="lib-detail-link" href="?source=' + esc(s.ref) + '">' + esc(t('lib.viewDetail', 'Full entry →')) + '</a>' +
       '</div></article>';
   }
 
@@ -187,13 +174,9 @@
         '</dl>' +
         '<div class="obs-action"><strong>' + esc(t('lib.howUsed', 'How this source is used')) + '</strong>' +
           esc(t('lib.use.' + s.material_type, s.recommended_use || '')) + '</div>' +
-        '<p class="obs-notes">' + esc(s.text_published
-          ? t('lib.text.published', 'The text of this source is published.')
-          : t('lib.text.unpublished', 'The text of this source is not published. It is held privately while its rights are unresolved, and it is not used for model training.')) + '</p>' +
         (s.word_form_count
           ? '<p class="obs-notes"><a href="/word-forms.html">' + esc(t('lib.seeWordForms', 'See the word-form index this source feeds →')) + '</a></p>'
           : '') +
-        '<div class="obs-source">' + linkBlock(s) + '</div>' +
       '</article>' +
       (related.length
         ? '<section class="lib-related"><h3>' + esc(tp('lib.related.h3', 'The same file appears {n} more times', { n: related.length })) + '</h3>' +

@@ -1860,14 +1860,19 @@ td { padding: 11px 14px; vertical-align: top; font-size: 14px; }
 .wf-detail-head h2 { margin: 4px 0 5px; font: normal clamp(36px, 7vw, 58px)/1 var(--font-serif); letter-spacing: -.03em; }
 .wf-detail-head p { margin: 0; color: var(--text2); }
 .wf-source-list { display: grid; gap: 10px; }
-.wf-source-card { display: grid; grid-template-columns: minmax(0, 1fr) 150px auto; align-items: center; gap: 18px;
+.wf-source-card { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: start; gap: 14px 18px;
   padding: 16px 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
 .wf-source-card h3 { margin: 0 0 4px; font-size: 15px; line-height: 1.35; }
 .wf-source-card p { margin: 0; color: var(--text3); font-size: 12px; }
 .wf-source-count { display: flex; flex-direction: column; }
 .wf-source-count b { font: normal 24px/1 var(--font-serif); }
 .wf-source-count span { margin-top: 3px; color: var(--text3); font-size: 11px; line-height: 1.25; }
-.wf-source-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; font-size: 13px; font-weight: 600; }
+.wf-contexts { grid-column: 1 / -1; margin: 2px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.wf-contexts li { padding: 11px 13px; border-left: 3px solid var(--accent); background: var(--surface2); border-radius: 0 7px 7px 0; }
+.wf-contexts p { margin: 0; color: var(--text1); font-size: 14px; line-height: 1.55; }
+.wf-contexts mark { color: inherit; background: #ffe9a8; border-radius: 2px; padding: 0 2px; }
+.wf-context-location { display: block; margin-bottom: 4px; color: var(--text3); font: 700 10px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: .05em; }
+.wf-context-empty { grid-column: 1 / -1; font-size: 13px !important; }
 .wf-detail-note { margin: 18px 0 0; color: var(--text2); font-size: 13px; line-height: 1.55; }
 
 /* Source Library and word-form collections above the corpus results. */
