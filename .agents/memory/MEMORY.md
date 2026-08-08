@@ -14,3 +14,4 @@
 - [Deployment image binaries](deployment-image-binaries.md) — workspace-only tools like `unzip` can be absent in production; do boot-path work in-process, and ENOENT has empty stderr.
 - [Console-clean auth gates](console-clean-auth-gates.md) — decide from `/api/auth/me` before calling a gated route, or every signed-out visitor logs a 401.
 - [Autoscale boot work](autoscale-boot-work.md) — long boot jobs are suspended, not run; chunk them, commit progress with the rows, and never gate completeness on row presence.
+- [Production data jobs](prod-data-jobs.md) — agent prod DB access is read-only; one-off write jobs need the user-provided prod connection string (requestSecrets) or a prod shell; publish carries schema, never data.
