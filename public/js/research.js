@@ -48,14 +48,14 @@
   ];
 
   const WORKFLOW_STEPS = [
-    ['research.step.discover', 'Spot the versions',
-      'Audited files are grouped into families when the same work appears more than once — two languages, two scripts, two editions, or a recording with its transcription.'],
-    ['research.step.route', 'Route, never merge',
-      'Each file is routed to a private candidate layer with its rights state attached. Nothing is merged into the corpus, and a duplicate is only ever linked as corroboration.'],
-    ['research.step.pair', 'Human pairing',
-      'A person decides which passages actually correspond. Proximity of filenames is not evidence of sentence equivalence, so no automatic alignment is trusted.'],
-    ['research.step.review', 'Expert review and rights',
-      'A pair becomes usable only after an expert approves it and the rights holder has cleared the source. Only then can it reach a public surface.'],
+    ['research.step.discover', 'Source grouping',
+      'Group versions of the same work by language, script, edition, or recording.'],
+    ['research.step.route', 'Restricted staging',
+      'Store candidates with rights and provenance metadata outside the public corpus.'],
+    ['research.step.pair', 'Manual alignment',
+      'Record corresponding passages; filenames alone do not establish equivalence.'],
+    ['research.step.review', 'Specialist validation',
+      'Approve or reject each alignment before it becomes translation evidence.'],
   ];
 
   function stat(labelText, value, note) {
@@ -80,8 +80,8 @@
     const summary = state.summary;
     if (state.error) {
       box.innerHTML = '<div class="research-note research-note-error"><h2>' +
-        esc(t('research.error.title', 'The research summary could not be loaded')) + '</h2><p>' +
-        esc(t('research.error.body', 'Nothing is missing from the corpus — only this summary is unavailable. Please try again later.')) +
+        esc(t('research.error.title', 'Research data unavailable')) + '</h2><p>' +
+        esc(t('research.error.body', 'Try again later.')) +
         '</p></div>';
       return;
     }
@@ -192,9 +192,9 @@
     if (!box) return;
     box.setAttribute('aria-busy', 'false');
     if (state.error) {
-      box.innerHTML = '<div class="obs-empty"><h3>' + esc(t('research.error.title', 'The research summary could not be loaded')) +
+      box.innerHTML = '<div class="obs-empty"><h3>' + esc(t('research.error.title', 'Research data unavailable')) +
         '</h3><p>' + esc(t('research.error.body',
-          'Nothing is missing from the corpus — only this summary is unavailable. Please try again later.')) + '</p></div>';
+          'Try again later.')) + '</p></div>';
       return;
     }
     const families = (state.summary && state.summary.families) || [];

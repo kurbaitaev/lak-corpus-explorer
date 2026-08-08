@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title data-i18n="about.meta.title">About & Research — Lak Corpus Explorer</title>
-<meta name="description" content="Methodology, sources, quality ladder, statistics, and collaboration invitation for the Lak language research corpus.">
+<title data-i18n="about.meta.title">About · Lak Corpus Explorer</title>
+<meta name="description" content="Corpus scope, sources, methodology, quality states, language varieties, and contribution routes.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -27,9 +27,7 @@
 <div class="about-hero">
   <div class="container">
     <h1 data-i18n="about.h1">About the Lak Corpus</h1>
-    <p data-i18n="about.hero.p">A publicly accessible, source-aware research corpus of the Lak language (лакку маз),
-    built for linguists, Lak speakers, and computational researchers. Every record is
-    traceable to its original source and carries an explicit quality state.</p>
+    <p data-i18n="about.hero.p">A public, source-aware Lak corpus for speakers, volunteers, and researchers. Every record retains provenance and review status.</p>
   </div>
 </div>
 
@@ -48,11 +46,7 @@
             <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.tokens">Tokens</div></div>
             <div class="stat-item"><div class="n">—</div><div class="d" data-i18n="about.stats.lexicon">Lexicon entries</div></div>
           </div>
-          <p data-i18n="about.stats.p1">Tokens are counted as space-delimited, punctuation-stripped word forms.
-          The lexicon includes all forms recorded across standard, Arakul, Balkhar,
-          Shali, and historical varieties plus Uslar 1890 OCR material.</p>
-          <p data-i18n-html="about.stats.p2"><strong>Corpus version:</strong> v1.0 — research preview,
-          released 29 July 2026. Counts above are live from the running corpus.</p>
+          <p data-i18n="about.stats.p1">Counts are generated from the running public corpus.</p>
         </div>
 
         <div class="about-section">
@@ -73,44 +67,35 @@
                 <td data-label="Type" data-i18n="about.sources.pcmlbe.type">Annotated text corpus</td>
                 <td data-label="Variety / period" data-i18n="about.sources.pcmlbe.variety">Unspecified / mixed</td>
                 <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></td>
-                <td data-label="Notes" data-i18n="about.sources.pcmlbe.notes">Parsed Corpus of Modern Lak; 41 PSDX/XML files and 8,788 segments. Created by Dr Erwin R. Komen at Radboud University / SIL International and licensed CC BY-SA 4.0. Includes 25 Lak–English Zhirkov segments, 21 with Cyrillic parallels. Individual records remain unreviewed.</td>
+                <td data-label="Notes" data-i18n="about.sources.pcmlbe.notes">41 PSDX/XML files; 8,788 segments; 25 Lak–English parallels, including 21 with Lak Cyrillic. CC BY-SA 4.0; records unreviewed.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Lak Wikipedia</strong></td>
                 <td data-label="Type" data-i18n="about.sources.wiki.type">Encyclopedic text</td>
                 <td data-label="Variety / period" data-i18n="variety.standard">Standard</td>
                 <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.badge.unreviewed">Unreviewed</span></td>
-                <td data-label="Notes" data-i18n="about.sources.wiki.notes">1,068 Wikipedia articles, 3,606 sentences. Community-written;
-                    orthographic consistency varies.</td>
+                <td data-label="Notes" data-i18n="about.sources.wiki.notes">1,068 articles; 3,606 sentences; orthographic consistency varies.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Digiev phrasebook</strong></td>
                 <td data-label="Type" data-i18n="about.sources.digiev.type">Parallel phrasebook</td>
                 <td data-label="Variety / period" data-i18n="about.sources.digiev.variety">Standard (colloquial)</td>
                 <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.badge.unreviewed">Unreviewed</span></td>
-                <td data-label="Notes" data-i18n="about.sources.digiev.notes">5,383 Russian–Lak phrase pairs. Practical travel and everyday vocabulary.</td>
+                <td data-label="Notes" data-i18n="about.sources.digiev.notes">5,383 Russian–Lak phrase pairs.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>IDS</strong></td>
                 <td data-label="Type" data-i18n="about.sources.ids.type">Lexicon</td>
                 <td data-label="Variety / period" data-i18n="about.sources.ids.variety">Standard + dialects</td>
                 <td data-label="Quality"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></td>
-                <td data-label="Notes" data-i18n="about.sources.ids.notes">Intercontinental Dictionary Series; four files; comparative Caucasian
-                    vocabulary organised by semantic field. Imported in bulk;
-                    individual records have not been human-checked.</td>
+                <td data-label="Notes" data-i18n="about.sources.ids.notes">Four lexicon files organised by semantic field; records unreviewed.</td>
               </tr>
               <tr>
                 <td data-label="Source"><strong>Uslar 1890</strong></td>
                 <td data-label="Type" data-i18n="about.sources.uslar.type">Historical grammar / lexicon</td>
                 <td data-label="Variety / period" data-i18n="about.sources.uslar.variety">Historical (19th c.)</td>
                 <td data-label="Quality"><span class="quality-badge q-ocr" data-i18n="about.ladder.ocr.badge">OCR — unreviewed</span></td>
-                <td data-label="Notes" data-i18n-html="about.sources.uslar.notes">Peter von Uslar's 1890 grammar of Lak, digitised via OCR.
-                    Archaic orthography, possible scan errors. <strong>Not silently modernised.</strong>
-                    All entries are preserved exactly as extracted and marked explicitly
-                    as OCR-sourced. Coverage is partial: roughly 1,469 records (≈6% of the
-                    corpus) from selected portions of the grammar — not a complete
-                    digitisation — and no entry has been individually verified against
-                    the scan.</td>
+                <td data-label="Notes" data-i18n-html="about.sources.uslar.notes">Partial OCR import: approximately 1,469 records. Historical spelling retained; entries not checked against scans.</td>
               </tr>
             </tbody>
           </table>
@@ -119,30 +104,13 @@
         <div class="about-section">
           <h2 data-i18n="about.method.h2">Methodology</h2>
 
-          <p data-i18n-html="about.method.p1"><strong>Translation-first search.</strong> When a Russian query term appears in the
-          alias dictionary (built from the Digiev phrasebook and IDS lexicon), the
-          system expands it to all known Lak equivalents and searches corpus text for
-          those forms. This surfaces concordance examples even when the user doesn't
-          know the Lak spelling. Direct substring search runs as a fallback for
-          terms not in the alias dictionary.</p>
+          <p data-i18n-html="about.method.p1"><strong>General search.</strong> Russian aliases expand to attested Lak equivalents; direct text matching remains available.</p>
 
-          <p data-i18n-html="about.method.p2"><strong>Script normalisation.</strong> All queries and corpus text are
-          normalised with Unicode NFKC before matching. Cyrillic е and ё are treated
-          as equivalent. Multiple codepoint representations of the Lak palochka
-          (Ӏ U+04C0, Latin I, Ukrainian І U+0406, and modifier letter vertical line
-          ӏ U+04CF) are all mapped to the canonical Ӏ (U+04C0) for search. This
-          ensures that OCR artefacts and encoding inconsistencies in the source data
-          do not produce false negatives.</p>
+          <p data-i18n-html="about.method.p2"><strong>Normalisation.</strong> Search uses Unicode NFKC, е/ё equivalence, and canonical palochka handling.</p>
 
-          <p data-i18n-html="about.method.p3"><strong>Quality states.</strong> Each record carries an explicit quality
-          label. The ladder below explains what each state means and what work
-          remains.</p>
+          <p data-i18n-html="about.method.p3"><strong>Structured search.</strong> Source annotations support exact wordform, lemma, and grammatical-tag queries.</p>
 
-          <p data-i18n-html="about.method.p4"><strong>No silent modernisation.</strong> The Uslar 1890 OCR material is
-          preserved verbatim. We do not apply spelling normalisation, diacritic
-          correction, or other post-processing that would alter the historical
-          linguistic record. Errors visible in the data are genuine scan artefacts
-          or orthographic conventions of the period.</p>
+          <p data-i18n-html="about.method.p4"><strong>Source fidelity.</strong> Historical and OCR material is preserved verbatim and labelled.</p>
         </div>
 
         <div class="about-section">
@@ -152,38 +120,28 @@
               <div class="ql-badge"><span class="quality-badge q-approved" data-i18n="about.ladder.approved.badge">Approved</span></div>
               <div class="ql-desc">
                 <strong data-i18n="about.ladder.approved.title">Human-verified</strong>
-                <span data-i18n="about.ladder.approved.desc">Lak text, translation, and metadata have been checked by a reviewer.
-                Corrections and notes are recorded. This is the target state for all records.</span>
+                <span data-i18n="about.ladder.approved.desc">Text, translation, and metadata checked by an authorised reviewer.</span>
               </div>
             </div>
             <div class="ql-row">
               <div class="ql-badge"><span class="quality-badge q-flagged" data-i18n="about.ladder.flagged.badge">Flagged</span></div>
               <div class="ql-desc">
                 <strong data-i18n="about.ladder.flagged.title">Needs attention</strong>
-                <span data-i18n="about.ladder.flagged.desc">A reviewer found a problem — OCR error, wrong variety label, missing
-                translation, or suspected corrupt text — and left a note. Awaiting
-                correction or specialist input.</span>
+                <span data-i18n="about.ladder.flagged.desc">A documented issue requires correction or specialist review.</span>
               </div>
             </div>
             <div class="ql-row">
               <div class="ql-badge"><span class="quality-badge q-ocr" data-i18n="about.ladder.ocr.badge">OCR — unreviewed</span></div>
               <div class="ql-desc">
                 <strong data-i18n="about.ladder.ocr.title">Uslar 1890 OCR source</strong>
-                <span data-i18n="about.ladder.ocr.desc">Extracted from a scanned 19th-century document. Text is presented
-                exactly as recognised; no modernisation applied. Expect scan
-                artefacts and archaic forms. In search results, OCR-sourced material
-                appears only in a clearly separated unverified section — never mixed
-                into the primary translation answer.</span>
+                <span data-i18n="about.ladder.ocr.desc">Scan-derived text preserved verbatim; expect OCR errors and historical spelling.</span>
               </div>
             </div>
             <div class="ql-row">
               <div class="ql-badge"><span class="quality-badge q-unreviewed" data-i18n="about.ladder.unreviewed.badge">Source import — unreviewed</span></div>
               <div class="ql-desc">
                 <strong data-i18n="about.ladder.unreviewed.title">Bulk-imported, not individually checked</strong>
-                <span data-i18n="about.ladder.unreviewed.desc">The default state for records imported from published sources
-                (PCMLBE, IDS, Lak Wikipedia, Digiev phrasebook). The sources are
-                reputable, but no record carries human verification until a
-                logged-in reviewer approves it.</span>
+                <span data-i18n="about.ladder.unreviewed.desc">Imported from a named source but not individually human-verified.</span>
               </div>
             </div>
           </div>
@@ -192,37 +150,25 @@
         <div class="about-section">
           <h2 data-i18n="about.varieties.h2">Dialect varieties</h2>
           <ul>
-            <li data-i18n-html="about.varieties.standard"><strong>Standard</strong> — the literary and administrative standard form of Lak,
-            based on the Kumukh dialect. Used in education, publishing, and official contexts.</li>
-            <li data-i18n-html="about.varieties.arakul"><strong>Arakul</strong> — dialect spoken in the village of Arakul (Аракул) in
-            the Lak district of Dagestan.</li>
-            <li data-i18n-html="about.varieties.balkhar"><strong>Balkhar</strong> — dialect of the pottery village of Balkhar (Балхъар),
-            known for its distinct phonology.</li>
-            <li data-i18n-html="about.varieties.shali"><strong>Shali</strong> — dialect of the Shali (Шали) region.</li>
-            <li data-i18n-html="about.varieties.historical"><strong>Historical</strong> — forms attested in 19th-century sources that may
-            differ from the modern standard.</li>
-            <li data-i18n-html="about.varieties.unspecified"><strong>Unspecified</strong> — variety not recorded in the source metadata.</li>
+            <li data-i18n-html="about.varieties.standard"><strong>Standard</strong>: literary Lak based on the Kumukh dialect.</li>
+            <li data-i18n-html="about.varieties.arakul"><strong>Arakul</strong>: variety associated with Arakul.</li>
+            <li data-i18n-html="about.varieties.balkhar"><strong>Balkhar</strong>: variety associated with Balkhar.</li>
+            <li data-i18n-html="about.varieties.shali"><strong>Shali</strong>: variety associated with Shali.</li>
+            <li data-i18n-html="about.varieties.historical"><strong>Historical</strong>: forms attested in historical sources.</li>
+            <li data-i18n-html="about.varieties.unspecified"><strong>Unspecified</strong>: variety absent from source metadata.</li>
           </ul>
         </div>
 
         <div class="about-section">
-          <h2 data-i18n="about.collab.h2">Invitation for collaboration</h2>
-          <p data-i18n="about.collab.p1">This corpus is designed to grow through expert contribution. We are actively seeking:</p>
+          <h2 data-i18n="about.collab.h2">Contribute</h2>
+          <p data-i18n="about.collab.p1">Choose the task that matches your expertise:</p>
           <ul>
-            <li data-i18n="about.collab.li1">Native Lak speakers who can verify translations, correct OCR errors,
-            and flag dialectal misattributions.</li>
-            <li data-i18n="about.collab.li2">Field linguists with access to unpublished wordlists, texts, or recordings
-            that can be incorporated with proper attribution.</li>
-            <li data-i18n="about.collab.li3">Universities and research institutions interested in formal collaboration
-            agreements for corpus expansion and annotation.</li>
-            <li data-i18n="about.collab.li4">Computational linguists developing NLP resources for low-resource
-            Caucasian languages who wish to co-develop evaluation benchmarks.</li>
+            <li data-i18n="about.collab.li1">Lak speakers: validate translations, spelling, and variety labels.</li>
+            <li data-i18n="about.collab.li2">Linguists: review morphology, glosses, and alignments.</li>
+            <li data-i18n="about.collab.li3">Archivists and rights specialists: verify provenance and reuse terms.</li>
+            <li data-i18n="about.collab.li4">NLP researchers: design reproducible benchmarks and evaluation methods.</li>
           </ul>
-          <p data-i18n-html="about.collab.p2">The review system on this site allows immediate contribution: any visitor can
-          flag problems and submit corrections or notes as suggestions. Canonical
-          <strong>Approved</strong> states can only be created by logged-in trusted
-          reviewers, so every approved record carries verified attribution.
-          Systematic contributions are welcome via the GitHub repository.</p>
+          <p data-i18n-html="about.collab.p2"><a href="/validate.html">Open validation tasks</a> or <a href="/register.html">create an account</a>. Approval rights are role-controlled.</p>
         </div>
 
       </div>
@@ -231,32 +177,9 @@
       <div>
 
         <div class="sidebar-card">
-          <h3 data-i18n="about.sidebar.quickStats">Quick statistics</h3>
-          <div class="stat-grid" id="sidebar-stats">
-            <div class="stat-item"><div class="n" id="s-docs">—</div><div class="d" data-i18n="about.stats.documents">Documents</div></div>
-            <div class="stat-item"><div class="n" id="s-segs">—</div><div class="d" data-i18n="about.stats.segments">Segments</div></div>
-            <div class="stat-item"><div class="n" id="s-tok">—</div><div class="d" data-i18n="about.stats.tokens">Tokens</div></div>
-            <div class="stat-item"><div class="n" id="s-lex">—</div><div class="d" data-i18n="about.sidebar.lexicon">Lexicon</div></div>
-            <div class="stat-item"><div class="n" id="s-wiki">—</div><div class="d" data-i18n="about.sidebar.wikiDocs">Wiki docs</div></div>
-            <div class="stat-item"><div class="n" id="s-phrase">—</div><div class="d" data-i18n="about.sidebar.phrasePairs">Phrasebook pairs</div></div>
-          </div>
-        </div>
-
-        <div class="sidebar-card">
-          <h3 data-i18n="about.sidebar.lexByVariety">Lexicon by variety</h3>
-          <table class="source-table" id="lex-by-variety">
-            <thead><tr><th data-i18n="about.sidebar.col.variety">Variety</th><th data-i18n="about.sidebar.col.entries">Entries</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="sidebar-card">
           <h3 data-i18n="about.sidebar.langInfo">Language information</h3>
-          <p data-i18n-html="about.sidebar.langInfo.p1">Lak (лакку маз, ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian
-          language spoken primarily in the Lak district of Dagestan, Russia.
-          It belongs to the Lak–Dargwa branch and has approximately 150,000 speakers.</p>
-          <p data-i18n-html="about.sidebar.langInfo.p2">The language uses a Cyrillic script with the palochka (Ӏ) for ejective
-          consonants — a letterform unique to Caucasian languages.</p>
+          <p data-i18n-html="about.sidebar.langInfo.p1">Lak (лакку маз; ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian language of Dagestan.</p>
+          <p data-i18n-html="about.sidebar.langInfo.p2">Modern Lak uses Cyrillic, including palochka (Ӏ).</p>
         </div>
 
         <div class="sidebar-card">
@@ -282,33 +205,6 @@ let aboutStats = null;
 function renderAboutStats(s) {
   const lang = window.I18n?.getLanguage?.() || 'en';
   const fmt = n => typeof n === 'number' ? n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') : String(n ?? '');
-  document.getElementById('s-docs').textContent   = fmt(s.documents);
-  document.getElementById('s-segs').textContent   = fmt(s.sentences);
-  document.getElementById('s-tok').textContent    = fmt(s.tokens);
-  document.getElementById('s-lex').textContent    = fmt(s.lexicon_rows);
-  document.getElementById('s-wiki').textContent   = fmt(s.wikipedia_documents);
-  document.getElementById('s-phrase').textContent = fmt(s.digiev_phrase_pairs);
-
-  const lbd = s.lexicon_by_dialect || {};
-  const tbody = document.querySelector('#lex-by-variety tbody');
-  tbody.replaceChildren();
-  const varieties = ['standard','arakul','balkhar','shali','historical'];
-  const tr = (k, fb) => (window.I18n && window.I18n.t ? (window.I18n.t(k) !== k ? window.I18n.t(k) : fb) : fb);
-  const labels = {
-    standard: tr('variety.standard','Standard'),
-    arakul: tr('variety.arakul','Arakul'),
-    balkhar: tr('variety.balkhar','Balkhar'),
-    shali: tr('variety.shali','Shali'),
-    historical: tr('about.varietyHistoricalUslar','Historical (Uslar)'),
-  };
-  for (const v of varieties) {
-    if (lbd[v] != null) {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td data-label="${tr('about.sidebar.col.variety','Variety')}">${labels[v]}</td><td data-label="${tr('about.sidebar.col.entries','Entries')}">${fmt(lbd[v])}</td>`;
-      tbody.appendChild(row);
-    }
-  }
-
   const grid = document.getElementById('about-stats');
   if (grid) {
     const items = grid.querySelectorAll('.stat-item');

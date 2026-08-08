@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title data-i18n="research.meta.title">Research update · Lak Corpus Explorer</title>
-<meta name="description" content="What changed in the Lak corpus research programme: audited private research candidates, parallel-source discovery, and the human review workflow before anything becomes public.">
+<title data-i18n="research.meta.title">Research · Lak Corpus Explorer</title>
+<meta name="description" content="Corpus scope, structured search, source inventory, review workflow, and publication rules.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/css/app.css?v=2">
 </head>
@@ -29,11 +29,9 @@
 <main class="observatory research-page">
   <header class="obs-hero">
     <div class="container">
-      <div class="obs-kicker" data-i18n="research.kicker">Research update · what changed</div>
-      <h1><span data-i18n="research.h1">What changed in this research round</span><span class="help-marker" data-help="help.researchUpdate" data-help-fallback="This page reports what the latest source audit found. The materials themselves stay private until rights and review are settled."></span></h1>
-      <p data-i18n-html="research.intro">The Explorer now has a public, structured PCMLBE layer with <strong>87,266 tokens</strong>, <strong>20,606 source analyses</strong>, and <strong>1,234 source lemmas</strong>. People can search exact wordforms, lemmas, and grammatical tags while every result remains linked to its source.</p>
-      <div class="obs-stats" id="research-stats" aria-label="Audited research aggregates" data-i18n-aria="research.statsLabel"></div>
-      <div class="obs-method" data-i18n-html="research.method"><strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.</div>
+      <div class="obs-kicker" data-i18n="research.kicker">Corpus documentation</div>
+      <h1 data-i18n="research.h1">Data, methods, and review</h1>
+      <p data-i18n-html="research.intro">Current corpus scope, search methods, source coverage, and publication controls.</p>
     </div>
   </header>
 
@@ -41,9 +39,9 @@
     <div class="container">
       <div class="research-v2-head">
         <div>
-          <div class="v2-spotlight-kicker" data-i18n="research.v2.kicker">Live now</div>
-          <h2 data-i18n="research.v2.h2">The corpus can now search inside Lak words</h2>
-          <p class="research-lede" data-i18n="research.v2.body">A search is no longer limited to a flat text match. The structured PCMLBE layer connects attested wordforms to source lemmas and grammatical analyses. This makes it possible to find related forms and grammatical constructions without presenting machine guesses as facts.</p>
+          <div class="v2-spotlight-kicker" data-i18n="research.v2.kicker">Public corpus</div>
+          <h2 data-i18n="research.v2.h2">Structured PCMLBE search</h2>
+          <p class="research-lede" data-i18n="research.v2.body">Attested wordforms are linked to source lemmas and grammatical analyses. Machine proposals are excluded from public results.</p>
         </div>
         <a class="btn btn-primary" href="/?mode=lemma&amp;q=дакӀ" data-i18n="research.v2.cta">Try lemma search</a>
       </div>
@@ -58,31 +56,24 @@
         <a href="/?mode=lemma&amp;q=дакӀ"><strong data-i18n="search.mode.lemma">Lemma</strong><span data-i18n="research.v2.lemma">Collect attested forms under a source lemma</span></a>
         <a href="/?mode=grammar&amp;q=N-GEN"><strong data-i18n="search.mode.grammar">Grammar</strong><span data-i18n="research.v2.grammar">Find tokens carrying a source grammatical tag</span></a>
       </div>
-      <p class="v2-trust" data-i18n="research.v2.trust">The 3,193 machine-generated lemma proposals are not public facts. They stay in an authenticated review workflow and never enter public search automatically.</p>
+      <p class="v2-trust" data-i18n="research.v2.trust">3,193 machine-generated lemma proposals remain in the authenticated review queue.</p>
     </div>
   </section>
 
-  <section class="research-section research-whatsnew" aria-label="What is new" data-i18n-aria="research.whatsnew.aria">
+  <section class="research-section research-whatsnew" aria-label="Source inventory" data-i18n-aria="research.whatsnew.aria">
     <div class="container">
-      <h2 data-i18n="research.whatsnew.h2">What’s new: the Lak Materials collection, described in the open</h2>
-      <p class="research-lede" data-i18n-html="research.whatsnew.credit">We thank <strong>Professor Victor Friedman</strong> for sharing his Lak research collection with the project. The files themselves stay private while their rights are unresolved; what is now public is the <strong>analysis and derived research metadata</strong> — what every source is, what language and script it uses, how well its text could be extracted, and how it can strengthen the corpus in the future.</p>
-      <p class="research-lede" data-i18n-html="research.whatsnew.public">All 320 audited items are accounted for: 293 substantive sources catalogued one by one, and 27 system metadata receipts. No scans, documents, audio, paths or unreviewed passages are published or downloadable. One already-public source has new clarity: the PCMLBE corpus is now confirmed under a <strong>CC BY-SA 4.0</strong> license, credited to Erwin Komen and Radboud University.</p>
+      <h2 data-i18n="research.whatsnew.h2">Source inventory</h2>
+      <p class="research-lede" data-i18n-html="research.whatsnew.credit"><strong>293 substantive sources</strong> are catalogued by material type, language, script, extraction quality, rights state, and corpus role.</p>
+      <p class="research-lede" data-i18n-html="research.whatsnew.public">Source content remains restricted unless publication rights and review status permit release.</p>
       <p class="research-lede"><a href="/source-library.html" data-i18n="research.whatsnew.libraryLink">Open the Source Library →</a> · <a href="/word-forms.html" data-i18n="research.whatsnew.formsLink">Browse the Lak word-form index →</a></p>
-    </div>
-  </section>
-
-  <section class="research-section" aria-label="Public corpus unchanged" data-i18n-aria="research.publicLabel">
-    <div class="container">
-      <div class="research-public" id="research-public" aria-live="polite"></div>
     </div>
   </section>
 
   <section class="research-section" aria-label="Licensed PCMLBE finding">
     <div class="container">
       <div class="research-note">
-        <h2 data-i18n="research.pcmlbe.h2">A hidden parallel text is now usable</h2>
-        <p data-i18n-html="research.pcmlbe.body">The Zhirkov 1955 record inside PCMLBE contains 25 aligned Lak–English segments; 21 also preserve Lak in Cyrillic. The earlier website showed only the Latin transcription. All three available fields are now searchable and remain labelled as source-import evidence until expert review.</p>
-        <p data-i18n="research.permission.credit">Professor Victor Friedman confirmed permission to use the research materials supplied for this project. Source-level provenance and quality review remain attached to every derived result.</p>
+        <h2 data-i18n="research.pcmlbe.h2">PCMLBE parallel data</h2>
+        <p data-i18n-html="research.pcmlbe.body">25 Lak–English segments are searchable; 21 include Lak Cyrillic. Records retain source provenance and review status.</p>
         <p><a href="http://hdl.handle.net/21.11114/COLL-0000-0021-959C-3" target="_blank" rel="noreferrer">PCMLBE persistent record</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a></p>
       </div>
     </div>
@@ -90,16 +81,16 @@
 
   <section class="research-section" aria-label="Discovery and review workflow" data-i18n-aria="research.workflowLabel">
     <div class="container">
-      <h2 data-i18n="research.workflow.h2">How parallel sources are found — and what happens next</h2>
-      <p class="research-lede" data-i18n-html="research.workflow.intro">Some of these materials appear to exist in more than one version: the same work in Lak and in Russian, in Cyrillic and in Latin script, or as a recording with a transcription. A pair of versions is a <strong>lead, not a translation</strong>: two files sitting next to each other is not proof that their sentences correspond.</p>
+      <h2 data-i18n="research.workflow.h2">Review workflow</h2>
+      <p class="research-lede" data-i18n-html="research.workflow.intro">Candidate relationships require source matching, sentence alignment, rights review, and expert validation.</p>
       <ol class="research-steps" id="research-steps"></ol>
     </div>
   </section>
 
   <section class="research-section" aria-label="Source families" data-i18n-aria="research.familiesLabel">
     <div class="container">
-      <h2 data-i18n="research.families.h2">Strongest alignment opportunities</h2>
-      <p class="research-lede" data-i18n-html="research.families.intro">Permission for the supplied materials is confirmed. These are the source families most likely to yield aligned Lak–Russian material after human pairing and expert review. Each card shows <strong>metadata only</strong> until those quality steps are complete.</p>
+      <h2 data-i18n="research.families.h2">Alignment candidates</h2>
+      <p class="research-lede" data-i18n-html="research.families.intro">Source families with potential Lak–Russian or Lak–English parallels. Cards contain metadata only.</p>
       <div id="research-families" aria-live="polite" aria-busy="true">
         <div class="obs-grid" aria-label="Loading" data-i18n-aria="research.loading"><div class="obs-skeleton"></div><div class="obs-skeleton"></div></div>
       </div>
@@ -108,9 +99,9 @@
 
   <section class="research-section research-gate" aria-label="Before anything becomes public" data-i18n-aria="research.gateLabel">
     <div class="container">
-      <h2 data-i18n="research.gate.h2">Before any of this could become public</h2>
+      <h2 data-i18n="research.gate.h2">Publication requirements</h2>
       <ul class="research-gate-list" id="research-gate"></ul>
-      <p class="research-lede" data-i18n-html="research.gate.footer">Until every step is complete for a given source, its material stays private: not searchable, not published, not exported, and not used for training. The public corpus grows only through material that is already clear to publish.</p>
+      <p class="research-lede" data-i18n-html="research.gate.footer">Restricted or unreviewed material is not searchable, published, exported, or used for training.</p>
     </div>
   </section>
 </main>

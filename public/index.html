@@ -41,9 +41,9 @@
   <div class="container">
     <section class="v2-spotlight" id="v2-spotlight" hidden aria-labelledby="v2-spotlight-title">
       <div class="v2-spotlight-copy">
-        <div class="v2-spotlight-kicker" data-i18n="search.smart.kicker">New structured corpus</div>
-        <h2 id="v2-spotlight-title" data-i18n="search.smart.title">Search Lak by wordform, lemma, or grammar</h2>
-        <p data-i18n="search.smart.body">The Explorer now searches inside 87,266 PCMLBE tokens and 20,606 source annotations. Find a written form, collect attested forms under one lemma, or search a grammatical tag.</p>
+        <div class="v2-spotlight-kicker" data-i18n="search.smart.kicker">Structured search</div>
+        <h2 id="v2-spotlight-title" data-i18n="search.smart.title">Wordform, lemma, and grammar search</h2>
+        <p data-i18n="search.smart.body">Search 87,266 PCMLBE tokens and 20,606 source annotations.</p>
       </div>
       <div class="v2-stat-grid" aria-label="Structured corpus statistics" data-i18n-aria="search.smart.statsLabel">
         <div class="v2-stat"><b data-v2-count="tokens">87,266</b><span data-i18n="search.smart.tokens">structured tokens</span></div>
@@ -57,7 +57,7 @@
         <button type="button" class="v2-example" data-example-mode="lemma" data-example-query="дакӀ"><strong data-i18n="search.mode.lemma">Lemma</strong> дакӀ</button>
         <button type="button" class="v2-example" data-example-mode="grammar" data-example-query="N-GEN"><strong data-i18n="search.mode.grammar">Grammar</strong> N-GEN</button>
       </div>
-      <p class="v2-trust" data-i18n="search.smart.trust">Public results show source annotations only. Machine predictions remain in the review queue until a person approves them.</p>
+      <p class="v2-trust" data-i18n="search.smart.trust">Public results contain source annotations only. Machine proposals require review.</p>
     </section>
     <form id="search-form" class="controls-grid" novalidate>
       <div class="search-mode-bar" id="v2-mode-bar" hidden data-i18n-aria="search.mode.label" aria-label="Search mode">
@@ -124,21 +124,6 @@
 </div>
 
 <div class="container search-main" style="padding-top:14px; padding-bottom:32px;">
-  <section class="search-guidance" aria-labelledby="what-to-do-title">
-    <div>
-      <h2 id="what-to-do-title" data-i18n="search.landing.whatToDoTitle">What should I do here?</h2>
-      <p data-i18n="search.landing.whatToDoBody">Search in Russian or Lak to find examples. Open the source document to check context, or check translations when a record needs expert attention.</p>
-    </div>
-    <span class="help-marker" data-help="help.corpusRecord" data-help-fallback="A corpus record is one searchable example, with its Lak form, translation, source, and identifier."></span>
-  </section>
-
-  <a class="research-banner" href="/research.html">
-    <span class="research-banner-kicker" data-i18n="index.research.kicker">Research update</span>
-    <span class="research-banner-title" data-i18n="index.research.title">The corpus now understands source lemmas and grammar</span>
-    <span class="research-banner-body" data-i18n="index.research.body">See how 87,266 PCMLBE tokens became a structured search layer, what is verified source evidence, and what still needs human review.</span>
-    <span class="research-banner-cta" data-i18n="index.research.cta">Read the research update →</span>
-  </a>
-
   <div id="concept-card" class="concept-card"></div>
 
   <!-- Sources and attested word forms matching the same query. These come
