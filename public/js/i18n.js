@@ -57,11 +57,11 @@
     // "Ресурсы" (outside resources) against "Источники" (our own holdings) —
     // the same distinction the English labels draw, and short enough that both
     // fit the desktop nav in Russian.
-    'nav.observatory': { en: 'Resource guide', ru: 'Ресурсы' },
-    'nav.research': { en: "What's new", ru: 'Что нового' },
-    'nav.lab': { en: 'Workspace', ru: 'Работа с переводами' },
-    'nav.lab.short': { en: 'Workspace', ru: 'Переводы' },
-    'nav.validate': { en: 'Check translations', ru: 'Проверить переводы' },
+    'nav.observatory': { en: 'Resources', ru: 'Ресурсы' },
+    'nav.research': { en: 'Research', ru: 'Исследования' },
+    'nav.lab': { en: 'Translate', ru: 'Перевод' },
+    'nav.lab.short': { en: 'Translate', ru: 'Перевод' },
+    'nav.validate': { en: 'Contribute', ru: 'Участие' },
     'nav.leaderboard': { en: 'Leaderboard', ru: 'Рейтинг' },
     // Kept short on purpose: the desktop nav has no room for the longer
     // "О проекте и исследованиях" now that the Source Library sits in it.
@@ -121,11 +121,11 @@
     'search.mode.lemma': { en: 'Lemma', ru: 'Лемма' },
     'search.mode.grammar': { en: 'Grammar', ru: 'Грамматика' },
     'search.mode.label': { en: 'Search mode', ru: 'Режим поиска' },
-    'search.smart.kicker': { en: 'New structured corpus', ru: 'Новый структурированный корпус' },
-    'search.smart.title': { en: 'Search Lak by wordform, lemma, or grammar', ru: 'Ищите по словоформе, лемме или грамматике' },
+    'search.smart.kicker': { en: 'Structured search', ru: 'Структурированный поиск' },
+    'search.smart.title': { en: 'Wordform, lemma, and grammar search', ru: 'Поиск по словоформе, лемме и грамматике' },
     'search.smart.body': {
-      en: 'The Explorer now searches inside 87,266 PCMLBE tokens and 20,606 source annotations. Find a written form, collect attested forms under one lemma, or search a grammatical tag.',
-      ru: 'Теперь поиск работает внутри 87 266 токенов PCMLBE и 20 606 аннотаций источника. Находите конкретную словоформу, собирайте засвидетельствованные формы одной леммы или ищите по грамматическому тегу.'
+      en: 'Search 87,266 PCMLBE tokens and 20,606 source annotations.',
+      ru: 'Поиск по 87 266 токенам PCMLBE и 20 606 аннотациям источника.'
     },
     'search.smart.statsLabel': { en: 'Structured corpus statistics', ru: 'Статистика структурированного корпуса' },
     'search.smart.tokens': { en: 'structured tokens', ru: 'структурированных токенов' },
@@ -135,8 +135,8 @@
     'search.smart.examplesLabel': { en: 'Try the new search', ru: 'Примеры нового поиска' },
     'search.smart.try': { en: 'Try it:', ru: 'Попробуйте:' },
     'search.smart.trust': {
-      en: 'Public results show source annotations only. Machine predictions remain in the review queue until a person approves them.',
-      ru: 'В публичных результатах показываются только аннотации источника. Машинные прогнозы остаются в очереди проверки до подтверждения человеком.'
+      en: 'Public results contain source annotations only. Machine proposals require review.',
+      ru: 'Публичные результаты содержат только аннотации источника. Машинные предложения требуют проверки.'
     },
     'search.grammarFeature': { en: 'Grammatical tag or feature', ru: 'Грамматический тег или признак' },
     'search.grammarChoose': { en: 'Choose a source tag…', ru: 'Выберите тег источника…' },
@@ -198,30 +198,27 @@
       en: 'Lak Resource Observatory · Lak Corpus Explorer',
       ru: 'Обсерватория лакских ресурсов · Обозреватель лакского корпуса'
     },
-    'obs.kicker': {
-      en: 'Public catalogue of materials · 29 July 2026',
-      ru: 'Публичный каталог материалов · 29 июля 2026'
-    },
+    'obs.kicker': { en: 'External resource register', ru: 'Реестр внешних ресурсов' },
     'obs.h1': { en: 'Lak resource guide', ru: 'Каталог лакских материалов' },
     'obs.intro': {
-      en: 'A guide to <strong>68 non-Bible materials</strong> for the Lak language: what exists, who holds it, what may be used, and the next careful step.',
-      ru: 'Каталог <strong>68 небиблейских материалов</strong> по лакскому языку: что есть, у кого хранится, что можно использовать и каков следующий осторожный шаг.'
+      en: '<strong>68 non-Bible resources</strong> with access, rights, evidence status, and next action.',
+      ru: '<strong>68 небиблейских ресурсов</strong> со статусами доступа, прав, подтверждения и следующим действием.'
     },
     'obs.statsLabel': { en: 'Registry summary', ru: 'Сводка реестра' },
     'obs.method': {
-      en: '<strong>How to read this register.</strong> Evidence status describes what has been confirmed: a held or processed item is locally accounted for; verified means the source was directly checked; a verified, contact, institutional, or local lead still requires follow-up; catalog-only records and discovery portals establish existence or point onward; a confirmed gap records an evidenced absence. Public access means discoverable, not automatically reusable. Rights text is preserved from the source ledger, while “permission-sensitive” is an operational flag for acquisition work requiring explicit permission, agreement, consent, or careful copying/reproduction review—not a legal conclusion. Public viewability never implies redistribution or model-training permission. Local provenance references are deliberately not published as web links. Bible-derived materials are excluded from the registry, acquisition guidance, corpus, and model recommendations.',
-      ru: '<strong>Как читать этот реестр.</strong> Статус подтверждения описывает то, что уже установлено: имеющийся или обработанный материал учтён локально; «проверено» означает, что источник был проверен напрямую; проверенная, контактная, институциональная или локальная наводка всё ещё требует дальнейшей работы; записи только по каталогу и поисковые порталы подтверждают существование или указывают путь дальше; подтверждённый пробел фиксирует доказанное отсутствие. Публичный доступ означает обнаружимость, а не автоматическую возможность повторного использования. Текст о правах сохранён из исходного реестра, а «требует разрешения» — это рабочая пометка для работы по приобретению, требующей явного разрешения, соглашения, согласия либо тщательной проверки копирования/воспроизведения, а не юридический вывод. Публичная доступность для просмотра никогда не подразумевает разрешение на распространение или обучение моделей. Локальные ссылки о происхождении намеренно не публикуются в виде веб-ссылок. Материалы, производные от Библии, исключены из реестра, рекомендаций по приобретению, корпуса и рекомендаций для моделей.'
+      en: 'Public access does not imply permission to redistribute or train models. Rights and evidence status are tracked separately.',
+      ru: 'Публичный доступ не означает разрешение на распространение или обучение моделей. Права и статус подтверждения учитываются отдельно.'
     },
     /* Private research layer (audited v1.2 sources) */
     'obs.private.sectionLabel': { en: 'Private research layer', ru: 'Закрытый исследовательский слой' },
-    'obs.private.h2': { en: 'Private research layer', ru: 'Закрытый исследовательский слой' },
+    'obs.private.h2': { en: 'Restricted research inventory', ru: 'Реестр закрытых материалов' },
     'obs.private.intro': {
-      en: 'Audited materials that are <strong>not part of the public corpus</strong>. Each one is held as a private research lead: it is not searchable here, not published, and not available for model training. This panel shows only what has been counted and checked — never the material itself.',
-      ru: 'Проверенные материалы, которые <strong>не входят в публичный корпус</strong>. Каждый хранится как закрытая исследовательская наводка: он не участвует в поиске, не публикуется и не используется для обучения моделей. Здесь показано только то, что подсчитано и проверено, — но не сам материал.'
+      en: 'Metadata and counts for materials excluded from public search, publication, and training.',
+      ru: 'Метаданные и числа по материалам, исключённым из публичного поиска, публикации и обучения.'
     },
     'obs.private.method': {
-      en: '<strong>How to read this panel.</strong> “Expected” is the count recorded in the source audit; “staged” is how much has actually been imported after a machine-checked manifest passed verification. When no verified manifest is present in the workspace, nothing is imported and the expected count stays a claim about the source, not data we hold. Every staged item starts as private research, permission pending, unreviewed import and not training-ready; rights, access, review and training are four separate human decisions. Page-level OCR stays outside ordinary search until a person has checked it and rights are cleared. Audio is described only as a collection-level inventory — no file URLs, and no claim about alignment, speakers, dialect, consent or redistribution. Duplicates are linked as corroboration and never merged into corpus records. Bible-derived material is excluded throughout.',
-      ru: '<strong>Как читать эту панель.</strong> «Ожидается» — это количество, зафиксированное при аудите источника; «подготовлено» — сколько действительно импортировано после того, как машинно проверяемый манифест прошёл проверку. Если проверенного манифеста в рабочей области нет, ничего не импортируется, а ожидаемое количество остаётся утверждением об источнике, а не данными, которыми мы располагаем. Каждая подготовленная запись начинается со статусов «закрытое исследование», «разрешение ожидается», «импорт не проверен» и «не готово к обучению»; права, доступ, проверка и обучение — четыре отдельных человеческих решения. Постраничный OCR остаётся вне обычного поиска, пока его не проверит человек и не будут урегулированы права. Аудио описано только как опись на уровне коллекции — без ссылок на файлы и без утверждений о выравнивании, дикторах, диалекте, согласии или распространении. Дубликаты связываются как подтверждение и никогда не сливаются с записями корпуса. Материалы, производные от Библии, исключены полностью.'
+      en: 'Expected counts come from the audit. Staged counts passed package verification.',
+      ru: 'Ожидаемые числа взяты из аудита. Подготовленные числа прошли проверку пакета.'
     },
     'obs.private.stat.sources': { en: 'Audited sources', ru: 'Проверенные источники' },
     'obs.private.stat.expected': { en: 'Expected records', ru: 'Ожидается записей' },
@@ -332,31 +329,31 @@
     'obs.loading': { en: 'Loading resources', ru: 'Загрузка ресурсов' },
 
     /* ── research.html (public research update) ──────────────── */
-    'research.meta.title': { en: 'Research update · Lak Corpus Explorer', ru: 'Ход исследования · Обозреватель лакского корпуса' },
-    'research.kicker': { en: 'Research update · what changed', ru: 'Ход исследования · что изменилось' },
-    'research.h1': { en: 'What changed in this research round', ru: 'Что изменилось в этом этапе исследования' },
+    'research.meta.title': { en: 'Research · Lak Corpus Explorer', ru: 'Исследования · Лакский корпус' },
+    'research.kicker': { en: 'Corpus documentation', ru: 'Документация корпуса' },
+    'research.h1': { en: 'Data, methods, and review', ru: 'Данные, методы и проверка' },
     'research.intro': {
-      en: 'The Explorer now has a public, structured PCMLBE layer with <strong>87,266 tokens</strong>, <strong>20,606 source analyses</strong>, and <strong>1,234 source lemmas</strong>. People can search exact wordforms, lemmas, and grammatical tags while every result remains linked to its source.',
-      ru: 'Теперь в Explorer есть публичный структурированный слой PCMLBE: <strong>87 266 токенов</strong>, <strong>20 606 разборов из источника</strong> и <strong>1 234 леммы</strong>. Можно искать точные словоформы, леммы и грамматические теги, сохраняя связь каждого результата с источником.'
+      en: 'Current corpus scope, search methods, source coverage, and publication controls.',
+      ru: 'Текущий состав корпуса, методы поиска, охват источников и правила публикации.'
     },
     'research.v2.aria': { en: 'Structured corpus search', ru: 'Структурированный поиск по корпусу' },
-    'research.v2.kicker': { en: 'Live now', ru: 'Уже доступно' },
-    'research.v2.h2': { en: 'The corpus can now search inside Lak words', ru: 'Корпус теперь умеет искать внутри лакских слов' },
+    'research.v2.kicker': { en: 'Public corpus', ru: 'Публичный корпус' },
+    'research.v2.h2': { en: 'Structured PCMLBE search', ru: 'Структурированный поиск PCMLBE' },
     'research.v2.body': {
-      en: 'A search is no longer limited to a flat text match. The structured PCMLBE layer connects attested wordforms to source lemmas and grammatical analyses. This makes it possible to find related forms and grammatical constructions without presenting machine guesses as facts.',
-      ru: 'Поиск больше не ограничен простым совпадением текста. Структурированный слой PCMLBE связывает засвидетельствованные словоформы с леммами и грамматическими разборами источника. Так можно находить связанные формы и грамматические конструкции, не выдавая машинные догадки за факты.'
+      en: 'Attested wordforms are linked to source lemmas and grammatical analyses. Machine proposals are excluded from public results.',
+      ru: 'Засвидетельствованные словоформы связаны с леммами и грамматическими разборами источника. Машинные предложения исключены из публичных результатов.'
     },
     'research.v2.cta': { en: 'Try lemma search', ru: 'Попробовать поиск по лемме' },
     'research.v2.wordform': { en: 'Find an exact form as it appears in a text', ru: 'Найти точную форму в тексте' },
     'research.v2.lemma': { en: 'Collect attested forms under a source lemma', ru: 'Собрать засвидетельствованные формы одной леммы' },
     'research.v2.grammar': { en: 'Find tokens carrying a source grammatical tag', ru: 'Найти токены с грамматическим тегом источника' },
     'research.v2.trust': {
-      en: 'The 3,193 machine-generated lemma proposals are not public facts. They stay in an authenticated review workflow and never enter public search automatically.',
-      ru: '3 193 машинных предложения по леммам не считаются публичными фактами. Они остаются в закрытом процессе проверки и никогда не попадают в публичный поиск автоматически.'
+      en: '3,193 machine-generated lemma proposals remain in the authenticated review queue.',
+      ru: '3 193 машинных предложения по леммам остаются в закрытой очереди проверки.'
     },
     'research.method': {
-      en: '<strong>How to read these numbers.</strong> “Audited” is what the source audit recorded. “Staged” is what actually passed machine verification and was imported into the private layer. They are shown separately, and a number is only ever a count — no passage, filename or extracted line is published here.',
-      ru: '<strong>Как читать эти числа.</strong> «По аудиту» — то, что зафиксировала проверка источников. «Загружено» — то, что действительно прошло машинную верификацию и попало в закрытый слой. Они показаны отдельно, и число остаётся только числом: ни отрывок, ни имя файла, ни извлечённая строка здесь не публикуются.'
+      en: 'Audited and staged counts are reported separately.',
+      ru: 'Числа по аудиту и загрузке приводятся отдельно.'
     },
     'research.statsLabel': { en: 'Audited research aggregates', ru: 'Сводные показатели аудита' },
     'research.publicLabel': { en: 'Public corpus unchanged', ru: 'Публичный корпус без изменений' },
@@ -368,15 +365,15 @@
     'research.stat.sourceRoutes': { en: 'Files audited', ru: 'Проверено файлов' },
     'research.stat.rightsReviews': { en: 'Substantive materials', ru: 'Содержательных материалов' },
     'research.stat.extractions': { en: 'Usable extractions', ru: 'Пригодных извлечений' },
-    'research.whatsnew.aria': { en: 'What is new', ru: 'Что нового' },
-    'research.whatsnew.h2': { en: 'What’s new: the Lak Materials collection, described in the open', ru: 'Новое: коллекция лакских материалов, описанная открыто' },
+    'research.whatsnew.aria': { en: 'Source inventory', ru: 'Реестр источников' },
+    'research.whatsnew.h2': { en: 'Source inventory', ru: 'Реестр источников' },
     'research.whatsnew.credit': {
-      en: 'We thank <strong>Professor Victor Friedman</strong> for sharing his Lak research collection with the project. The files themselves stay private while their rights are unresolved; what is now public is the <strong>analysis and derived research metadata</strong> — what every source is, what language and script it uses, how well its text could be extracted, and how it can strengthen the corpus in the future.',
-      ru: 'Мы благодарим <strong>профессора Виктора Фридмана</strong> за то, что он поделился с проектом своей исследовательской коллекцией по лакскому языку. Сами файлы остаются закрытыми, пока не урегулированы права; открыты теперь <strong>анализ и производные исследовательские метаданные</strong> — что представляет собой каждый источник, на каком он языке и письме, насколько удалось извлечь текст и как он сможет усилить корпус в будущем.'
+      en: '<strong>293 substantive sources</strong> are catalogued by material type, language, script, extraction quality, rights state, and corpus role.',
+      ru: '<strong>293 содержательных источника</strong> описаны по виду материала, языку, письму, качеству извлечения, правам и роли в корпусе.'
     },
     'research.whatsnew.public': {
-      en: 'All 320 audited items are accounted for: 293 substantive sources catalogued one by one, and 27 system metadata receipts. No scans, documents, audio, paths or unreviewed passages are published or downloadable. One already-public source has new clarity: the PCMLBE corpus is now confirmed under a <strong>CC BY-SA 4.0</strong> license, credited to Erwin Komen and Radboud University.',
-      ru: 'Учтены все 320 аудированных единиц: 293 содержательных источника описаны по одному, плюс 27 служебных файлов-квитанций. Сканы, документы, аудио, пути и непроверенные фрагменты не публикуются и не выдаются. По одному уже публичному источнику появилась ясность: корпус PCMLBE теперь подтверждён под лицензией <strong>CC BY-SA 4.0</strong> — Эрвин Комен, Радбаудский университет.'
+      en: 'Source content remains restricted unless publication rights and review status permit release.',
+      ru: 'Содержание источников остаётся закрытым, пока права на публикацию и статус проверки не разрешают выпуск.'
     },
     'research.whatsnew.libraryLink': { en: 'Open the Source Library →', ru: 'Открыть библиотеку источников →' },
     'research.whatsnew.formsLink': { en: 'Browse the Lak word-form index →', ru: 'Открыть указатель словоформ →' },
@@ -401,14 +398,14 @@
     'research.public.parallelNote': { en: 'restored from the licensed PCMLBE source', ru: 'восстановлены из лицензированного источника PCMLBE' },
     'research.public.cyrillic': { en: 'Pairs with Cyrillic Lak', ru: 'Пар с лакским текстом кириллицей' },
     'research.public.cyrillicNote': { en: 'shown beside the Latin transcription', ru: 'показаны рядом с латинской транскрипцией' },
-    'research.pcmlbe.h2': { en: 'A hidden parallel text is now usable', ru: 'Скрытый параллельный текст теперь можно использовать' },
+    'research.pcmlbe.h2': { en: 'PCMLBE parallel data', ru: 'Параллельные данные PCMLBE' },
     'research.pcmlbe.body': {
-      en: 'The Zhirkov 1955 record inside PCMLBE contains 25 aligned Lak–English segments; 21 also preserve Lak in Cyrillic. The earlier website showed only the Latin transcription. All three available fields are now searchable and remain labelled as source-import evidence until expert review.',
-      ru: 'Запись Жиркова 1955 года внутри PCMLBE содержит 25 сопоставленных лакско-английских сегментов; в 21 также сохранён лакский текст кириллицей. Раньше сайт показывал только латинскую транскрипцию. Теперь поиск работает по всем трём доступным полям, а записи помечены как импортированные из источника до экспертной проверки.'
+      en: '25 Lak–English segments are searchable; 21 include Lak Cyrillic. Records retain source provenance and review status.',
+      ru: 'Доступны для поиска 25 лакско-английских сегментов; 21 содержит лакскую кириллицу. Для записей сохраняются происхождение и статус проверки.'
     },
     'research.permission.credit': {
-      en: 'Professor Victor Friedman confirmed permission to use the research materials supplied for this project. Source-level provenance and quality review remain attached to every derived result.',
-      ru: 'Профессор Виктор Фридман подтвердил разрешение использовать исследовательские материалы, переданные для этого проекта. Для каждого производного результата сохраняются происхождение источника и статус проверки качества.'
+      en: 'Permission is recorded. Source provenance and review status remain attached to derived results.',
+      ru: 'Разрешение зафиксировано. Для производных результатов сохраняются происхождение и статус проверки.'
     },
     'research.verify.verified': { en: 'Package verified', ru: 'Пакет проверен' },
     'research.verify.blocked': { en: 'Package blocked — nothing staged', ru: 'Пакет заблокирован — ничего не загружено' },
@@ -427,35 +424,35 @@
       en: 'Nothing has been staged yet, so only the audited expectations are shown.',
       ru: 'Пока ничего не загружено, поэтому показаны только ожидаемые числа из аудита.'
     },
-    'research.workflow.h2': { en: 'How parallel sources are found — and what happens next', ru: 'Как находят параллельные источники и что происходит дальше' },
+    'research.workflow.h2': { en: 'Review workflow', ru: 'Процесс проверки' },
     'research.workflow.intro': {
-      en: 'Some of these materials appear to exist in more than one version: the same work in Lak and in Russian, in Cyrillic and in Latin script, or as a recording with a transcription. A pair of versions is a <strong>lead, not a translation</strong>: two files sitting next to each other is not proof that their sentences correspond.',
-      ru: 'Часть этих материалов, судя по всему, существует в нескольких версиях: одно и то же произведение на лакском и на русском, кириллицей и латиницей, или запись вместе с расшифровкой. Пара версий — это <strong>наводка, а не перевод</strong>: соседство двух файлов не доказывает, что их предложения соответствуют друг другу.'
+      en: 'Candidate relationships require source matching, sentence alignment, rights review, and expert validation.',
+      ru: 'Связи между кандидатами требуют сопоставления источников, выравнивания предложений, проверки прав и экспертной валидации.'
     },
-    'research.step.discover.title': { en: 'Spot the versions', ru: 'Заметить версии' },
+    'research.step.discover.title': { en: 'Source grouping', ru: 'Группировка источников' },
     'research.step.discover.body': {
-      en: 'Audited files are grouped into families when the same work appears more than once — two languages, two scripts, two editions, or a recording with its transcription.',
-      ru: 'Проверенные файлы объединяются в группы, когда одно произведение встречается несколько раз: два языка, две графики, два издания или запись вместе с расшифровкой.'
+      en: 'Group versions of the same work by language, script, edition, or recording.',
+      ru: 'Сгруппировать версии одного произведения по языку, письму, изданию или записи.'
     },
-    'research.step.route.title': { en: 'Route, never merge', ru: 'Направить, но не сливать' },
+    'research.step.route.title': { en: 'Restricted staging', ru: 'Закрытая подготовка' },
     'research.step.route.body': {
-      en: 'Each file is routed to a private candidate layer with its rights state attached. Nothing is merged into the corpus, and a duplicate is only ever linked as corroboration.',
-      ru: 'Каждый файл направляется в закрытый слой кандидатов вместе со статусом прав. Ничего не сливается с корпусом, а дубликат лишь связывается как подтверждение.'
+      en: 'Store candidates with rights and provenance metadata outside the public corpus.',
+      ru: 'Хранить кандидаты с данными о правах и происхождении вне публичного корпуса.'
     },
-    'research.step.pair.title': { en: 'Human pairing', ru: 'Сопоставление человеком' },
+    'research.step.pair.title': { en: 'Manual alignment', ru: 'Ручное выравнивание' },
     'research.step.pair.body': {
-      en: 'A person decides which passages actually correspond. Proximity of filenames is not evidence of sentence equivalence, so no automatic alignment is trusted.',
-      ru: 'Человек решает, какие отрывки действительно соответствуют друг другу. Похожие имена файлов не доказывают равенство предложений, поэтому автоматическому сопоставлению не доверяют.'
+      en: 'Record corresponding passages; filenames alone do not establish equivalence.',
+      ru: 'Зафиксировать соответствующие отрывки; имена файлов не доказывают эквивалентность.'
     },
-    'research.step.review.title': { en: 'Expert review', ru: 'Экспертная проверка' },
+    'research.step.review.title': { en: 'Specialist validation', ru: 'Проверка специалистом' },
     'research.step.review.body': {
-      en: 'Permission is confirmed. A candidate pair becomes usable translation evidence only after an expert approves the actual alignment.',
-      ru: 'Разрешение подтверждено. Пара-кандидат становится пригодным переводческим материалом только после экспертного утверждения самого сопоставления.'
+      en: 'Approve or reject each alignment before it becomes translation evidence.',
+      ru: 'Утвердить или отклонить каждое выравнивание до включения в переводческие данные.'
     },
-    'research.families.h2': { en: 'Strongest alignment opportunities', ru: 'Наиболее перспективные группы для сопоставления' },
+    'research.families.h2': { en: 'Alignment candidates', ru: 'Кандидаты на выравнивание' },
     'research.families.intro': {
-      en: 'Permission for the supplied materials is confirmed. These are the source families most likely to yield aligned Lak–Russian material after human pairing and expert review. Each card shows <strong>metadata only</strong> until those quality steps are complete.',
-      ru: 'Разрешение на переданные материалы подтверждено. Эти группы источников с наибольшей вероятностью дадут сопоставленный лакско-русский материал после ручного сопоставления и экспертной проверки. До завершения этих этапов карточки показывают <strong>только метаданные</strong>.'
+      en: 'Source families with potential Lak–Russian or Lak–English parallels. Cards contain metadata only.',
+      ru: 'Группы источников с возможными лакско-русскими или лакско-английскими параллелями. Карточки содержат только метаданные.'
     },
     'research.families.empty.title': { en: 'No source families to show yet', ru: 'Пока нет групп источников' },
     'research.families.empty.body': { en: 'Families appear here once a package has been verified.', ru: 'Группы появятся здесь после проверки пакета.' },
@@ -493,34 +490,34 @@
     'research.blocking.human_pairing_map': { en: 'Human pairing map', ru: 'Сопоставление, сделанное человеком' },
     'research.blocking.expert_review': { en: 'Expert review', ru: 'Экспертная проверка' },
     'research.blockingBody.rights_clearance': {
-      en: '— the rights holder has to agree, in writing, to publication and reuse.',
-      ru: '— правообладатель должен письменно согласиться на публикацию и повторное использование.'
+      en: ': documented permission for publication and reuse.',
+      ru: ': документированное разрешение на публикацию и повторное использование.'
     },
     'research.blockingBody.human_pairing_map': {
-      en: '— a person has to record which passages correspond, passage by passage.',
-      ru: '— человек должен зафиксировать, какие отрывки соответствуют друг другу, отрывок за отрывком.'
+      en: ': recorded passage-level correspondences.',
+      ru: ': зафиксированные соответствия на уровне отрывков.'
     },
     'research.blockingBody.expert_review': {
-      en: '— an expert has to approve each pair before it counts as evidence.',
-      ru: '— эксперт должен утвердить каждую пару, прежде чем она станет доказательством.'
+      en: ': specialist approval for each pair.',
+      ru: ': утверждение каждой пары специалистом.'
     },
-    'research.gate.h2': { en: 'Before any of this could become public', ru: 'Прежде чем что-либо из этого станет публичным' },
+    'research.gate.h2': { en: 'Publication requirements', ru: 'Требования к публикации' },
     'research.gate.footer': {
-      en: 'Until every step is complete for a given source, its material stays private: not searchable, not published, not exported, and not used for training. The public corpus grows only through material that is already clear to publish.',
-      ru: 'Пока для источника не пройдены все шаги, его материал остаётся закрытым: не ищется, не публикуется, не выгружается и не используется для обучения. Публичный корпус пополняется только тем, что уже разрешено публиковать.'
+      en: 'Restricted or unreviewed material is not searchable, published, exported, or used for training.',
+      ru: 'Закрытый или непроверенный материал не участвует в поиске, не публикуется, не выгружается и не используется для обучения.'
     },
-    'research.error.title': { en: 'The research summary could not be loaded', ru: 'Не удалось загрузить сводку исследования' },
+    'research.error.title': { en: 'Research data unavailable', ru: 'Данные исследования недоступны' },
     'research.error.body': {
-      en: 'Nothing is missing from the corpus — only this summary is unavailable. Please try again later.',
-      ru: 'С корпусом всё в порядке — недоступна только эта сводка. Пожалуйста, попробуйте позже.'
+      en: 'Try again later.',
+      ru: 'Попробуйте позже.'
     },
 
     /* ── about.html ──────────────────────────────────────────── */
-    'about.meta.title': { en: 'About & Research — Lak Corpus Explorer', ru: 'О проекте и исследованиях — Обозреватель лакского корпуса' },
+    'about.meta.title': { en: 'About · Lak Corpus Explorer', ru: 'О корпусе · Лакский корпус' },
     'about.h1': { en: 'About the Lak Corpus', ru: 'О лакском корпусе' },
     'about.hero.p': {
-      en: 'A publicly accessible, source-aware research corpus of the Lak language (лакку маз), built for linguists, Lak speakers, and computational researchers. Every record is traceable to its original source and carries an explicit quality state.',
-      ru: 'Общедоступный исследовательский корпус лакского языка (лакку маз) с учётом источников, созданный для лингвистов, носителей лакского языка и специалистов по компьютерной лингвистике. Каждая запись прослеживается до своего первоисточника и имеет явно указанный статус качества.'
+      en: 'A public, source-aware Lak corpus for speakers, volunteers, and researchers. Every record retains provenance and review status.',
+      ru: 'Публичный корпус лакского языка для носителей, волонтёров и исследователей. Каждая запись сохраняет происхождение и статус проверки.'
     },
     'about.stats.h2': { en: 'Corpus statistics', ru: 'Статистика корпуса' },
     'about.stats.documents': { en: 'Documents', ru: 'Документы' },
@@ -528,8 +525,8 @@
     'about.stats.tokens': { en: 'Tokens', ru: 'Токены' },
     'about.stats.lexicon': { en: 'Lexicon entries', ru: 'Записи лексикона' },
     'about.stats.p1': {
-      en: 'Tokens are counted as space-delimited, punctuation-stripped word forms. The lexicon includes all forms recorded across standard, Arakul, Balkhar, Shali, and historical varieties plus Uslar 1890 OCR material.',
-      ru: 'Токены подсчитываются как разделённые пробелами словоформы без учёта пунктуации. Лексикон включает все формы, зафиксированные в литературной, аракульской, балхарской, шалинской и исторической разновидностях, а также материал Услара 1890 года, полученный с помощью OCR.'
+      en: 'Counts are generated from the running public corpus.',
+      ru: 'Числа формируются из работающего публичного корпуса.'
     },
     'about.stats.p2': {
       en: '<strong>Corpus version:</strong> v1.0 — research preview, released 29 July 2026. Counts above are live from the running corpus.',
@@ -544,125 +541,125 @@
     'about.sources.pcmlbe.type': { en: 'Annotated text corpus', ru: 'Аннотированный текстовый корпус' },
     'about.sources.pcmlbe.variety': { en: 'Unspecified / mixed', ru: 'Не указано / смешанное' },
     'about.sources.pcmlbe.notes': {
-      en: 'Parsed Corpus of Modern Lak; 41 PSDX/XML files and 8,788 segments. Created by Dr Erwin R. Komen at Radboud University / SIL International and licensed CC BY-SA 4.0. Includes 25 Lak–English Zhirkov segments, 21 with Cyrillic parallels. Individual records remain unreviewed.',
-      ru: 'Размеченный корпус современного лакского языка: 41 файл PSDX/XML и 8 788 сегментов. Создан доктором Эрвином Р. Коменом в Университете Радбауд / SIL International и опубликован по лицензии CC BY-SA 4.0. Включает 25 лакско-английских сегментов Жиркова, из них 21 с параллельным текстом кириллицей. Отдельные записи пока не проверены.'
+      en: '41 PSDX/XML files; 8,788 segments; 25 Lak–English parallels, including 21 with Lak Cyrillic. CC BY-SA 4.0; records unreviewed.',
+      ru: '41 файл PSDX/XML; 8 788 сегментов; 25 лакско-английских параллелей, включая 21 с лакской кириллицей. CC BY-SA 4.0; записи не проверены.'
     },
     'about.sidebar.pcmlbeLink': { en: 'PCMLBE — Erwin R. Komen, Radboud University / SIL (CC BY-SA 4.0)', ru: 'PCMLBE — Эрвин Р. Комен, Радбаудский университет / SIL (CC BY-SA 4.0)' },
     'about.sources.wiki.type': { en: 'Encyclopedic text', ru: 'Энциклопедический текст' },
     'about.sources.wiki.notes': {
-      en: '1,068 Wikipedia articles, 3,606 sentences. Community-written; orthographic consistency varies.',
-      ru: '1 068 статей Википедии, 3 606 предложений. Написаны сообществом; орфографическая согласованность варьируется.'
+      en: '1,068 articles; 3,606 sentences; orthographic consistency varies.',
+      ru: '1 068 статей; 3 606 предложений; орфография неоднородна.'
     },
     'about.sources.digiev.type': { en: 'Parallel phrasebook', ru: 'Параллельный разговорник' },
     'about.sources.digiev.variety': { en: 'Standard (colloquial)', ru: 'Литературный (разговорный)' },
     'about.sources.digiev.notes': {
-      en: '5,383 Russian–Lak phrase pairs. Practical travel and everyday vocabulary.',
-      ru: '5 383 русско-лакских пары фраз. Практическая лексика для путешествий и повседневного общения.'
+      en: '5,383 Russian–Lak phrase pairs.',
+      ru: '5 383 русско-лакские пары фраз.'
     },
     'about.sources.ids.type': { en: 'Lexicon', ru: 'Лексикон' },
     'about.sources.ids.variety': { en: 'Standard + dialects', ru: 'Литературный + диалекты' },
     'about.sources.ids.notes': {
-      en: 'Intercontinental Dictionary Series; four files; comparative Caucasian vocabulary organised by semantic field. Imported in bulk; individual records have not been human-checked.',
-      ru: 'Intercontinental Dictionary Series; четыре файла; сравнительная кавказская лексика, организованная по семантическим полям. Импортирована массово; отдельные записи не проверялись человеком.'
+      en: 'Four lexicon files organised by semantic field; records unreviewed.',
+      ru: 'Четыре файла лексикона по семантическим полям; записи не проверены.'
     },
     'about.sources.uslar.type': { en: 'Historical grammar / lexicon', ru: 'Историческая грамматика / лексикон' },
     'about.sources.uslar.variety': { en: 'Historical (19th c.)', ru: 'Исторический (XIX в.)' },
     'about.sources.uslar.notes': {
-      en: "Peter von Uslar's 1890 grammar of Lak, digitised via OCR. Archaic orthography, possible scan errors. <strong>Not silently modernised.</strong> All entries are preserved exactly as extracted and marked explicitly as OCR-sourced. Coverage is partial: roughly 1,469 records (≈6% of the corpus) from selected portions of the grammar — not a complete digitisation — and no entry has been individually verified against the scan.",
-      ru: 'Грамматика лакского языка Петра фон Услара 1890 года, оцифрованная методом OCR. Архаичная орфография, возможны ошибки сканирования. <strong>Не подвергалась незаметной модернизации.</strong> Все записи сохранены точно в том виде, в каком были извлечены, и явно помечены как полученные с помощью OCR. Охват частичный: около 1 469 записей (≈6 % корпуса) из отдельных частей грамматики — это не полная оцифровка — и ни одна запись не была проверена по скану в отдельности.'
+      en: 'Partial OCR import: approximately 1,469 records. Historical spelling retained; entries not checked against scans.',
+      ru: 'Частичный OCR-импорт: около 1 469 записей. Историческое написание сохранено; записи не сверены со сканами.'
     },
     'about.method.h2': { en: 'Methodology', ru: 'Методология' },
     'about.method.p1': {
-      en: '<strong>Translation-first search.</strong> When a Russian query term appears in the alias dictionary (built from the Digiev phrasebook and IDS lexicon), the system expands it to all known Lak equivalents and searches corpus text for those forms. This surfaces concordance examples even when the user doesn\'t know the Lak spelling. Direct substring search runs as a fallback for terms not in the alias dictionary.',
-      ru: '<strong>Поиск «сначала перевод».</strong> Когда русский поисковый запрос присутствует в словаре соответствий (составленном по разговорнику Digiev и лексикону IDS), система расширяет его до всех известных лакских эквивалентов и ищет эти формы в текстах корпуса. Это позволяет находить конкордансные примеры, даже когда пользователь не знает лакского написания. Прямой поиск по подстроке используется как запасной вариант для терминов, отсутствующих в словаре соответствий.'
+      en: '<strong>General search.</strong> Russian aliases expand to attested Lak equivalents; direct text matching remains available.',
+      ru: '<strong>Общий поиск.</strong> Русские соответствия расширяются до засвидетельствованных лакских эквивалентов; прямой поиск по тексту остаётся доступен.'
     },
     'about.method.p2': {
-      en: '<strong>Script normalisation.</strong> All queries and corpus text are normalised with Unicode NFKC before matching. Cyrillic е and ё are treated as equivalent. Multiple codepoint representations of the Lak palochka (Ӏ U+04C0, Latin I, Ukrainian І U+0406, and modifier letter vertical line ӏ U+04CF) are all mapped to the canonical Ӏ (U+04C0) for search. This ensures that OCR artefacts and encoding inconsistencies in the source data do not produce false negatives.',
-      ru: '<strong>Нормализация письма.</strong> Все запросы и текст корпуса нормализуются по Unicode NFKC перед сопоставлением. Кириллические е и ё считаются равнозначными. Различные кодовые представления лакской палочки (Ӏ U+04C0, латинская I, украинская І U+0406 и модификатор вертикальной черты ӏ U+04CF) отображаются в канонический символ Ӏ (U+04C0) для поиска. Это гарантирует, что артефакты OCR и несогласованности кодировки в исходных данных не приводят к ложным пропускам.'
+      en: '<strong>Normalisation.</strong> Search uses Unicode NFKC, е/ё equivalence, and canonical palochka handling.',
+      ru: '<strong>Нормализация.</strong> Поиск использует Unicode NFKC, эквивалентность е/ё и каноническую обработку палочки.'
     },
     'about.method.p3': {
-      en: '<strong>Quality states.</strong> Each record carries an explicit quality label. The ladder below explains what each state means and what work remains.',
-      ru: '<strong>Статусы качества.</strong> Каждая запись имеет явную пометку о качестве. Приведённая ниже лестница поясняет, что означает каждый статус и какая работа остаётся.'
+      en: '<strong>Structured search.</strong> Source annotations support exact wordform, lemma, and grammatical-tag queries.',
+      ru: '<strong>Структурированный поиск.</strong> Аннотации источника поддерживают точные запросы по словоформе, лемме и грамматическому тегу.'
     },
     'about.method.p4': {
-      en: '<strong>No silent modernisation.</strong> The Uslar 1890 OCR material is preserved verbatim. We do not apply spelling normalisation, diacritic correction, or other post-processing that would alter the historical linguistic record. Errors visible in the data are genuine scan artefacts or orthographic conventions of the period.',
-      ru: '<strong>Никакой незаметной модернизации.</strong> OCR-материал Услара 1890 года сохранён дословно. Мы не применяем нормализацию орфографии, исправление диакритики или иную постобработку, которая изменила бы исторический языковой памятник. Ошибки, видимые в данных, — это подлинные артефакты сканирования или орфографические нормы того времени.'
+      en: '<strong>Source fidelity.</strong> Historical and OCR material is preserved verbatim and labelled.',
+      ru: '<strong>Точность источника.</strong> Исторические и OCR-материалы сохраняются дословно и явно помечаются.'
     },
     'about.ladder.h2': { en: 'Quality ladder', ru: 'Лестница качества' },
     'about.ladder.approved.badge': { en: 'Approved', ru: 'Утверждено' },
     'about.ladder.approved.title': { en: 'Human-verified', ru: 'Проверено человеком' },
     'about.ladder.approved.desc': {
-      en: 'Lak text, translation, and metadata have been checked by a reviewer. Corrections and notes are recorded. This is the target state for all records.',
-      ru: 'Лакский текст, перевод и метаданные проверены рецензентом. Исправления и примечания зафиксированы. Это целевой статус для всех записей.'
+      en: 'Text, translation, and metadata checked by an authorised reviewer.',
+      ru: 'Текст, перевод и метаданные проверены уполномоченным рецензентом.'
     },
     'about.ladder.flagged.badge': { en: 'Flagged', ru: 'Помечено' },
     'about.ladder.flagged.title': { en: 'Needs attention', ru: 'Требует внимания' },
     'about.ladder.flagged.desc': {
-      en: 'A reviewer found a problem — OCR error, wrong variety label, missing translation, or suspected corrupt text — and left a note. Awaiting correction or specialist input.',
-      ru: 'Рецензент обнаружил проблему — ошибку OCR, неверную пометку разновидности, отсутствующий перевод или предположительно испорченный текст — и оставил примечание. Ожидает исправления или заключения специалиста.'
+      en: 'A documented issue requires correction or specialist review.',
+      ru: 'Зафиксированная проблема требует исправления или проверки специалистом.'
     },
     'about.ladder.ocr.badge': { en: 'OCR — unreviewed', ru: 'OCR — не проверено' },
     'about.ladder.ocr.title': { en: 'Uslar 1890 OCR source', ru: 'Источник OCR: Услар 1890' },
     'about.ladder.ocr.desc': {
-      en: 'Extracted from a scanned 19th-century document. Text is presented exactly as recognised; no modernisation applied. Expect scan artefacts and archaic forms. In search results, OCR-sourced material appears only in a clearly separated unverified section — never mixed into the primary translation answer.',
-      ru: 'Извлечено из отсканированного документа XIX века. Текст представлен точно в том виде, в каком был распознан; модернизация не применялась. Возможны артефакты сканирования и архаичные формы. В результатах поиска материал OCR отображается только в чётко отделённом непроверенном разделе — он никогда не смешивается с основным переводческим ответом.'
+      en: 'Scan-derived text preserved verbatim; expect OCR errors and historical spelling.',
+      ru: 'Текст из скана сохранён дословно; возможны ошибки OCR и историческое написание.'
     },
     'about.ladder.unreviewed.badge': { en: 'Source import — unreviewed', ru: 'Импорт из источника — не проверено' },
     'about.badge.unreviewed': { en: 'Unreviewed', ru: 'Не проверено' },
     'about.ladder.unreviewed.title': { en: 'Bulk-imported, not individually checked', ru: 'Импортировано массово, не проверено по отдельности' },
     'about.ladder.unreviewed.desc': {
-      en: 'The default state for records imported from published sources (PCMLBE, IDS, Lak Wikipedia, Digiev phrasebook). The sources are reputable, but no record carries human verification until a logged-in reviewer approves it.',
-      ru: 'Статус по умолчанию для записей, импортированных из опубликованных источников (PCMLBE, IDS, лакская Википедия, разговорник Digiev). Источники авторитетны, но ни одна запись не считается проверенной человеком, пока её не утвердит авторизованный рецензент.'
+      en: 'Imported from a named source but not individually human-verified.',
+      ru: 'Импортировано из указанного источника, но не проверено человеком по отдельности.'
     },
     'about.varieties.h2': { en: 'Dialect varieties', ru: 'Диалектные разновидности' },
     'about.varieties.standard': {
-      en: '<strong>Standard</strong> — the literary and administrative standard form of Lak, based on the Kumukh dialect. Used in education, publishing, and official contexts.',
-      ru: '<strong>Литературный</strong> — литературная и административная стандартная форма лакского языка на основе кумухского диалекта. Используется в образовании, издательском деле и официальных контекстах.'
+      en: '<strong>Standard</strong>: literary Lak based on the Kumukh dialect.',
+      ru: '<strong>Литературный</strong>: литературная форма на основе кумухского диалекта.'
     },
     'about.varieties.arakul': {
-      en: '<strong>Arakul</strong> — dialect spoken in the village of Arakul (Аракул) in the Lak district of Dagestan.',
-      ru: '<strong>Аракульский</strong> — диалект, распространённый в селе Аракул (Аракул) в Лакском районе Дагестана.'
+      en: '<strong>Arakul</strong>: variety associated with Arakul.',
+      ru: '<strong>Аракульский</strong>: разновидность, связанная с Аракулом.'
     },
     'about.varieties.balkhar': {
-      en: '<strong>Balkhar</strong> — dialect of the pottery village of Balkhar (Балхъар), known for its distinct phonology.',
-      ru: '<strong>Балхарский</strong> — диалект гончарного села Балхар (Балхъар), известного своей особой фонологией.'
+      en: '<strong>Balkhar</strong>: variety associated with Balkhar.',
+      ru: '<strong>Балхарский</strong>: разновидность, связанная с Балхаром.'
     },
     'about.varieties.shali': {
-      en: '<strong>Shali</strong> — dialect of the Shali (Шали) region.',
-      ru: '<strong>Шалинский</strong> — диалект района Шали (Шали).'
+      en: '<strong>Shali</strong>: variety associated with Shali.',
+      ru: '<strong>Шалинский</strong>: разновидность, связанная с Шали.'
     },
     'about.varieties.historical': {
-      en: '<strong>Historical</strong> — forms attested in 19th-century sources that may differ from the modern standard.',
-      ru: '<strong>Исторический</strong> — формы, засвидетельствованные в источниках XIX века, которые могут отличаться от современной нормы.'
+      en: '<strong>Historical</strong>: forms attested in historical sources.',
+      ru: '<strong>Исторический</strong>: формы из исторических источников.'
     },
     'about.varieties.unspecified': {
-      en: '<strong>Unspecified</strong> — variety not recorded in the source metadata.',
-      ru: '<strong>Не указано</strong> — разновидность не зафиксирована в метаданных источника.'
+      en: '<strong>Unspecified</strong>: variety absent from source metadata.',
+      ru: '<strong>Не указано</strong>: разновидность отсутствует в метаданных источника.'
     },
-    'about.collab.h2': { en: 'Invitation for collaboration', ru: 'Приглашение к сотрудничеству' },
+    'about.collab.h2': { en: 'Contribute', ru: 'Участие' },
     'about.collab.p1': {
-      en: 'This corpus is designed to grow through expert contribution. We are actively seeking:',
-      ru: 'Этот корпус создан для роста за счёт вклада экспертов. Мы активно ищем:'
+      en: 'Choose the task that matches your expertise:',
+      ru: 'Выберите задачу, соответствующую вашей квалификации:'
     },
     'about.collab.li1': {
-      en: 'Native Lak speakers who can verify translations, correct OCR errors, and flag dialectal misattributions.',
-      ru: 'Носителей лакского языка, которые могут проверять переводы, исправлять ошибки OCR и указывать на неверные диалектные атрибуции.'
+      en: 'Lak speakers: validate translations, spelling, and variety labels.',
+      ru: 'Носители лакского: проверка переводов, написания и меток разновидности.'
     },
     'about.collab.li2': {
-      en: 'Field linguists with access to unpublished wordlists, texts, or recordings that can be incorporated with proper attribution.',
-      ru: 'Полевых лингвистов с доступом к неопубликованным словникам, текстам или записям, которые можно включить с надлежащим указанием авторства.'
+      en: 'Linguists: review morphology, glosses, and alignments.',
+      ru: 'Лингвисты: проверка морфологии, глосс и выравниваний.'
     },
     'about.collab.li3': {
-      en: 'Universities and research institutions interested in formal collaboration agreements for corpus expansion and annotation.',
-      ru: 'Университеты и исследовательские учреждения, заинтересованные в официальных соглашениях о сотрудничестве по расширению и аннотированию корпуса.'
+      en: 'Archivists and rights specialists: verify provenance and reuse terms.',
+      ru: 'Архивисты и специалисты по правам: проверка происхождения и условий использования.'
     },
     'about.collab.li4': {
-      en: 'Computational linguists developing NLP resources for low-resource Caucasian languages who wish to co-develop evaluation benchmarks.',
-      ru: 'Компьютерных лингвистов, разрабатывающих NLP-ресурсы для малоресурсных кавказских языков, кто хочет совместно разрабатывать оценочные эталоны.'
+      en: 'NLP researchers: design reproducible benchmarks and evaluation methods.',
+      ru: 'NLP-исследователи: разработка воспроизводимых бенчмарков и методов оценки.'
     },
     'about.collab.p2': {
-      en: 'The review system on this site allows immediate contribution: any visitor can flag problems and submit corrections or notes as suggestions. Canonical <strong>Approved</strong> states can only be created by logged-in trusted reviewers, so every approved record carries verified attribution. Systematic contributions are welcome via the GitHub repository.',
-      ru: 'Система проверки на этом сайте позволяет вносить вклад немедленно: любой посетитель может отмечать проблемы и предлагать исправления или примечания. Канонический статус <strong>«Утверждено»</strong> могут присваивать только авторизованные доверенные рецензенты, поэтому каждая утверждённая запись имеет проверенное авторство. Систематический вклад приветствуется через репозиторий GitHub.'
+      en: '<a href="/validate.html">Open validation tasks</a> or <a href="/register.html">create an account</a>. Approval rights are role-controlled.',
+      ru: '<a href="/validate.html">Откройте задачи проверки</a> или <a href="/register.html">создайте аккаунт</a>. Право утверждения зависит от роли.'
     },
     'about.sidebar.quickStats': { en: 'Quick statistics', ru: 'Краткая статистика' },
     'about.sidebar.wikiDocs': { en: 'Wiki docs', ru: 'Документы вики' },
@@ -673,12 +670,12 @@
     'about.sidebar.col.entries': { en: 'Entries', ru: 'Записи' },
     'about.sidebar.langInfo': { en: 'Language information', ru: 'Сведения о языке' },
     'about.sidebar.langInfo.p1': {
-      en: 'Lak (лакку маз, ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian language spoken primarily in the Lak district of Dagestan, Russia. It belongs to the Lak–Dargwa branch and has approximately 150,000 speakers.',
-      ru: 'Лакский язык (лакку маз, ISO 639-3: <strong>lbe</strong>) — нахско-дагестанский (северо-восточнокавказский) язык, распространённый преимущественно в Лакском районе Дагестана (Россия). Относится к лакско-даргинской ветви, число говорящих — около 150 000 человек.'
+      en: 'Lak (лакку маз; ISO 639-3: <strong>lbe</strong>) is a Northeast Caucasian language of Dagestan.',
+      ru: 'Лакский язык (лакку маз; ISO 639-3: <strong>lbe</strong>) — нахско-дагестанский язык Дагестана.'
     },
     'about.sidebar.langInfo.p2': {
-      en: 'The language uses a Cyrillic script with the palochka (Ӏ) for ejective consonants — a letterform unique to Caucasian languages.',
-      ru: 'В языке используется кириллица с палочкой (Ӏ) для абруптивных согласных — начертание, характерное для кавказских языков.'
+      en: 'Modern Lak uses Cyrillic, including palochka (Ӏ).',
+      ru: 'Современный лакский использует кириллицу, включая палочку (Ӏ).'
     },
     'about.sidebar.resources': { en: 'Resources', ru: 'Ресурсы' },
     'about.varietyHistoricalUslar': { en: 'Historical (Uslar)', ru: 'Исторический (Услар)' },
@@ -689,17 +686,17 @@
     'hiw.meta.title': { en: 'How validation works — Lak Corpus Explorer', ru: 'Как работает проверка — Обозреватель лакского корпуса' },
     'hiw.h1': { en: 'How validation works', ru: 'Как работает проверка' },
     'hiw.intro': {
-      en: 'Lak is a living language with a small speaker community. Every validation here is an act of preservation: checking a translation, restoring a scanned word, confirming a sense. The system is designed so that <b>careful, knowledgeable work counts most</b> — and so that no single click can change the corpus on its own.',
-      ru: 'Лакский — живой язык с небольшим сообществом носителей. Каждая проверка здесь — акт сохранения: проверка перевода, восстановление отсканированного слова, подтверждение значения. Система устроена так, чтобы <b>больше всего ценился внимательный и компетентный труд</b> — и чтобы ни один отдельный клик не мог сам по себе изменить корпус.'
+      en: 'Independent contributions, documented evidence, consensus, and expert review protect the canonical corpus.',
+      ru: 'Независимые ответы, документированные основания, консенсус и экспертная проверка защищают канонический корпус.'
     },
     'hiw.s1.h2': { en: 'One small task at a time', ru: 'По одной небольшой задаче за раз' },
     'hiw.s1.p1': {
-      en: 'The validation workspace presents a single focused question — is this translation correct, does <i>барз</i> mean “moon” or “month” here, is this OCR text clean, which dialect is this form? You answer independently: <b>you never see other votes before submitting your own</b>. Only afterwards is the emerging community view shown. This keeps judgments honest and independent, which is what makes agreement meaningful.',
-      ru: 'Рабочее пространство проверки задаёт один сфокусированный вопрос — верен ли этот перевод, означает ли <i>барз</i> здесь «луну» или «месяц», чист ли этот OCR-текст, к какому диалекту относится эта форма? Вы отвечаете самостоятельно: <b>вы никогда не видите чужие голоса до того, как отправите свой</b>. Складывающееся мнение сообщества показывается только после этого. Так суждения остаются честными и независимыми, что и придаёт согласию смысл.'
+      en: 'Answer one focused question independently. Other votes appear only after submission.',
+      ru: 'Ответьте на один конкретный вопрос самостоятельно. Чужие голоса показываются только после отправки.'
     },
     'hiw.s1.p2': {
-      en: 'You can attach a correction, an evidence note, and a source reference. When the final outcome supports them, these earn extra recognition.',
-      ru: 'Вы можете приложить исправление, примечание с доказательствами и ссылку на источник. Если итог их подтверждает, они приносят дополнительное признание.'
+      en: 'Add a correction, evidence note, and source reference when available.',
+      ru: 'По возможности добавьте исправление, примечание и ссылку на источник.'
     },
     'hiw.s2.h2': { en: 'Roles and expertise', ru: 'Роли и экспертиза' },
     'hiw.s2.p1': {
@@ -707,20 +704,20 @@
       ru: '<b>Участник</b> — каждый, кто зарегистрировался. Участники проверяют, отмечают проблемы и предлагают правки.'
     },
     'hiw.s2.p2': {
-      en: '<b>Trusted validator</b> — granted by an administrator or by invitation, after relevant expertise is recorded: linguistic training, native-speaker knowledge, community standing, or academic work. Trusted validators help resolve disputed items.',
-      ru: '<b>Доверенный проверяющий</b> — присваивается администратором или по приглашению после фиксации соответствующей экспертизы: лингвистической подготовки, знания как носителя, авторитета в сообществе или академической работы. Доверенные проверяющие помогают разрешать спорные записи.'
+      en: '<b>Trusted validator</b> resolves disputed items after expertise is recorded.',
+      ru: '<b>Доверенный проверяющий</b> решает спорные вопросы после фиксации квалификации.'
     },
     'hiw.s2.p3': {
-      en: '<b>Verified expert</b> — the same, with a stronger documented basis. Only verified experts and administrators can mark an item <i>expert verified</i>.',
-      ru: '<b>Подтверждённый эксперт</b> — то же самое, но с более весомым документально подтверждённым основанием. Только подтверждённые эксперты и администраторы могут пометить запись как <i>подтверждено экспертом</i>.'
+      en: '<b>Verified expert</b> may issue expert verification.',
+      ru: '<b>Подтверждённый эксперт</b> может вынести экспертное решение.'
     },
     'hiw.s2.p4': {
-      en: '<b>Administrator</b> — stewards of the corpus: grant roles, create invitations, invalidate abusive points, and resolve appeals.',
-      ru: '<b>Администратор</b> — кураторы корпуса: назначают роли, создают приглашения, аннулируют недобросовестные баллы и рассматривают апелляции.'
+      en: '<b>Administrator</b> manages roles, audits, and appeals.',
+      ru: '<b>Администратор</b> управляет ролями, аудитом и апелляциями.'
     },
     'hiw.s2.p5': {
-      en: 'Registering never makes anyone an expert by itself. Expert status always leaves a written record of its basis in the audit trail.',
-      ru: 'Сама по себе регистрация никого не делает экспертом. Статус эксперта всегда оставляет письменную запись о своём основании в журнале аудита.'
+      en: 'Expert roles require a documented basis.',
+      ru: 'Экспертная роль требует документированного основания.'
     },
     'hiw.s3.h2': { en: 'Consensus and verification — different things', ru: 'Консенсус и проверка — это разные вещи' },
     'hiw.s3.p1': {
@@ -728,17 +725,17 @@
       ru: 'Записи проходят через понятные статусы: <span class="badge">в ожидании</span> → <span class="badge">консенсус сообщества</span> или <span class="badge">спорно</span> → <span class="badge">подтверждено экспертом</span> или <span class="badge">отклонено</span>.'
     },
     'hiw.s3.p2': {
-      en: 'When at least three independent contributors agree strongly (weighted by reliability), an item reaches <b>community consensus</b>. That is valuable — but it is <b>not</b> expert verification, and the interface always says so. When opinions diverge, the item becomes <b>disputed</b> and is routed to trusted validators and verified experts. Changes to the canonical corpus itself remain restricted to trusted reviewers, experts, and administrators — exactly as before.',
-      ru: 'Когда не менее трёх независимых участников решительно сходятся во мнении (с учётом надёжности), запись достигает <b>консенсуса сообщества</b>. Это ценно — но это <b>не</b> экспертная проверка, и интерфейс всегда об этом сообщает. Когда мнения расходятся, запись становится <b>спорной</b> и направляется доверенным проверяющим и подтверждённым экспертам. Изменения самого канонического корпуса по-прежнему доступны только доверенным рецензентам, экспертам и администраторам — как и раньше.'
+      en: 'Three independent, reliability-weighted votes can establish <b>community consensus</b>. Disagreement routes the item to specialist review. Consensus is not expert verification.',
+      ru: 'Три независимых голоса с учётом надёжности могут установить <b>консенсус сообщества</b>. Разногласие направляет запись специалисту. Консенсус не равен экспертной проверке.'
     },
     'hiw.s4.h2': { en: 'Points reward quality, not clicks', ru: 'Баллы вознаграждают качество, а не клики' },
     'hiw.s4.p1': {
-      en: 'A completed validation earns <b>provisional</b> points. They become <b>confirmed</b> only when your answer later agrees with community consensus, a reference (gold-standard) answer, or expert adjudication. Extra points go to useful corrections, evidence-backed notes, resolving disputed items, and expert verification work. Spam, duplicates, and unsupported rapid-fire submissions earn nothing confirmed.',
-      ru: 'Завершённая проверка приносит <b>предварительные</b> баллы. Они становятся <b>подтверждёнными</b>, только когда ваш ответ впоследствии совпадает с консенсусом сообщества, эталонным (золотым) ответом или экспертным решением. Дополнительные баллы начисляются за полезные исправления, подкреплённые доказательствами примечания, разрешение спорных записей и экспертную проверку. Спам, дубликаты и необоснованные быстрые ответы подряд не приносят подтверждённых баллов.'
+      en: 'Points remain <b>provisional</b> until supported by consensus, a reference answer, or expert adjudication.',
+      ru: 'Баллы остаются <b>предварительными</b>, пока их не подтвердит консенсус, эталонный ответ или экспертное решение.'
     },
     'hiw.s4.p2': {
-      en: 'To keep things healthy there are rate limits, a daily cap, and diminishing returns after many validations in one day. Administrators can invalidate abusive points — the records stay in the audit trail; nothing is silently erased.',
-      ru: 'Для здоровой работы предусмотрены ограничения скорости, дневной лимит и убывающая отдача после множества проверок за один день. Администраторы могут аннулировать недобросовестные баллы — записи остаются в журнале аудита; ничто не удаляется незаметно.'
+      en: 'Rate limits, daily caps, and an audit trail discourage low-quality submissions.',
+      ru: 'Ограничения скорости, дневные лимиты и журнал аудита сдерживают некачественные ответы.'
     },
     'hiw.s5.h2': { en: 'Reliability — tracked separately from points', ru: 'Надёжность — учитывается отдельно от баллов' },
     'hiw.s5.p1': {
@@ -756,17 +753,17 @@
     },
     'hiw.s7.h2': { en: 'Privacy', ru: 'Конфиденциальность' },
     'hiw.s7.p1': {
-      en: 'Your email is visible only to you. Your profile is private unless you explicitly make it public, and the leaderboard lists you only if you opt in. Votes are attributed for auditability, but public surfaces show display names and quality bands only.',
-      ru: 'Ваш адрес электронной почты виден только вам. Ваш профиль остаётся приватным, пока вы явно не сделаете его публичным, а рейтинг включает вас только по вашему согласию. Голоса атрибутируются ради возможности аудита, но на публичных страницах показываются только отображаемые имена и уровни качества.'
+      en: 'Email is private. Profiles and leaderboard listing are opt-in. Votes remain auditable.',
+      ru: 'Email закрыт. Профиль и участие в рейтинге включаются добровольно. Голоса сохраняются для аудита.'
     },
     'hiw.s8.h2': { en: 'Appeals', ru: 'Апелляции' },
     'hiw.s8.p1': {
-      en: 'Disagree with a revoked point or an adjudication? Submit an appeal from your profile. An administrator reviews it and writes a resolution. Appeals, votes, status changes, and adjudications all live in a permanent audit trail with timestamps and contributors.',
-      ru: 'Не согласны с аннулированным баллом или решением? Подайте апелляцию из своего профиля. Администратор рассмотрит её и запишет решение. Апелляции, голоса, изменения статуса и решения — всё хранится в постоянном журнале аудита с отметками времени и указанием участников.'
+      en: 'Submit appeals from your profile. Decisions remain in the permanent audit trail.',
+      ru: 'Апелляции подаются из профиля. Решения сохраняются в постоянном журнале аудита.'
     },
     'hiw.outro': {
-      en: 'Баркалла — thank you for helping keep Lak alive, accurate, and open to science. 💛',
-      ru: 'Баркалла — спасибо, что помогаете сохранять лакский язык живым, точным и открытым для науки. 💛'
+      en: 'Validation records remain auditable.',
+      ru: 'Записи проверок сохраняются для аудита.'
     },
 
     /* ── validate.html ───────────────────────────────────────── */
@@ -804,8 +801,8 @@
     'validate.next': { en: 'Next task', ru: 'Следующая задача' },
     'validate.empty.h2': { en: 'All caught up', ru: 'Всё сделано' },
     'validate.empty.p': {
-      en: 'There are no open tasks for you right now. New material is added regularly — thank you for helping preserve Lak.',
-      ru: 'Сейчас для вас нет открытых задач. Новый материал добавляется регулярно — спасибо, что помогаете сохранять лакский язык.'
+      en: 'No open validation tasks.',
+      ru: 'Открытых задач для проверки нет.'
     },
     'validate.morph.warning': {
       en: 'Proposal only — not a source annotation. A vote does not assign this analysis to every occurrence.',
@@ -2234,8 +2231,8 @@
     'lib.kicker': { en: 'Public source catalogue', ru: 'Открытый каталог источников' },
     'lib.h1': { en: 'Source Library', ru: 'Библиотека источников' },
     'lib.intro': {
-      en: 'Every substantive source in the research batch, described in the open. You can see <strong>what each source is</strong>, what language and script it uses, what rights state it is in, and what it contributes — without any of the source text being published.',
-      ru: 'Все содержательные источники исследовательской подборки — открыто описаны. Видно, <strong>что представляет собой каждый источник</strong>, на каком он языке и письме, каков его правовой статус и что он даёт проекту, — при этом сам текст источника не публикуется.'
+      en: 'Source metadata, language, script, extraction quality, rights state, and corpus role.',
+      ru: 'Метаданные источников, язык, письмо, качество извлечения, правовой статус и роль в корпусе.'
     },
     'lib.statsLabel': { en: 'Library summary', ru: 'Сводка по библиотеке' },
     'lib.stat.items': { en: 'Audited items', ru: 'Аудировано единиц' },
@@ -2248,41 +2245,41 @@
     'lib.coverage.aria': { en: 'Source-family coverage', ru: 'Охват по видам материала' },
     'lib.coverage.h2': { en: 'Source-family coverage', ru: 'Охват по видам материала' },
     'lib.coverage.intro': {
-      en: 'The audit counted <strong>320 items</strong> in this collection: <strong>293 substantive sources</strong> — every one catalogued below — and <strong>27 system metadata receipts</strong> (operating-system files with no content, listed at the foot of the page). Each family is shown with the role it can play once its rights are cleared.',
-      ru: 'Аудит насчитал в коллекции <strong>320 единиц</strong>: <strong>293 содержательных источника</strong> — все представлены ниже — и <strong>27 служебных файлов-квитанций</strong> (системные файлы без содержания, перечислены внизу страницы). Для каждого вида указана роль, которую он сможет сыграть после урегулирования прав.'
+      en: '<strong>293 substantive sources</strong>, grouped by family and proposed corpus role.',
+      ru: '<strong>293 содержательных источника</strong>, сгруппированных по семейству и предполагаемой роли в корпусе.'
     },
 
     'lib.themes.aria': { en: 'How these sources strengthen the corpus', ru: 'Как эти источники усилят корпус' },
-    'lib.themes.h2': { en: 'How these sources will strengthen the corpus', ru: 'Как эти источники усилят корпус' },
+    'lib.themes.h2': { en: 'Corpus applications', ru: 'Применение в корпусе' },
     'lib.themes.dictionaries.h3': { en: 'Dictionary reconciliation', ru: 'Сверка словарей' },
     'lib.themes.dictionaries.body': {
-      en: 'Twenty-one dictionaries and lexicons — held privately — can be cross-checked against the Khaydakov, Dzhidalaev, Gadzhiyev and Digiev layers already in the corpus, so duplicate headwords become corroboration instead of silent repeats.',
-      ru: 'Двадцать один словарь и лексикон — хранятся закрыто — можно сверить со слоями Хайдакова, Джидалаева, Гаджиева и Дигиева, уже имеющимися в корпусе, чтобы повторные словарные статьи стали подтверждением, а не скрытым дублем.'
+      en: 'Compare headwords, senses, and spellings across lexicons.',
+      ru: 'Сопоставление заголовочных слов, значений и написаний в разных словарях.'
     },
     'lib.themes.ocr.h3': { en: 'OCR correction', ru: 'Исправление OCR' },
     'lib.themes.ocr.body': {
-      en: 'Scanned documents with known extraction quality give reviewers a focused queue: the word-form index shows which spellings are widely attested and which appear only where OCR struggled.',
-      ru: 'Сканированные документы с известным качеством извлечения дают проверяющим чёткую очередь: указатель словоформ показывает, какие написания широко засвидетельствованы, а какие встречаются лишь там, где OCR ошибался.'
+      en: 'Prioritise uncertain forms for scan comparison.',
+      ru: 'Приоритизация сомнительных форм для сверки со сканами.'
     },
     'lib.themes.morphology.h3': { en: 'Morphology research', ru: 'Исследование морфологии' },
     'lib.themes.morphology.body': {
-      en: 'Fifty-eight grammar and linguistic-analysis sources can supply paradigms, rules and cited examples for lemma and morphology work — reviewed by experts before any of it becomes data.',
-      ru: 'Пятьдесят восемь источников по грамматике и лингвистическому анализу могут дать парадигмы, правила и цитируемые примеры для работы над леммами и морфологией — после экспертной проверки, прежде чем что-либо станет данными.'
+      en: 'Extract reviewed paradigms, lemmas, and grammatical analyses.',
+      ru: 'Извлечение проверенных парадигм, лемм и грамматических разборов.'
     },
     'lib.themes.benchmark.h3': { en: 'Benchmark design', ru: 'Устройство бенчмарка' },
     'lib.themes.benchmark.body': {
-      en: 'Elicitation questionnaires and graded educational material inform how a fair Lak benchmark should be built, while the held-out benchmark stays isolated from everything public.',
-      ru: 'Анкеты для элиситации и градуированные учебные материалы подсказывают, как построить честный бенчмарк лакского языка; отложенный бенчмарк при этом остаётся изолированным от всего публичного.'
+      en: 'Build isolated evaluation sets from reviewed material.',
+      ru: 'Создание изолированных оценочных наборов из проверенного материала.'
     },
     'lib.themes.review.h3': { en: 'Expert review', ru: 'Экспертная проверка' },
     'lib.themes.review.body': {
-      en: 'Sixty-six translation or parallel-text candidates give reviewers concrete pairs to accept or reject inside the Alignment Lab — where every relationship starts as a draft, never a conclusion.',
-      ru: 'Шестьдесят шесть кандидатов в переводы и параллельные тексты дают проверяющим конкретные пары для принятия или отклонения в Лаборатории выравнивания, где каждая связь начинается как черновик, а не как вывод.'
+      en: 'Accept, reject, or correct proposed analyses and translations.',
+      ru: 'Принятие, отклонение или исправление предложенных разборов и переводов.'
     },
-    'lib.themes.alignment.h3': { en: 'Cautious alignment', ru: 'Осторожное выравнивание' },
+    'lib.themes.alignment.h3': { en: 'Text alignment', ru: 'Выравнивание текстов' },
     'lib.themes.alignment.body': {
-      en: 'Lak–Russian and Lak–English parallel candidates are aligned provisionally, section by section, so future corpus growth can draw on them. A provisional pair is not a verified translation: nothing is published or trained on until a reviewer confirms it.',
-      ru: 'Лакско-русские и лакско-английские параллельные кандидаты выравниваются предварительно, раздел за разделом, чтобы будущий рост корпуса мог на них опираться. Предварительная пара — не проверенный перевод: ничто не публикуется и не используется для обучения, пока проверяющий её не подтвердит.'
+      en: 'Align reviewed Lak–Russian and Lak–English parallel segments.',
+      ru: 'Выравнивание проверенных лакско-русских и лакско-английских сегментов.'
     },
 
     'lib.receipts.aria': { en: 'System metadata receipts', ru: 'Служебные файлы-квитанции' },
@@ -2297,8 +2294,8 @@
     'lib.disposition.no_extractable_text': { en: 'No extractable text', ru: 'Нет извлекаемого текста' },
     'lib.disposition.provenance_witness_only': { en: 'Provenance witness only', ru: 'Только свидетельство получения' },
     'lib.method': {
-      en: '<strong>What is published here, and what is not.</strong> This catalogue publishes description, never content: the kind of material, its language and script mix, its size, its rights state, and the role it plays in this project. It does not publish file paths, checksums, who supplied a source, descriptions of what a source says, or any of its text. Document titles are shown only where the file’s own metadata carries a real title; where it does not, the entry is named by its material type rather than by an invented name. A name in “attributed to” is the name recorded inside the file, which is not always the author. Dates are file dates, not publication dates.',
-      ru: '<strong>Что здесь публикуется, а что нет.</strong> Каталог публикует описание, но никогда — содержание: вид материала, соотношение языков и письма, объём, правовой статус и роль в проекте. Не публикуются пути к файлам, контрольные суммы, сведения о том, кто передал источник, описания того, о чём источник, и никакой его текст. Название документа показывается только там, где оно действительно есть в метаданных файла; иначе запись называется по виду материала, а не выдуманным именем. Имя в поле «приписывается» — это имя, записанное внутри файла, и это не всегда автор. Даты — это даты файла, а не даты публикации.'
+      en: 'This catalogue publishes metadata only. Restricted source content, file paths, and private provenance are excluded.',
+      ru: 'Каталог публикует только метаданные. Закрытое содержание, пути к файлам и частные сведения о происхождении исключены.'
     },
     'lib.catalogueLabel': { en: 'Source catalogue', ru: 'Каталог источников' },
     'lib.searchLabel': { en: 'Search sources', ru: 'Поиск по источникам' },
@@ -2309,8 +2306,8 @@
     'lib.languageScope.all': { en: 'All languages', ru: 'Все языки' },
     'lib.scriptProfile': { en: 'Script', ru: 'Письмо' },
     'lib.scriptProfile.all': { en: 'Any script', ru: 'Любое письмо' },
-    'lib.contribution': { en: 'Contribution', ru: 'Вклад' },
-    'lib.contribution.all': { en: 'Any contribution', ru: 'Любой вклад' },
+    'lib.contribution': { en: 'Corpus use', ru: 'Использование в корпусе' },
+    'lib.contribution.all': { en: 'Any corpus use', ru: 'Любое использование' },
     'lib.rightsState': { en: 'Rights state', ru: 'Правовой статус' },
     'lib.rightsState.all': { en: 'Any rights state', ru: 'Любой правовой статус' },
     'lib.toWordForms': { en: 'Open the Lak word-form index →', ru: 'Открыть указатель лакских словоформ →' },
@@ -2392,8 +2389,8 @@
     'lib.review.sectionLabel': { en: 'Rights review queue', ru: 'Очередь проверки прав' },
     'lib.review.h2': { en: 'Rights review queue', ru: 'Очередь проверки прав' },
     'lib.review.intro': {
-      en: 'A handful of sources in this batch look like they may already be in the public domain. <strong>Looking like it is not a clearance.</strong> They are listed here in the open so the question is visible and answerable — and their text stays unpublished until someone checks.',
-      ru: 'Несколько источников подборки выглядят так, будто уже перешли в общественное достояние. <strong>«Выглядит» — это ещё не разрешение.</strong> Они перечислены здесь открыто, чтобы вопрос был виден и на него можно было ответить, а их текст не публикуется, пока никто не проверил.'
+      en: 'Candidate public-domain sources awaiting a recorded rights decision. Source text remains unpublished.',
+      ru: 'Кандидаты в общественное достояние ожидают зафиксированного решения по правам. Текст источников не публикуется.'
     },
     'lib.review.empty': { en: 'Nothing is waiting on a rights decision right now.', ru: 'Сейчас ничего не ждёт решения по правам.' },
 
@@ -2539,13 +2536,13 @@
     'wf.kicker': { en: 'Derived public index', ru: 'Производный открытый указатель' },
     'wf.h1': { en: 'Lak word forms', ru: 'Лакские словоформы' },
     'wf.intro': {
-      en: 'Word forms as they actually appear across the research batch — not dictionary headwords, but <strong>the shapes the words take in real texts</strong>. Each entry shows how often the form occurs and how many independent sources attest it.',
-      ru: 'Словоформы в том виде, в каком они реально встречаются в исследовательской подборке, — не словарные заголовки, а <strong>тот облик, который слова принимают в живых текстах</strong>. Для каждой формы показано, как часто она встречается и сколько независимых источников её подтверждают.'
+      en: 'Attested forms with occurrence and independent-source counts.',
+      ru: 'Засвидетельствованные формы с числом вхождений и независимых источников.'
     },
     'wf.statsLabel': { en: 'Index summary', ru: 'Сводка по указателю' },
     'wf.method': {
-      en: '<strong>Why a form has to appear twice.</strong> A word that occurs in only one restricted document is a fact about that document, and enough such facts would reconstruct it. So a form is published only when <strong>at least two independent sources</strong> use it. That is also why the index carries no sentences, no context and no line references: it is a list of words and counts, deliberately not a way to read anything. Fieldwork recordings contribute nothing at all, because their filenames and content can identify the people who were recorded.',
-      ru: '<strong>Почему форма должна встретиться дважды.</strong> Слово, встречающееся лишь в одном закрытом документе, — это факт об этом документе, и достаточное число таких фактов позволило бы его восстановить. Поэтому форма публикуется, только если её используют <strong>не менее двух независимых источников</strong>. По той же причине в указателе нет ни предложений, ни контекста, ни ссылок на строки: это список слов и чисел и намеренно не способ что-либо прочитать. Полевые записи не дают сюда ничего — их имена файлов и содержание могут указать на записанных людей.'
+      en: 'Public forms require at least two independent sources. Restricted context and fieldwork content are excluded.',
+      ru: 'Публичная форма должна встречаться не менее чем в двух независимых источниках. Закрытый контекст и полевые материалы исключены.'
     },
     'wf.indexLabel': { en: 'Word form index', ru: 'Указатель словоформ' },
     'wf.searchLabel': { en: 'Find a form', ru: 'Найти форму' },

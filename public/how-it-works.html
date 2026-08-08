@@ -26,106 +26,46 @@
 
 <main class="container" style="padding-top:32px; padding-bottom:64px; max-width:760px;" id="hiw">
   <h1 style="font-size:26px; margin-bottom:10px;" data-i18n="hiw.h1">How validation works</h1>
-  <p style="color:var(--text2); font-size:15px; margin-bottom:28px;" data-i18n-html="hiw.intro">
-    Lak is a living language with a small speaker community. Every validation here is an
-    act of preservation: checking a translation, restoring a scanned word, confirming a
-    sense. The system is designed so that <b>careful, knowledgeable work counts most</b> —
-    and so that no single click can change the corpus on its own.
-  </p>
+  <p style="color:var(--text2); font-size:15px; margin-bottom:28px;" data-i18n-html="hiw.intro">Independent contributions, documented evidence, consensus, and expert review protect the canonical corpus.</p>
 
   <section class="card hiw-section">
     <h2 data-i18n="hiw.s1.h2">One small task at a time</h2>
-    <p data-i18n-html="hiw.s1.p1">The validation workspace presents a single focused question — is this translation
-    correct, does <i>барз</i> mean “moon” or “month” here, is this OCR text clean, which
-    dialect is this form? You answer independently: <b>you never see other votes before
-    submitting your own</b>. Only afterwards is the emerging community view shown. This
-    keeps judgments honest and independent, which is what makes agreement meaningful.</p>
-    <p data-i18n="hiw.s1.p2">You can attach a correction, an evidence note, and a source reference. When the
-    final outcome supports them, these earn extra recognition.</p>
+    <p data-i18n-html="hiw.s1.p1">Answer one focused question independently. Other votes appear only after submission.</p>
+    <p data-i18n="hiw.s1.p2">Add a correction, evidence note, and source reference when available.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2><span data-i18n="hiw.s2.h2">Roles and expertise</span><span class="help-marker" data-help="help.expertValidation" data-help-fallback="An expert decision is used when community answers disagree or a final specialist check is needed."></span></h2>
+    <h2 data-i18n="hiw.s2.h2">Roles and expertise</h2>
     <p data-i18n-html="hiw.s2.p1"><b>Contributor</b> — everyone who registers. Contributors validate, flag, and suggest.</p>
-    <p data-i18n-html="hiw.s2.p2"><b>Trusted validator</b> — granted by an administrator or by invitation, after relevant
-    expertise is recorded: linguistic training, native-speaker knowledge, community standing,
-    or academic work. Trusted validators help resolve disputed items.</p>
-    <p data-i18n-html="hiw.s2.p3"><b>Verified expert</b> — the same, with a stronger documented basis. Only verified
-    experts and administrators can mark an item <i>expert verified</i>.</p>
-    <p data-i18n-html="hiw.s2.p4"><b>Administrator</b> — stewards of the corpus: grant roles, create invitations,
-    invalidate abusive points, and resolve appeals.</p>
-    <p data-i18n="hiw.s2.p5">Registering never makes anyone an expert by itself. Expert status always leaves a
-    written record of its basis in the audit trail.</p>
+    <p data-i18n-html="hiw.s2.p2"><b>Trusted validator</b> resolves disputed items after expertise is recorded.</p>
+    <p data-i18n-html="hiw.s2.p3"><b>Verified expert</b> may issue expert verification.</p>
+    <p data-i18n-html="hiw.s2.p4"><b>Administrator</b> manages roles, audits, and appeals.</p>
+    <p data-i18n="hiw.s2.p5">Expert roles require a documented basis.</p>
   </section>
 
   <section class="card hiw-section">
-    <h2><span data-i18n="hiw.s3.h2">Community agreement and expert checks are different</span><span class="help-marker" data-help="help.consensus" data-help-fallback="Community agreement means several people independently chose the same answer. It is useful, but it is not the same as an expert decision."></span></h2>
+    <h2 data-i18n="hiw.s3.h2">Community agreement and expert checks are different</h2>
     <p data-i18n-html="hiw.s3.p1">Items move through clear states: <span class="badge">pending</span> →
     <span class="badge">community consensus</span> or <span class="badge">disputed</span> →
     <span class="badge">expert verified</span> or <span class="badge">rejected</span>.</p>
-    <p data-i18n-html="hiw.s3.p2">When at least three independent contributors agree strongly (weighted by
-    reliability), an item reaches <b>community consensus</b>. That is valuable — but it is
-    <b>not</b> expert verification, and the interface always says so. When opinions diverge,
-    the item becomes <b>disputed</b> and is routed to trusted validators and verified experts.
-    Changes to the canonical corpus itself remain restricted to trusted reviewers, experts,
-    and administrators — exactly as before.</p>
+    <p data-i18n-html="hiw.s3.p2">Three independent, reliability-weighted votes can establish <b>community consensus</b>. Disagreement routes the item to specialist review. Consensus is not expert verification.</p>
   </section>
 
   <section class="card hiw-section">
     <h2 data-i18n="hiw.s4.h2">Points reward quality, not clicks</h2>
-    <p data-i18n-html="hiw.s4.p1">A completed validation earns <b>provisional</b> points. They become <b>confirmed</b>
-    only when your answer later agrees with community consensus, a reference (gold-standard)
-    answer, or expert adjudication. Extra points go to useful corrections, evidence-backed
-    notes, resolving disputed items, and expert verification work. Spam, duplicates, and
-    unsupported rapid-fire submissions earn nothing confirmed.</p>
-    <p data-i18n="hiw.s4.p2">To keep things healthy there are rate limits, a daily cap, and diminishing returns
-    after many validations in one day. Administrators can invalidate abusive points — the
-    records stay in the audit trail; nothing is silently erased.</p>
-  </section>
-
-  <section class="card hiw-section">
-    <h2><span data-i18n="hiw.s5.h2">Answer track record — separate from points</span><span class="help-marker" data-help="help.sourceReliability" data-help-fallback="This score summarizes how often earlier answers agreed with checked answers. Use it as context, not as proof that someone is always right."></span></h2>
-    <p data-i18n-html="hiw.s5.p1">Points say how much you have contributed. <b>Reliability</b> says how often your
-    judgments hold up: agreement on hidden calibration tasks, agreement with later
-    consensus, reversals, and expert-confirmed work. Reliability weights your future votes
-    in consensus — carefully and within narrow bounds, so newcomers still matter. Your
-    current band (new, developing, established, high) and exactly what it is based on are
-    always visible to you on the leaderboard page.</p>
-  </section>
-
-  <section class="card hiw-section">
-    <h2 data-i18n="hiw.s6.h2">Leaderboard, streaks, quests, achievements</h2>
-    <p data-i18n-html="hiw.s6.p1">The public leaderboard ranks by <b>confirmed quality points</b> — never raw activity —
-    and shows verified validations, reliability band, contribution streak, and expert badges.
-    Research on gamification warns that leaderboards can discourage newcomers, so your
-    personal view emphasizes <b>your</b> rank, percentile, and nearest neighbors rather than
-    unreachable all-time totals. Listing is strictly opt-in, pseudonyms are welcome, and
-    email addresses are never shown.</p>
-    <p data-i18n="hiw.s6.p2">A daily streak requires at least one genuine, substantive contribution — rejected spam
-    never extends it. Small daily and weekly quests nudge toward diverse, high-value work
-    (OCR restoration, dialect questions, evidence notes) instead of repeating the easiest
-    task. Achievements mark real milestones: a first expert-confirmed correction, ten
-    high-quality validations, dialect specialization, OCR restoration, source detective
-    work, consensus building, and sustained contribution.</p>
+    <p data-i18n-html="hiw.s4.p1">Points remain <b>provisional</b> until supported by consensus, a reference answer, or expert adjudication.</p>
+    <p data-i18n="hiw.s4.p2">Rate limits, daily caps, and an audit trail discourage low-quality submissions.</p>
   </section>
 
   <section class="card hiw-section">
     <h2 data-i18n="hiw.s7.h2">Privacy</h2>
-    <p data-i18n="hiw.s7.p1">Your email is visible only to you. Your profile is private unless you explicitly make
-    it public, and the leaderboard lists you only if you opt in. Votes are attributed for
-    auditability, but public surfaces show display names and quality bands only.</p>
+    <p data-i18n="hiw.s7.p1">Email is private. Profiles and leaderboard listing are opt-in. Votes remain auditable.</p>
   </section>
 
   <section class="card hiw-section">
     <h2 data-i18n="hiw.s8.h2">Appeals</h2>
-    <p data-i18n="hiw.s8.p1">Disagree with a revoked point or an adjudication? Submit an appeal from your profile.
-    An administrator reviews it and writes a resolution. Appeals, votes, status changes, and
-    adjudications all live in a permanent audit trail with timestamps and contributors.</p>
+    <p data-i18n="hiw.s8.p1">Submit appeals from your profile. Decisions remain in the permanent audit trail.</p>
   </section>
-
-  <p style="color:var(--text2); font-size:14px; margin-top:24px;" data-i18n="hiw.outro">
-    Баркалла — thank you for helping keep Lak alive, accurate, and open to science. 💛
-  </p>
 </main>
 
 <div id="toast-container"></div>

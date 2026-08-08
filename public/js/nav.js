@@ -210,6 +210,23 @@
       links.insertBefore(intelligence, about || links.querySelector('#auth-link') || null);
     }
 
+    // Keep the primary navigation task-based and compact. Secondary tools are
+    // linked from their relevant pages instead of competing in the main bar.
+    var primaryOrder = ['/', '/source-library.html', '/research.html', '/lab.html', '/validate.html', '/about.html'];
+    links.querySelectorAll('.nav-link').forEach(function (link) {
+      var path = link.getAttribute('href');
+      if (path === '/intelligence.html' || link.id === 'auth-link') return;
+      if (!primaryOrder.includes(path)) link.remove();
+    });
+    primaryOrder.forEach(function (path) {
+      var link = links.querySelector('a[href="' + path + '"]');
+      if (link) links.appendChild(link);
+    });
+    var privateLink = links.querySelector('a[href="/intelligence.html"]');
+    var authLink = links.querySelector('#auth-link');
+    if (privateLink) links.appendChild(privateLink);
+    if (authLink) links.appendChild(authLink);
+
     if (!links.id) links.id = 'nav-links';
 
     var btn = document.createElement('button');
