@@ -44,6 +44,13 @@ const cleanDictionary = concordanceSnippets(
 assert.strictEqual(cleanDictionary.length, 1);
 assert(cleanDictionary[0].snippet.includes('просьба, мольба'));
 
+const russianStops = new Set(['наклон', 'невод']);
+const concatenatedDictionary = concordanceSnippets(
+  'мольба миннат наклон кьус ритаву невод', 'мольба', 4,
+  { dictionary: true, knownRussian: true, stopTerms: russianStops });
+assert.strictEqual(concatenatedDictionary.length, 1);
+assert.strictEqual(concatenatedDictionary[0].snippet, 'мольба миннат…');
+
 const wordFormsHtml = fs.readFileSync(require.resolve('../public/word-forms.html'), 'utf8');
 const wordFormsJs = fs.readFileSync(require.resolve('../public/js/word-forms.js'), 'utf8');
 const appCss = fs.readFileSync(require.resolve('../public/css/app.css'), 'utf8');
