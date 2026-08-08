@@ -91,6 +91,7 @@ let searchSeq     = 0;
 let searchAbort   = null;
 let currentMode = 'general';
 let v2Ready = false;
+let currentLemmaBrowse = false;
 
 // ── DOM refs ─────────────────────────────────────────────────
 const $q       = document.getElementById('q');
@@ -102,6 +103,8 @@ const $modeBar = document.getElementById('v2-mode-bar');
 const $v2Spotlight = document.getElementById('v2-spotlight');
 const $grammarWrap = document.getElementById('grammar-feature-wrap');
 const $grammar = document.getElementById('grammar-feature');
+const $browseLemmas = document.getElementById('browse-lemmas');
+const $resultsHead = document.getElementById('results-head');
 const $tbody   = document.getElementById('tbody');
 const $count   = document.getElementById('count-label');
 const $page    = document.getElementById('page-label');
@@ -170,6 +173,12 @@ function setSearchMode(mode) {
   $modeBar.querySelectorAll('[data-mode]').forEach(item => item.classList.toggle('active', item === button));
   document.querySelectorAll('.legacy-filter').forEach(item => { item.hidden = currentMode !== 'general'; });
   $grammarWrap.hidden = currentMode !== 'grammar';
+  $browseLemmas.hidden = currentMode !== 'lemma';
+  $q.placeholder = currentMode === 'lemma'
+    ? t('search.lemma.placeholder', 'Enter a lemma, or leave blank to browse all')
+    : t('index.searchPlaceholder', 'e.g. луна, земля, спасибо, с днем рождения…');
+  currentLemmaBrowse = false;
+  $resultsHead.hidden = false;
   $concept.classList.remove('visible');
   return true;
 }
@@ -199,8 +208,9 @@ async function search(page = 1) {
   const source  = $source.value;
   const variety = $variety.value;
   const morphologyQuery = currentMode === 'grammar' ? (q || $grammar.value) : q;
+  const browseLemmas = currentMode === 'lemma' && !q;
 
-  if (currentMode !== 'general' && !morphologyQuery) {
+  if (currentMode !== 'general' && !morphologyQuery && !browseLemmas) {
     currentTotal = 0; currentPages = 1; currentPage = 1;
     const modeLabel = t(`search.mode.${currentMode}`, currentMode);
     $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">⌨</div><h3>${esc(t('search.morph.exactPromptTitle', `Enter an exact ${modeLabel} query`, { mode: modeLabel }))}</h3><p>${esc(t('search.morph.exactPromptBody', 'Morphology search does not silently fall back to substring matching.'))}</p></div></td></tr>`;
@@ -209,7 +219,7 @@ async function search(page = 1) {
     return;
   }
 
-  const params = new URLSearchParams({ page, limit: currentMode === 'general' ? 50 : 25 });
+  const params = new URLSearchParams({ page, limit: currentMode === 'general' || browseLemmas ? 50 : 25 });
   if (q)       params.set('q', q);
   if (currentMode === 'general') {
     if (kind)    params.set('kind', kind);
@@ -220,17 +230,23 @@ async function search(page = 1) {
     if (currentMode === 'grammar' && !q && $grammar.value) params.set('q', $grammar.value);
   }
 
-  $tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3);">${esc(t('search.loading', 'Searching…'))}</td></tr>`;
+  currentLemmaBrowse = browseLemmas;
+  $resultsHead.hidden = browseLemmas;
+  $tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3);">${esc(t(browseLemmas ? 'search.lemma.loading' : 'search.loading', browseLemmas ? 'Loading lemmas…' : 'Searching…'))}</td></tr>`;
   [$prev,$prev2,$next,$next2].forEach(b => b.disabled = true);
 
   try {
-    const endpoint = currentMode === 'general' ? '/api/corpus/search' : '/api/corpus/v2/search';
+    const endpoint = currentMode === 'general'
+      ? '/api/corpus/search'
+      : browseLemmas ? '/api/corpus/v2/lemmas' : '/api/corpus/v2/search';
     const res  = await fetch(`${endpoint}?${params}`, controller ? { signal: controller.signal } : undefined);
     if (!res.ok) throw new Error(t('search.error.failed', 'Search failed'));
     const data = await res.json();
     // A newer search started while this one was resolving — discard it whole.
     if (seq !== searchSeq) return;
 
+    currentLemmaBrowse = data.mode === 'lemmas';
+    $resultsHead.hidden = currentLemmaBrowse;
     currentTotal    = data.total;
     currentPages    = data.pages;
     currentPage     = data.page;
@@ -247,6 +263,7 @@ async function search(page = 1) {
     renderConceptCard(q, currentExpanded, currentSenses, currentOcrSenses);
     renderCollections(currentQuery, currentCollections);
     if (currentMode === 'general') renderResults(currentRows, currentMatches, currentExplain);
+    else if (currentLemmaBrowse) renderLemmaIndex(currentRows);
     else renderMorphResults(currentRows);
     renderPagination();
     if (currentMode === 'general') loadEvidence(seq, currentRows, currentExpanded);
@@ -289,14 +306,39 @@ function renderConceptCard(q, expanded, senses, ocrSenses = []) {
 }
 
 function renderPagination() {
-  const prefix = currentMode === 'general' && currentExpanded.length && $kind.value !== 'lexicon' ? t('search.count.corpusPrefix', 'Corpus occurrences · ') : '';
-  $count.innerHTML = tp('search.count.records', currentTotal,
-    `${prefix}<b>${currentTotal.toLocaleString(localeTag())}</b> records`,
-    { prefix, count: `<b>${currentTotal.toLocaleString(localeTag())}</b>` });
+  if (currentLemmaBrowse) {
+    $count.innerHTML = tp('search.lemma.count', currentTotal,
+      `<b>${currentTotal.toLocaleString(localeTag())}</b> lemmas`,
+      { count: `<b>${currentTotal.toLocaleString(localeTag())}</b>` });
+  } else {
+    const prefix = currentMode === 'general' && currentExpanded.length && $kind.value !== 'lexicon' ? t('search.count.corpusPrefix', 'Corpus occurrences · ') : '';
+    $count.innerHTML = tp('search.count.records', currentTotal,
+      `${prefix}<b>${currentTotal.toLocaleString(localeTag())}</b> records`,
+      { prefix, count: `<b>${currentTotal.toLocaleString(localeTag())}</b>` });
+  }
   const text = t('search.page.of', `Page ${currentPage} of ${currentPages}`, { page: currentPage, pages: currentPages });
   $page.textContent = $page2.textContent = text;
   [$prev,$prev2].forEach(b => b.disabled = currentPage <= 1);
   [$next,$next2].forEach(b => b.disabled = currentPage >= currentPages);
+}
+
+function renderLemmaIndex(rows) {
+  if (!rows.length) {
+    $tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><h3>${esc(t('search.lemma.empty', 'No source lemmas found'))}</h3></div></td></tr>`;
+    return;
+  }
+  $tbody.innerHTML = `<tr><td colspan="8" class="lemma-index-cell"><div class="lemma-index-grid">${rows.map(row => {
+    const definitions = (row.definitions || []).filter(Boolean).slice(0, 2);
+    const parts = (row.parts_of_speech || []).filter(Boolean).slice(0, 3);
+    return `<a class="lemma-index-card" href="/?mode=lemma&amp;q=${encodeURIComponent(row.lemma)}">
+      <span class="lemma-index-form" lang="lbe">${esc(row.lemma)}</span>
+      ${definitions.length ? `<span class="lemma-index-definition">${esc(definitions.join('; '))}</span>` : ''}
+      ${parts.length ? `<span class="lemma-index-pos">${parts.map(esc).join(' · ')}</span>` : ''}
+      <span class="lemma-index-counts">${esc(t('search.lemma.summary', '{forms} forms · {occurrences} occurrences', {
+        forms: fmt(row.attested_forms), occurrences: fmt(row.annotated_occurrences)
+      }))}</span>
+    </a>`;
+  }).join('')}</div></td></tr>`;
 }
 
 function renderMorphResults(rows) {
@@ -681,15 +723,24 @@ $modeBar?.addEventListener('click', event => {
 document.querySelectorAll('[data-example-mode]').forEach(button => {
   button.addEventListener('click', () => runV2Example(button.dataset.exampleMode, button.dataset.exampleQuery));
 });
+$browseLemmas?.addEventListener('click', () => {
+  if (!setSearchMode('lemma')) return;
+  $q.value = '';
+  search(1);
+});
 
 // ── Re-render on language change ──────────────────────────────
 function relocalize() {
   renderStats();
   if (v2Ready) loadV2();
+  $q.placeholder = currentMode === 'lemma'
+    ? t('search.lemma.placeholder', 'Enter a lemma, or leave blank to browse all')
+    : t('index.searchPlaceholder', 'e.g. луна, земля, спасибо, с днем рождения…');
   if (hasSearchIntent) {
     renderConceptCard(currentQuery, currentExpanded, currentSenses, currentOcrSenses);
     renderCollections(currentQuery, currentCollections);
     if (currentMode === 'general') renderResults(currentRows, currentMatches, currentExplain);
+    else if (currentLemmaBrowse) renderLemmaIndex(currentRows);
     else renderMorphResults(currentRows);
     renderPagination();
   }
@@ -711,4 +762,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   const initialMode = initial.get('mode');
   const initialQuery = initial.get('q');
   if (initialQuery && ['wordform', 'lemma', 'grammar'].includes(initialMode)) runV2Example(initialMode, initialQuery);
+  else if (initialMode === 'lemma' && setSearchMode('lemma')) search(1);
 });

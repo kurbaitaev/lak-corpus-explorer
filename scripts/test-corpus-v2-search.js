@@ -19,6 +19,9 @@ assert(routeSource.includes("evidence_badge"), 'public results must label source
 assert(!routeSource.includes('morphology_proposals p JOIN corpus_tokens'), 'public search must not join proposals into token results');
 assert(routeSource.includes('public_search_allowed = TRUE'), 'public queries must enforce source rights');
 assert(routeSource.includes("p.access_status='authenticated'"), 'proposal queue must require authenticated records');
+assert(routeSource.includes("router.get('/api/corpus/v2/lemmas'"), 'public lemma index endpoint missing');
+assert(routeSource.includes('COUNT(DISTINCT t.wordform_id)::int AS attested_forms'), 'lemma index must report attested forms');
+assert(routeSource.includes('WHERE ${PUBLIC_SOURCE} ${predicate}'), 'lemma index must enforce source rights');
 
 for (const file of ['public/js/search.js', 'public/js/i18n.js']) {
   const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
@@ -38,4 +41,6 @@ assert(searchUi.includes('searchAbort?.abort()') && searchUi.includes('seq !== s
   'newest-request-wins cancellation and stale-response guard missing');
 assert(searchUi.includes('runV2Example') && searchUi.includes("new URLSearchParams(location.search)"),
   'clickable and deep-linked structured search wiring missing');
+assert(ui.includes('id="browse-lemmas"') && searchUi.includes("'/api/corpus/v2/lemmas'") && searchUi.includes('renderLemmaIndex'),
+  'browse-all lemma UI and endpoint wiring missing');
 console.log('corpus v2 search semantics, fail-closed rights, UI modes, and newest-request-wins checks passed');

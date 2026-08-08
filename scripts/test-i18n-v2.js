@@ -27,6 +27,8 @@ for (const key of [
   'search.smart.analyses','search.smart.lemmas','search.smart.tags','search.smart.trust',
   'search.grammarFeature','search.badge.sourceAnnotation','search.badge.noSourceAnalysis',
   'search.morph.noMatchesTitle','search.morph.exactPromptTitle',
+  'search.lemma.browseAll','search.lemma.placeholder','search.lemma.loading',
+  'search.lemma.empty','search.lemma.summary',
   'validate.kind.lemma_analysis','validate.question.lemma_analysis',
   'validate.morph.option.accept','validate.morph.option.reject',
   'validate.morph.option.uncertain','validate.morph.option.correct',
@@ -37,4 +39,7 @@ for (const key of [
   assert.notStrictEqual(en.t(key), key);
   assert.notStrictEqual(ru.t(key), key);
 }
+assert(en._dict['search.lemma.count']?.en && en._dict['search.lemma.count']?.ru, 'lemma count plural forms missing');
+assert.strictEqual(en.plural('search.lemma.count', 2, { count: 2 }), '2 lemmas');
+assert.strictEqual(ru.plural('search.lemma.count', 5, { count: 5 }), '5 лемм');
 console.log('corpus v2 EN/RU localization keys passed');

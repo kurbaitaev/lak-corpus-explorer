@@ -99,6 +99,46 @@ module.exports = function createCorpusV2Router({ pool }) {
     }
   });
 
+  router.get('/api/corpus/v2/lemmas', async (req, res) => {
+    const { page, limit, offset } = parsePagination(req.query);
+    const query = normalizeLak(req.query.q);
+    const params = [];
+    let predicate = '';
+    if (query) {
+      params.push(normalizeLakVariants(req.query.q).map(value => `${value}%`));
+      predicate = `AND l.normalized_form LIKE ANY($1)`;
+    }
+    params.push(limit, offset);
+    const limitParam = `$${params.length - 1}`;
+    const offsetParam = `$${params.length}`;
+    try {
+      const result = await pool.query(
+        `SELECT l.id AS lemma_id, l.display_form AS lemma, l.normalized_form,
+                COUNT(DISTINCT a.id)::int AS annotated_occurrences,
+                COUNT(DISTINCT t.wordform_id)::int AS attested_forms,
+                COALESCE(array_agg(DISTINCT a.source_pos) FILTER (WHERE a.source_pos IS NOT NULL), ARRAY[]::text[]) AS parts_of_speech,
+                COALESCE(array_agg(DISTINCT a.definition) FILTER (WHERE NULLIF(a.definition, '') IS NOT NULL), ARRAY[]::text[]) AS definitions,
+                COUNT(*) OVER()::int AS total
+           FROM corpus_lemma_keys l
+           JOIN corpus_token_analyses a ON a.lemma_key_id=l.id
+           JOIN corpus_tokens t ON t.id=a.token_id
+           JOIN corpus_segments g ON g.id=t.segment_id
+           JOIN corpus_documents d ON d.id=g.document_id
+           JOIN corpus_sources s ON s.id=d.source_id
+          WHERE ${PUBLIC_SOURCE} ${predicate}
+          GROUP BY l.id
+          ORDER BY l.normalized_form, l.id
+          LIMIT ${limitParam} OFFSET ${offsetParam}`,
+        params);
+      const total = result.rows[0]?.total || 0;
+      const rows = result.rows.map(({ total: ignored, ...row }) => row);
+      res.json({ mode: 'lemmas', query: req.query.q || '', total, page, pages: Math.max(1, Math.ceil(total / limit)), limit, rows });
+    } catch (error) {
+      console.error('corpus v2 lemmas:', error.message);
+      res.status(500).json({ error: 'Lemma index failed.' });
+    }
+  });
+
   router.get('/api/corpus/v2/lemmas/:id', async (req, res) => {
     try {
       const lemma = (await pool.query(
