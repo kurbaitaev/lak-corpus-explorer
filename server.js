@@ -883,15 +883,21 @@ app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ── Corpus v2 fail-closed deployment bootstrap ───────────────
-// When CORPUS_V2_ENABLED is set, additive versioned migrations must succeed
-// before the server listens. The checksummed PCMLBE import and reconciliation
-// run only with the separate CORPUS_V2_AUTO_IMPORT opt-in. A failure exits
-// without listening so the platform keeps the previous healthy deployment.
+// ── Corpus v2 fail-closed data bootstrap ─────────────────────
+// Open the HTTP port immediately so a production health check is never held
+// behind a large, checksum-verified import. Corpus v2 routes return 503 while
+// preparation is running and become available only after exact reconciliation.
+// A bootstrap failure still exits non-zero so the platform can replace the
+// unhealthy instance without ever exposing partial v2 data.
 const { runCorpusV2Bootstrap } = require('./lib/corpus-v2-bootstrap');
+const { markCorpusV2Ready, markCorpusV2Failed } = require('./lib/corpus-v2');
 
 // Serialize with the legacy startup migration: when the bootstrap is armed,
 // no DDL may run concurrently with the versioned migration and import.
+const httpServer = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Lak Corpus Explorer running on port ${PORT}`);
+});
+
 runCorpusV2Bootstrap({ before: startupMigration })
   .then(result => {
     if (result.ran) {
@@ -900,11 +906,11 @@ runCorpusV2Bootstrap({ before: startupMigration })
     } else if (result.migrated) {
       console.log('Corpus v2 bootstrap: additive schema migrations verified');
     }
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Lak Corpus Explorer running on port ${PORT}`);
-    });
+    markCorpusV2Ready();
   })
   .catch(err => {
-    console.error(`Corpus v2 bootstrap failed — refusing to start: ${err.message}`);
-    process.exit(1);
+    markCorpusV2Failed(err);
+    console.error(`Corpus v2 bootstrap failed — stopping server: ${err.message}`);
+    httpServer.close(() => process.exit(1));
+    setTimeout(() => process.exit(1), 5000).unref();
   });

@@ -116,8 +116,8 @@ async function main() {
     assert(!r.calls.includes('POOL_END'), 'server must never end the shared pool');
   }
 
-  // Failure prevents listen: a rejected startup migration, migration, import,
-  // or reconciliation rejects the bootstrap (the server then exits).
+  // A rejected startup migration, migration, import, or reconciliation rejects
+  // the bootstrap. The server exposes no corpus-v2 data until this resolves.
   for (const [step, overrides, options, pattern] of [
     ['startup migration', {}, { before: Promise.reject(new Error('legacy ddl failed')) }, /legacy ddl failed/],
     ['migration', { migrateFiles: async () => { throw new Error('ddl failed'); } }, {}, /ddl failed/],
@@ -130,31 +130,31 @@ async function main() {
     await assert.rejects(createCorpusV2Bootstrap(r.deps)(options), pattern, `${step} failure must reject`);
   }
 
-  // Integration, failure path: server.js booted with both flags and an
-  // unreachable database must exit non-zero and never create a listener.
+  // Integration, failure path: server.js opens its health-check port promptly,
+  // but an unreachable database still makes it exit non-zero.
   {
     const badDb = 'postgres://127.0.0.1:1/corpus_v2_unreachable';
     const { code, output } = await bootServer({ PORT: '5191', ...BOTH_TRUE, DATABASE_URL: badDb }, null, 90000);
     assert.notStrictEqual(code, 0, `server must exit non-zero on bootstrap failure (got ${code})`);
-    assert(output.includes('refusing to start'), `expected fail-closed log, got:\n${output.slice(-1500)}`);
-    assert(!output.includes('running on port 5191'), 'server listened despite bootstrap failure');
+    assert(output.includes('stopping server'), `expected fail-closed log, got:\n${output.slice(-1500)}`);
+    assert(output.includes('running on port 5191'), 'server did not open its health-check port before bootstrap');
   }
 
   // Integration, success path: with both flags against the already-imported
-  // development database, the bootstrap reconciles idempotently and only then
-  // does the server listen.
+  // development database, the server listens first and the bootstrap then
+  // reconciles idempotently before corpus-v2 routes become ready.
   if (process.env.DATABASE_URL) {
     const { output } = await bootServer({ PORT: '5192', ...BOTH_TRUE }, 'running on port 5192');
     const bootstrapAt = output.indexOf('Corpus v2 bootstrap: batch');
     const listenAt = output.indexOf('running on port 5192');
     assert(bootstrapAt !== -1, `bootstrap did not run; output:\n${output.slice(-1500)}`);
     assert(output.includes('idempotent'), 'second boot must report the batch already imported');
-    assert(bootstrapAt < listenAt, 'server listened before the bootstrap reconciled');
+    assert(listenAt < bootstrapAt, 'server health-check port waited for the bulk import');
   } else {
     console.log('corpus v2 autostart: live database success path skipped (DATABASE_URL is not configured)');
   }
 
-  console.log('corpus v2 autostart: default-off, additive schema boot, exact import gating, fail-closed startup ordering, and idempotent import checks passed');
+  console.log('corpus v2 autostart: default-off, prompt health-check listener, exact import gating, fail-closed data readiness, and idempotent import checks passed');
 }
 
 main().catch(error => { console.error(error.stack || error.message); process.exit(1); });
