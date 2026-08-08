@@ -30,7 +30,28 @@ for (const form of forms) {
 const snippets = concordanceSnippets(
   '[OCR PAGE 85] Там было все: и скорбь, и любовь, и мольба, и обида, и надежда.', 'мольба');
 assert.strictEqual(snippets.length, 1);
-assert(snippets[0].includes('любовь, и мольба, и обида'));
-assert(snippets[0].length <= 360);
+assert(snippets[0].snippet.includes('любовь, и мольба, и обида'));
+assert(snippets[0].snippet.length <= 360);
+
+const dirtyOcr = concordanceSnippets(
+  'прбсьба, мольба; — тПун просйть,', 'мольба', 4,
+  { dictionary: true, knownRussian: true });
+assert.deepStrictEqual(dirtyOcr, [], 'mixed and damaged OCR must not be shown as readable evidence');
+
+const cleanDictionary = concordanceSnippets(
+  'просьба, мольба; обращение с просьбой', 'мольба', 4,
+  { dictionary: true, knownRussian: true });
+assert.strictEqual(cleanDictionary.length, 1);
+assert(cleanDictionary[0].snippet.includes('просьба, мольба'));
+
+const wordFormsHtml = fs.readFileSync(require.resolve('../public/word-forms.html'), 'utf8');
+const wordFormsJs = fs.readFileSync(require.resolve('../public/js/word-forms.js'), 'utf8');
+const appCss = fs.readFileSync(require.resolve('../public/css/app.css'), 'utf8');
+assert(!wordFormsHtml.includes('wf-confidence'), 'misleading attestation control must stay removed');
+assert(!wordFormsHtml.includes('wf-stats'), 'raw mixed-token total must not be promoted as a lexicon count');
+assert(wordFormsJs.includes("if (!document.getElementById('wf-search').value.trim())"),
+  'occurrence explorer must wait for an explicit search');
+assert(/\.wf-contexts mark\s*\{[^}]*color:\s*#201707/i.test(appCss),
+  'highlight text needs an explicit readable color in dark mode');
 
 console.log('Russian inflection lookup and concordance tests passed.');

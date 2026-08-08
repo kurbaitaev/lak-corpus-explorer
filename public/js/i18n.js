@@ -2547,27 +2547,32 @@
     },
 
     /* ── Public word-form index ─────────────────────────────── */
-    'wf.meta.title': { en: 'Lak word forms · Lak Corpus Explorer', ru: 'Лакские словоформы · Лакский корпус' },
+    'wf.meta.title': { en: 'Corpus occurrence search · Lak Corpus Explorer', ru: 'Поиск вхождений · Лакский корпус' },
     'wf.kicker': { en: 'Derived public index', ru: 'Производный открытый указатель' },
-    'wf.h1': { en: 'Lak word forms', ru: 'Лакские словоформы' },
+    'wf.h1': { en: 'Corpus occurrence search', ru: 'Поиск вхождений в корпусе' },
     'wf.intro': {
-      en: 'Attested forms with occurrence and independent-source counts.',
-      ru: 'Засвидетельствованные формы с числом вхождений и независимых источников.'
+      en: 'Find a Lak or Russian form and see where it occurs.',
+      ru: 'Найдите лакскую или русскую форму и посмотрите, где она встречается.'
     },
     'wf.statsLabel': { en: 'Index summary', ru: 'Сводка по указателю' },
     'wf.method': {
-      en: 'Public forms require at least two independent sources. Restricted context and fieldwork content are excluded.',
-      ru: 'Публичная форма должна встречаться не менее чем в двух независимых источниках. Закрытый контекст и полевые материалы исключены.'
+      en: 'Results report occurrences in corpus files. Unreadable OCR context is omitted.',
+      ru: 'Результаты показывают вхождения в файлах корпуса. Нечитаемый OCR-контекст не выводится.'
     },
-    'wf.indexLabel': { en: 'Word form index', ru: 'Указатель словоформ' },
+    'wf.indexLabel': { en: 'Corpus occurrence search', ru: 'Поиск вхождений в корпусе' },
     'wf.searchLabel': { en: 'Find a form', ru: 'Найти форму' },
-    'wf.searchPlaceholder': { en: 'Start typing a Lak word…', ru: 'Начните вводить лакское слово…' },
+    'wf.searchPlaceholder': { en: 'Enter a Lak or Russian word…', ru: 'Введите лакское или русское слово…' },
+    'wf.start.title': { en: 'Search the corpus', ru: 'Поиск по корпусу' },
+    'wf.start.body': {
+      en: 'Enter a Lak or Russian word to find its recorded forms and occurrence contexts.',
+      ru: 'Введите лакское или русское слово, чтобы найти зафиксированные формы и контексты.'
+    },
     'wf.script': { en: 'Script', ru: 'Письмо' },
     'wf.script.all': { en: 'Any script', ru: 'Любое письмо' },
     'wf.confidence': { en: 'Attestation', ru: 'Подтверждённость' },
     'wf.confidence.all': { en: 'Any attestation', ru: 'Любая подтверждённость' },
     'wf.sort': { en: 'Order by', ru: 'Сортировать' },
-    'wf.sort.sources': { en: 'Most sources', ru: 'Больше источников' },
+    'wf.sort.sources': { en: 'Most files', ru: 'Больше файлов' },
     'wf.sort.occurrences': { en: 'Most occurrences', ru: 'Чаще встречается' },
     'wf.sort.alphabetical': { en: 'Alphabetical', ru: 'По алфавиту' },
     'wf.markerOnly': { en: 'Only forms with Lak-specific letters', ru: 'Только формы с лакскими буквами' },
@@ -2575,19 +2580,19 @@
     'wf.pagerLabel': { en: 'Index pages', ru: 'Страницы указателя' },
     'wf.markerTitle': { en: 'Contains a Lak-specific letter', ru: 'Содержит специфическую лакскую букву' },
     'wf.markerShort': { en: 'Lak', ru: 'лак.' },
-    'wf.findSources': { en: 'Sources', ru: 'Источники' },
-    'wf.tableCaption': { en: 'Lak word forms with occurrence and source counts', ru: 'Лакские словоформы с числом вхождений и источников' },
+    'wf.findSources': { en: 'Occurrences', ru: 'Вхождения' },
+    'wf.tableCaption': { en: 'Corpus forms with occurrence and file counts', ru: 'Формы корпуса с числом вхождений и файлов' },
     'wf.col.form': { en: 'Form', ru: 'Форма' },
     'wf.col.occurrences': { en: 'Occurrences', ru: 'Вхождений' },
-    'wf.col.sources': { en: 'Sources', ru: 'Источников' },
+    'wf.col.sources': { en: 'Files', ru: 'Файлов' },
     'wf.col.script': { en: 'Script', ru: 'Письмо' },
     'wf.col.confidence': { en: 'Attestation', ru: 'Подтверждённость' },
     'wf.col.explore': { en: 'Explore', ru: 'Перейти' },
     'wf.resultCount': { en: '{shown} of {total} forms', ru: '{shown} из {total} форм' },
     'wf.empty.title': { en: 'No forms match', ru: 'Ничего не найдено' },
     'wf.empty.body': {
-      en: 'A form appears here only when at least two independent sources use it. Try a shorter beginning, or clear a filter.',
-      ru: 'Форма попадает сюда, только если её используют не менее двух независимых источников. Попробуйте более короткое начало слова или снимите фильтр.'
+      en: 'Try the complete word, a shorter beginning, or another spelling.',
+      ru: 'Попробуйте полное слово, более короткое начало или другое написание.'
     },
     'wf.error.title': { en: 'The index could not be loaded', ru: 'Не удалось загрузить указатель' },
     'wf.error.body': { en: 'Reload the page to try again.', ru: 'Обновите страницу, чтобы повторить.' },
@@ -2599,13 +2604,13 @@
     'wf.stat.forms': { en: 'Searchable word forms', ru: 'Словоформ в поиске' },
     'wf.stat.threshold': { en: 'Sources needed to publish a form', ru: 'Источников нужно для публикации формы' },
     'wf.stat.thresholdValue': { en: '2+', ru: '2+' },
-    'wf.detail.kicker': { en: 'Word-form evidence', ru: 'Сведения о словоформе' },
+    'wf.detail.kicker': { en: 'Corpus evidence', ru: 'Данные корпуса' },
     'wf.detail.summary': {
-      en: '{occurrences} occurrences across {sources} sources',
-      ru: '{occurrences} вхождений в {sources} источниках'
+      en: '{occurrences} occurrences across {sources} files',
+      ru: '{occurrences} вхождений в {sources} файлах'
     },
-    'wf.detail.inThisSource': { en: 'occurrences in this source', ru: 'вхождений в этом источнике' },
-    'wf.detail.back': { en: 'Back to word forms', ru: 'Назад к словоформам' },
+    'wf.detail.inThisSource': { en: 'occurrences in this file', ru: 'вхождений в этом файле' },
+    'wf.detail.back': { en: 'Back to results', ru: 'Назад к результатам' },
     'wf.detail.loading': { en: 'Loading source evidence', ru: 'Загрузка сведений об источниках' },
     'wf.detail.errorTitle': { en: 'Source evidence could not be loaded', ru: 'Не удалось загрузить сведения об источниках' },
     'wf.detail.errorBody': { en: 'Return to the index and try again.', ru: 'Вернитесь к указателю и повторите попытку.' },
@@ -2616,8 +2621,8 @@
     'wf.context.page': { en: 'Page {number}', ru: 'Страница {number}' },
     'wf.context.line': { en: 'Line {number}', ru: 'Строка {number}' },
     'wf.context.unavailable': {
-      en: 'Context is not available for this occurrence.',
-      ru: 'Контекст этого вхождения недоступен.'
+      en: 'A readable context is not available for this occurrence.',
+      ru: 'Для этого вхождения нет читаемого контекста.'
     },
     'wf.source.untitled': { en: '{type} · {ref}', ru: '{type} · {ref}' },
     'wf.source.openRecord': { en: 'Source record', ru: 'Карточка источника' },

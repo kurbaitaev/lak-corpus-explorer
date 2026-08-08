@@ -108,7 +108,36 @@ function cleanQuery(value) {
   return String(value || '').trim().slice(0, 80);
 }
 
-function concordanceSnippets(text, form, max = 4) {
+const CYRILLIC_VOWELS = /[аеёиоуыэюя]/gi;
+const LATIN_LETTERS = /[A-Za-z]/;
+const CYRILLIC_LETTERS = /[А-Яа-яЁё]/;
+const INTERNAL_CAPITAL = /[а-яё][А-ЯЁ]/;
+
+function concordanceQuality(snippet, form, knownRussian) {
+  let score = 5;
+  const text = String(snippet || '');
+  const lower = text.toLowerCase();
+  const at = lower.indexOf(String(form || '').toLowerCase());
+  if (at === 0 || at <= 12) score += 2;
+  if (text.length > 250) score -= 2;
+  if (/�|\u0000/.test(text)) score -= 10;
+  if (INTERNAL_CAPITAL.test(text)) score -= 6;
+  if (/-\s*$/.test(text)) score -= 3;
+  if (knownRussian && LATIN_LETTERS.test(text) && CYRILLIC_LETTERS.test(text)) score -= 8;
+  if (knownRussian) {
+    const words = text.match(/[А-Яа-яЁё]+/g) || [];
+    for (const word of words) {
+      if (word.length < 6 || word.toLowerCase() === String(form).toLowerCase()) continue;
+      const vowels = (word.match(CYRILLIC_VOWELS) || []).length;
+      if (vowels <= 1) score -= 4;
+    }
+  }
+  const withoutMatch = at >= 0 ? text.slice(0, at) + text.slice(at + String(form).length) : text;
+  if ((withoutMatch.match(/[\p{L}\p{N}]/gu) || []).length <= 2) score -= 5;
+  return score;
+}
+
+function concordanceSnippets(text, form, max = 4, options = {}) {
   const source = String(text || '').replace(/\s+/g, ' ').trim();
   const query = String(form || '').normalize('NFKC').toLowerCase();
   const searchable = source.normalize('NFKC').toLowerCase();
@@ -122,16 +151,28 @@ function concordanceSnippets(text, form, max = 4) {
     const after = searchable[at + query.length] || '';
     if ((!before || !/[\p{L}\p{N}]/u.test(before)) &&
         (!after || !/[\p{L}\p{N}]/u.test(after) || /[\u0300-\u036f]/u.test(after))) {
-      const start = Math.max(0, at - 105);
-      const end = Math.min(source.length, at + query.length + 145);
+      let start = Math.max(0, at - 90);
+      let end = Math.min(source.length, at + query.length + 120);
+      if (options.dictionary) {
+        const leftBreak = Math.max(source.lastIndexOf(';', at - 1), source.lastIndexOf('.', at - 1));
+        const rightSemi = source.indexOf(';', at + query.length);
+        const rightPeriod = source.indexOf('.', at + query.length);
+        const rightCandidates = [rightSemi, rightPeriod].filter(n => n >= 0);
+        if (leftBreak >= 0 && at - leftBreak <= 100) start = leftBreak + 1;
+        if (rightCandidates.length) {
+          const boundary = Math.min(...rightCandidates);
+          if (boundary - at <= 130) end = boundary;
+        }
+      }
       let snippet = source.slice(start, end).trim();
       if (start > 0) snippet = '…' + snippet;
       if (end < source.length) snippet += '…';
-      if (!out.includes(snippet)) out.push(snippet);
+      const quality = concordanceQuality(snippet, form, !!options.knownRussian);
+      if (quality >= 4 && !out.some(item => item.snippet === snippet)) out.push({ snippet, quality });
     }
     from = at + query.length;
   }
-  return out;
+  return out.sort((a, b) => b.quality - a.quality).slice(0, max);
 }
 
 function contextPage(text) {
@@ -139,7 +180,7 @@ function contextPage(text) {
   return match ? Number(match[1]) : null;
 }
 
-module.exports = ({ pool, packageDir }) => {
+module.exports = ({ pool, packageDir, knownRussianTerms = new Set() }) => {
   const router = express.Router();
 
   // A shared "is the library built yet" answer. A visitor arriving while the
@@ -404,7 +445,7 @@ module.exports = ({ pool, packageDir }) => {
       const summary = toPublicForm(published.rows[0]);
       const sequences = rows.rows.map(row => Number(row.source_sequence));
       const candidates = sequences.length ? await pool.query(
-        `SELECT source_sequence, text, source_line
+        `SELECT source_sequence, layer, text, source_line
            FROM v13_candidates
           WHERE source_sequence = ANY($1::int[])
             AND layer = ANY($2::text[])
@@ -415,26 +456,40 @@ module.exports = ({ pool, packageDir }) => {
         [sequences, derivation.FORM_SOURCE_LAYERS, form]) : { rows: [] };
 
       const contextsBySource = new Map();
+      const knownRussian = knownRussianTerms.has(form);
       for (const candidate of candidates.rows) {
         const seq = Number(candidate.source_sequence);
         if (!contextsBySource.has(seq)) contextsBySource.set(seq, []);
         const contexts = contextsBySource.get(seq);
-        if (contexts.length >= 5) continue;
         const page = contextPage(candidate.text);
-        for (const snippet of concordanceSnippets(candidate.text, form, 5 - contexts.length)) {
+        const dictionary = candidate.layer === 'private_lexicon_lines';
+        for (const result of concordanceSnippets(candidate.text, form, 5, {
+          dictionary,
+          // A plain-Cyrillic lookup inside a bilingual dictionary may be a
+          // Russian gloss even when the older flat corpus never indexed it.
+          // Apply the stricter OCR checks to that local context only. This
+          // avoids pretending that every plain-Cyrillic Lak form is Russian.
+          knownRussian: knownRussian || (dictionary && !/[Ӏӏ]/u.test(form)),
+        })) {
+          const snippet = result.snippet;
           try {
             P.assertPublicSafe({ snippet }, 'word-form-context');
           } catch {
             continue;
           }
-          const context = { snippet };
+          const context = { snippet, _quality: result.quality };
           if (page !== null) context.page = page;
           else if (candidate.source_line !== null && Number(candidate.source_line) >= 0) {
             context.line = Number(candidate.source_line);
           }
-          contexts.push(context);
-          if (contexts.length >= 5) break;
+          if (!contexts.some(item => item.snippet === snippet)) contexts.push(context);
         }
+      }
+
+      for (const contexts of contextsBySource.values()) {
+        contexts.sort((a, b) => b._quality - a._quality);
+        contexts.splice(3);
+        for (const context of contexts) delete context._quality;
       }
 
       const items = rows.rows.map(row => ({

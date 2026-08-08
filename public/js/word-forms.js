@@ -29,7 +29,15 @@
   }
 
   function sourceName(source) {
-    if (source.title) return source.title;
+    if (source.title) {
+      return String(source.title)
+        .replace(/[_-]+/g, ' ')
+        .replace(/([a-zа-яё])([A-ZА-ЯЁ])/g, '$1 $2')
+        .replace(/([A-Za-zА-Яа-яЁё])(\d)/g, '$1 $2')
+        .replace(/(\d)([A-Za-zА-Яа-яЁё])/g, '$1 $2')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
     return tp('wf.source.untitled', '{type} · {ref}', {
       type: label('materialType', source.material_type), ref: source.ref,
     });
@@ -56,8 +64,7 @@
   }
 
   var SCRIPTS = ['cyrillic', 'latin', 'mixed'];
-  var CONFIDENCES = ['high', 'medium', 'low'];
-  var state = { page: 1, seq: 0, last: null, total: null };
+  var state = { page: 1, seq: 0, last: null };
 
   function row(f) {
     var detailHref = '/word-forms.html?form=' + encodeURIComponent(f.form);
@@ -68,10 +75,8 @@
       '<td class="wf-num">' + esc(num(f.occurrences)) + '</td>' +
       '<td class="wf-num">' + esc(num(f.sources)) + '</td>' +
       '<td><span class="obs-tag">' + esc(label('scriptProfile', f.script_profile)) + '</span></td>' +
-      '<td><span class="wf-confidence ' + esc(f.confidence) + '">' +
-        esc(label('confidence', f.confidence)) + '</span></td>' +
       '<td><a href="' + detailHref + '">' +
-        esc(t('wf.findSources', 'Sources')) + '</a></td>' +
+        esc(t('wf.findSources', 'Occurrences')) + '</a></td>' +
       '</tr>';
   }
 
@@ -89,17 +94,17 @@
           '<p>' + esc(label('materialType', source.material_type)) +
           (source.document_year ? ' · ' + esc(source.document_year) : '') + '</p></div>' +
         '<div class="wf-source-count"><b>' + esc(num(source.form_occurrences)) + '</b><span>' +
-          esc(t('wf.detail.inThisSource', 'occurrences in this source')) + '</span></div>' +
+          esc(t('wf.detail.inThisSource', 'occurrences in this file')) + '</span></div>' +
         (contexts ? '<ol class="wf-contexts">' + contexts + '</ol>' :
-          '<p class="wf-context-empty">' + esc(t('wf.context.unavailable', 'Context is not available for this occurrence.')) + '</p>') +
+          '<p class="wf-context-empty">' + esc(t('wf.context.unavailable', 'A readable context is not available for this occurrence.')) + '</p>') +
       '</article>';
     }).join('');
 
     host.innerHTML = '<a class="lib-back" href="/word-forms.html?q=' + encodeURIComponent(payload.form) + '">' +
-      esc(t('wf.detail.back', 'Back to word forms')) + '</a>' +
-      '<header class="wf-detail-head"><div><div class="obs-kicker">' + esc(t('wf.detail.kicker', 'Word-form evidence')) + '</div>' +
+      esc(t('wf.detail.back', 'Back to results')) + '</a>' +
+      '<header class="wf-detail-head"><div><div class="obs-kicker">' + esc(t('wf.detail.kicker', 'Corpus evidence')) + '</div>' +
       '<h2 lang="lbe">' + esc(payload.form) + '</h2><p>' +
-      esc(tp('wf.detail.summary', '{occurrences} occurrences across {sources} sources', {
+      esc(tp('wf.detail.summary', '{occurrences} occurrences across {sources} files', {
         occurrences: num(payload.occurrences), sources: num(payload.sources),
       })) + '</p></div></header>' +
       '<div class="wf-source-list">' + sourceCards + '</div>' +
@@ -119,7 +124,7 @@
       .then(function (r) { if (!r.ok) throw new Error('not found'); return r.json(); })
       .then(renderDetail)
       .catch(function () {
-        host.innerHTML = '<a class="lib-back" href="/word-forms.html">' + esc(t('wf.detail.back', 'Back to word forms')) + '</a>' +
+        host.innerHTML = '<a class="lib-back" href="/word-forms.html">' + esc(t('wf.detail.back', 'Back to results')) + '</a>' +
           '<div class="obs-error"><h2>' + esc(t('wf.detail.errorTitle', 'Source evidence could not be loaded')) +
           '</h2><p>' + esc(t('wf.detail.errorBody', 'Return to the index and try again.')) + '</p></div>';
       });
@@ -146,17 +151,16 @@
 
     content.innerHTML = payload.items.length
       ? '<div class="wf-table-wrap"><table class="wf-table">' +
-        '<caption class="sr-only">' + esc(t('wf.tableCaption', 'Lak word forms with occurrence and source counts')) + '</caption>' +
+        '<caption class="sr-only">' + esc(t('wf.tableCaption', 'Corpus forms with occurrence and file counts')) + '</caption>' +
         '<thead><tr>' +
           '<th scope="col">' + esc(t('wf.col.form', 'Form')) + '</th>' +
           '<th scope="col" class="wf-num">' + esc(t('wf.col.occurrences', 'Occurrences')) + '</th>' +
-          '<th scope="col" class="wf-num">' + esc(t('wf.col.sources', 'Sources')) + '</th>' +
+          '<th scope="col" class="wf-num">' + esc(t('wf.col.sources', 'Files')) + '</th>' +
           '<th scope="col">' + esc(t('wf.col.script', 'Script')) + '</th>' +
-          '<th scope="col">' + esc(t('wf.col.confidence', 'Attestation')) + '</th>' +
           '<th scope="col">' + esc(t('wf.col.explore', 'Explore')) + '</th>' +
         '</tr></thead><tbody>' + payload.items.map(row).join('') + '</tbody></table></div>'
       : '<div class="obs-empty"><h2>' + esc(t('wf.empty.title', 'No forms match')) + '</h2><p>' +
-        esc(t('wf.empty.body', 'A form appears here only when at least two independent sources use it. Try a shorter beginning, or clear a filter.')) + '</p></div>';
+        esc(t('wf.empty.body', 'Try the complete word, a shorter beginning, or another spelling.')) + '</p></div>';
 
     if (payload.pages_total > 1) {
       pager.hidden = false;
@@ -172,35 +176,12 @@
     }
   }
 
-  function renderStats(payload) {
-    var search = document.getElementById('wf-search');
-    if (state.total == null && search && !search.value.trim()) state.total = payload.total;
-    var total = state.total == null ? payload.total : state.total;
-    var host = document.getElementById('wf-stats');
-    host.innerHTML =
-      '<div class="obs-stat"><b>' + esc(num(total)) + '</b><span>' +
-        esc(t('wf.stat.forms', 'Searchable word forms')) + '</span></div>';
-  }
-
-  function loadIndexTotal() {
-    fetch('/api/word-forms?limit=1&sort=alphabetical', { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
-      .then(function (payload) {
-        if (typeof payload.total !== 'number') return;
-        state.total = payload.total;
-        renderStats(payload);
-      })
-      .catch(function () {});
-  }
-
   function currentQuery() {
     var params = new URLSearchParams();
     var q = document.getElementById('wf-search').value.trim();
     if (q) params.set('q', q);
     var script = document.getElementById('wf-script').value;
     if (script) params.set('script_profile', script);
-    var confidence = document.getElementById('wf-confidence').value;
-    if (confidence) params.set('confidence', confidence);
     if (document.getElementById('wf-marker').checked) params.set('lak_marker', 'true');
     params.set('sort', document.getElementById('wf-sort').value);
     params.set('page', String(state.page));
@@ -209,6 +190,17 @@
 
   var inflight = null;
   function load() {
+    if (!document.getElementById('wf-search').value.trim()) {
+      if (inflight) inflight.abort();
+      state.last = null;
+      document.getElementById('wf-results').textContent = '';
+      document.getElementById('wf-pager').hidden = true;
+      document.getElementById('wf-content').setAttribute('aria-busy', 'false');
+      document.getElementById('wf-content').innerHTML =
+        '<div class="obs-empty"><h2>' + esc(t('wf.start.title', 'Search the corpus')) + '</h2><p>' +
+        esc(t('wf.start.body', 'Enter a Lak or Russian word to find its recorded forms and occurrence contexts.')) + '</p></div>';
+      return;
+    }
     var seq = ++state.seq;
     if (inflight) inflight.abort();
     var controller = new AbortController();
@@ -219,7 +211,6 @@
         if (seq !== state.seq) return;
         state.last = payload;
         render(payload);
-        renderStats(payload);
       })
       .catch(function (err) {
         if (err && err.name === 'AbortError') return;
@@ -238,24 +229,14 @@
       el.textContent = label('scriptProfile', value);
       script.appendChild(el);
     });
-    var confidence = document.getElementById('wf-confidence');
-    CONFIDENCES.forEach(function (value) {
-      var el = document.createElement('option');
-      el.value = value;
-      el.textContent = label('confidence', value);
-      confidence.appendChild(el);
-    });
   }
 
   function relocalizeSelects() {
     Array.prototype.slice.call(document.getElementById('wf-script').options)
       .forEach(function (el) { if (el.value) el.textContent = label('scriptProfile', el.value); });
-    Array.prototype.slice.call(document.getElementById('wf-confidence').options)
-      .forEach(function (el) { if (el.value) el.textContent = label('confidence', el.value); });
   }
 
   function boot() {
-    loadIndexTotal();
     var detailForm = new URLSearchParams(window.location.search).get('form');
     if (detailForm) {
       loadDetail(detailForm);
@@ -271,7 +252,7 @@
       clearTimeout(debounce);
       debounce = setTimeout(function () { state.page = 1; load(); }, 180);
     });
-    ['wf-script', 'wf-confidence', 'wf-sort', 'wf-marker'].forEach(function (id) {
+    ['wf-script', 'wf-sort', 'wf-marker'].forEach(function (id) {
       document.getElementById(id).addEventListener('change', function () { state.page = 1; load(); });
     });
     document.getElementById('wf-pager').addEventListener('click', function (e) {
@@ -287,7 +268,7 @@
     I18n.onChange(function () {
       relocalizeSelects();
       if (state.detail) { renderDetail(state.detail); return; }
-      if (state.last) { render(state.last); renderStats(state.last); }
+      if (state.last) render(state.last);
     });
   }
 
