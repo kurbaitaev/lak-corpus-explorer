@@ -164,13 +164,52 @@ module.exports = function createCorpusV2Router({ pool }) {
              FROM eligible
             ORDER BY source_count DESC,CASE WHEN normalized_form ~ '^[А-Яа-яЁёӀӏ]' THEN 0 WHEN normalized_form ~ '[А-Яа-яЁёӀӏ]' THEN 1 ELSE 2 END,normalized_form,lemma_id
             LIMIT ${limitParam} OFFSET ${offsetParam}
+         ), evidence_tokens AS (
+           SELECT a.lemma_key_id,t.id AS token_id
+             FROM corpus_token_analyses a
+             JOIN corpus_tokens t ON t.id=a.token_id
+             JOIN corpus_segments g ON g.id=t.segment_id
+             JOIN corpus_documents d ON d.id=g.document_id
+             JOIN corpus_sources s ON s.id=d.source_id
+            WHERE a.lemma_key_id IN (SELECT lemma_id FROM paged) AND ${PUBLIC_SOURCE}
+           UNION
+           SELECT r.lemma_key_id,t.id AS token_id
+             FROM corpus_wordform_lemma_relations r
+             JOIN corpus_tokens t ON t.wordform_id=r.wordform_id
+             JOIN corpus_segments g ON g.id=t.segment_id
+             JOIN corpus_documents d ON d.id=g.document_id
+             JOIN corpus_sources s ON s.id=d.source_id
+            WHERE r.lemma_key_id IN (SELECT lemma_id FROM paged) AND r.review_status='source_verified' AND ${PUBLIC_SOURCE}
+         ), occurrence_counts AS (
+           SELECT lemma_key_id,COUNT(*)::int AS annotated_occurrences FROM evidence_tokens GROUP BY lemma_key_id
+         ), form_evidence AS (
+           SELECT a.lemma_key_id,t.wordform_id
+             FROM corpus_token_analyses a JOIN corpus_tokens t ON t.id=a.token_id
+            WHERE a.lemma_key_id IN (SELECT lemma_id FROM paged)
+           UNION
+           SELECT r.lemma_key_id,r.wordform_id
+             FROM corpus_wordform_lemma_relations r
+            WHERE r.lemma_key_id IN (SELECT lemma_id FROM paged) AND r.review_status='source_verified'
+         ), form_counts AS (
+           SELECT lemma_key_id,COUNT(*)::int AS attested_forms FROM form_evidence GROUP BY lemma_key_id
+         ), lexical_meta AS (
+           SELECT el.lemma_key_id,
+                  array_agg(DISTINCT e.part_of_speech) FILTER (WHERE e.part_of_speech IS NOT NULL) AS parts_of_speech,
+                  array_agg(DISTINCT COALESCE(ss.gloss_ru,ss.gloss_en,ss.definition)) FILTER (WHERE COALESCE(ss.gloss_ru,ss.gloss_en,ss.definition) IS NOT NULL) AS definitions
+             FROM lexicon_entry_lemmas el
+             JOIN lexicon_entries e ON e.id=el.entry_id
+             LEFT JOIN lexicon_senses ss ON ss.entry_id=e.id
+            WHERE el.lemma_key_id IN (SELECT lemma_id FROM paged)
+            GROUP BY el.lemma_key_id
          )
-         SELECT p.*,
-                (SELECT COUNT(DISTINCT t.id)::int FROM corpus_tokens t JOIN corpus_segments g ON g.id=t.segment_id JOIN corpus_documents d ON d.id=g.document_id JOIN corpus_sources s ON s.id=d.source_id LEFT JOIN corpus_token_analyses a ON a.token_id=t.id LEFT JOIN corpus_wordform_lemma_relations r ON r.wordform_id=t.wordform_id WHERE ${PUBLIC_SOURCE} AND (a.lemma_key_id=p.lemma_id OR (r.lemma_key_id=p.lemma_id AND r.review_status='source_verified'))) annotated_occurrences,
-                (SELECT COUNT(DISTINCT w.id)::int FROM corpus_wordforms w LEFT JOIN corpus_wordform_lemma_relations r ON r.wordform_id=w.id WHERE (r.lemma_key_id=p.lemma_id AND r.review_status='source_verified') OR EXISTS (SELECT 1 FROM corpus_tokens tx JOIN corpus_token_analyses a ON a.token_id=tx.id WHERE tx.wordform_id=w.id AND a.lemma_key_id=p.lemma_id)) attested_forms,
-                COALESCE((SELECT array_agg(DISTINCT e.part_of_speech) FILTER (WHERE e.part_of_speech IS NOT NULL) FROM lexicon_entry_lemmas el JOIN lexicon_entries e ON e.id=el.entry_id WHERE el.lemma_key_id=p.lemma_id),ARRAY[]::text[]) parts_of_speech,
-                COALESCE((SELECT array_agg(DISTINCT COALESCE(ss.gloss_ru,ss.gloss_en,ss.definition)) FILTER (WHERE COALESCE(ss.gloss_ru,ss.gloss_en,ss.definition) IS NOT NULL) FROM lexicon_entry_lemmas el JOIN lexicon_senses ss ON ss.entry_id=el.entry_id WHERE el.lemma_key_id=p.lemma_id),ARRAY[]::text[]) definitions
+         SELECT p.*,COALESCE(oc.annotated_occurrences,0) AS annotated_occurrences,
+                COALESCE(fc.attested_forms,0) AS attested_forms,
+                COALESCE(lm.parts_of_speech,ARRAY[]::text[]) AS parts_of_speech,
+                COALESCE(lm.definitions,ARRAY[]::text[]) AS definitions
            FROM paged p
+           LEFT JOIN occurrence_counts oc ON oc.lemma_key_id=p.lemma_id
+           LEFT JOIN form_counts fc ON fc.lemma_key_id=p.lemma_id
+           LEFT JOIN lexical_meta lm ON lm.lemma_key_id=p.lemma_id
           ORDER BY p.source_count DESC,CASE WHEN p.normalized_form ~ '^[А-Яа-яЁёӀӏ]' THEN 0 WHEN p.normalized_form ~ '[А-Яа-яЁёӀӏ]' THEN 1 ELSE 2 END,p.normalized_form,p.lemma_id`,
         params);
       const total = result.rows[0]?.total || 0;
